@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <title>Patient Registration</title>
+</head>
+<body>
+    <h1>Register Patient</h1>
+    
+    <form th:action="@{/register}" th:object="${patient}" method="post">
+        <label>First Name:</label>
+        <input type="text" th:field="*{firstName}" /><br/>
+
+        <label>Last Name:</label>
+        <input type="text" th:field="*{lastName}" /><br/>
+
+        <label>Age:</label>
+        <input type="number" th:field="*{age}" /><br/>
+
+        <label>Gender:</label>
+        <input type="text" th:field="*{gender}" /><br/>
+
+        <label>Medical History:</label>
+        <textarea th:field="*{medicalHistory}"></textarea><br/>
+
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>
