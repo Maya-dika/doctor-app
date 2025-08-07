@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Healthcare Portal - User Selection</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 50%, #f5f5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Background decoration */
+        body::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(46, 125, 50, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(-20px, -20px) rotate(1deg); }
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 60px 40px;
+            border-radius: 25px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.1);
+            max-width: 600px;
+            width: 100%;
+            animation: slideUp 0.8s ease-out;
+            position: relative;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 20px;
+            background: linear-gradient(135deg, #2e7d32, #1976d2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+            font-weight: bold;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        h1 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            color: #718096;
+            font-size: 1.1rem;
+            margin-bottom: 40px;
+            font-weight: 400;
+        }
+
+        .button-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .user-option {
+            position: relative;
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border: 2px solid transparent;
+            cursor: pointer;
+            overflow: hidden;
+        }
+
+        .user-option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #2e7d32, #1976d2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+
+        .user-option:hover::before {
+            transform: scaleX(1);
+        }
+
+        .user-option:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: rgba(46, 125, 50, 0.2);
+        }
+
+        .doctor-option:hover {
+            background: linear-gradient(135deg, rgba(25, 118, 210, 0.05), rgba(255, 255, 255, 1));
+        }
+
+        .patient-option:hover {
+            background: linear-gradient(135deg, rgba(46, 125, 50, 0.05), rgba(255, 255, 255, 1));
+        }
+
+        .icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .doctor-icon {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+        }
+
+        .patient-icon {
+            background: linear-gradient(135deg, #2e7d32, #388e3c);
+        }
+
+        .user-option:hover .icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        .btn {
+            width: 100%;
+            padding: 0;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .option-title {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #2d3748;
+        }
+
+        .option-description {
+            color: #718096;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+        }
+
+        .option-features {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .option-features li {
+            color: #4a5568;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .option-features li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        .cta-text {
+            margin-top: 20px;
+            padding: 12px 24px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+        }
+
+        .doctor-cta {
+            background: linear-gradient(135deg, #1976d2, #1565c0);
+            color: white;
+        }
+
+        .patient-cta {
+            background: linear-gradient(135deg, #2e7d32, #388e3c);
+            color: white;
+        }
+
+        .user-option:hover .cta-text {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Mobile responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 40px 30px;
+                margin: 20px;
+            }
+
+            .button-container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 2rem;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .user-option {
+                padding: 30px 20px;
+            }
+        }
+
+        /* Accessibility improvements */
+        .user-option:focus-within {
+            outline: 3px solid rgba(46, 125, 50, 0.5);
+            outline-offset: 2px;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="logo">H+</div>
+        <h1>Welcome to HealthCare Portal</h1>
+        <p class="subtitle">Please select your role to continue</p>
+        
+        <div class="button-container">
+            <form th:action="@{/registerdoc}" method="get">
+                <button type="submit" class="btn">
+                    <div class="user-option doctor-option">
+                        <div class="icon doctor-icon">👨‍⚕️</div>
+                        <h3 class="option-title">Healthcare Provider</h3>
+                        <p class="option-description">Access medical tools and patient management systems</p>
+                        <ul class="option-features">
+                            <li>Patient records management</li>
+                            <li>Appointment scheduling</li>
+                            <li>Medical documentation</li>
+                            <li>Prescription management</li>
+                        </ul>
+                        <div class="cta-text doctor-cta">Register as Doctor</div>
+                    </div>
+                </button>
+            </form>
+            
+            <form th:action="@{/register-patient}" method="get">
+                <button type="submit" class="btn">
+                    <div class="user-option patient-option">
+                        <div class="icon patient-icon">👤</div>
+                        <h3 class="option-title">Patient</h3>
+                        <p class="option-description">Manage your health information and appointments</p>
+                        <ul class="option-features">
+                            <li>Book appointments</li>
+                            <li>View medical history</li>
+                            <li>Access test results</li>
+                            <li>Prescription tracking</li>
+                        </ul>
+                        <div class="cta-text patient-cta">Register as Patient</div>
+                    </div>
+                </button>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

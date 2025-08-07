@@ -9,19 +9,20 @@ import org.springframework.web.bind.annotation.*;
 
 @Controller
 public class PatientController {
-
+    
     @Autowired
     private PatientRepository patientRepository;
-
-    @GetMapping("/register")
-    public String showRegistrationForm(Model model) {
+    
+    @GetMapping("/register-patient")
+    public String showRegistrationForm(@RequestParam(required = false) String success, Model model) {
         model.addAttribute("patient", new Patient());
+        model.addAttribute("success", success != null);
         return "register";
     }
-
-    @PostMapping("/register")
+    
+    @PostMapping("/register-patient")
     public String registerPatient(@ModelAttribute Patient patient) {
         patientRepository.save(patient);
-        return "redirect:/register?success";
+        return "redirect:/register-patient?success";
     }
 }
