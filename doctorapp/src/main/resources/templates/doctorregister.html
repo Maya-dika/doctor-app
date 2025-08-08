@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Doctor Registration - Healthcare Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #e8f5e8 0%, #f0f8ff 50%, #f5f5ff 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 2.2rem;
+            font-weight: 600;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(90deg, #2e7d32, #1976d2);
+            border-radius: 2px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-weight: 600;
+            color: #4a5568;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, select, textarea {
+            padding: 12px 16px;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2e7d32;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(46, 125, 50, 0.1);
+            transform: translateY(-1px);
+        }
+
+        input:hover, select:hover, textarea:hover {
+            border-color: #cbd5e0;
+        }
+
+        select {
+            cursor: pointer;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            background-size: 16px;
+            padding-right: 40px;
+            appearance: none;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+            font-family: inherit;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #2e7d32 0%, #1976d2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(46, 125, 50, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        /* Input validation styles */
+        input:required:invalid {
+            border-color: #fed7d7;
+        }
+
+        input:required:valid {
+            border-color: #c6f6d5;
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+                margin: 10px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+        }
+
+        /* Loading state */
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .error-message {
+            color: #e53e3e;
+            font-size: 0.8rem;
+            margin-top: 4px;
+            display: none;
+        }
+
+        /* Privacy notice */
+        .privacy-notice {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+            color: #2e7d32;
+            border-left: 4px solid #4caf50;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Doctor Registration</h1>
+        
+        <div class="privacy-notice">
+            <strong>Privacy Notice:</strong> <div class="privacy-notice">
+    <strong>Privacy Notice:</strong> Your personal and professional information will be kept secure and used only for purposes related to your medical practice on this platform. 
+    This includes verifying your credentials, enabling patient communication, and complying with applicable healthcare regulations. 
+    We do not share your information with third parties without your consent.
+</div>
+
+        </div>
+         <div th:if="${success}" style="background: #e6ffed; border-left: 5px solid #38a169; padding: 15px; margin-bottom: 20px;">
+    ✅ Patient registered successfully!
+</div>
+        
+        <form th:action="@{/register-doctor}" th:object="${doctor}" method="post" novalidate>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="firstName">First Name *</label>
+                    <input type="text" id="firstName" th:field="*{firstName}" required 
+                           pattern="[A-Za-z\s]+" title="Please enter a valid first name" />
+                    <span class="error-message">Please enter your first name</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="lastName">Last Name *</label>
+                    <input type="text" id="lastName" th:field="*{lastName}" required 
+                           pattern="[A-Za-z\s]+" title="Please enter a valid last name" />
+                    <span class="error-message">Please enter your last name</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="location"> Location *</label>
+                    <input type="text" id="location" th:field="*{location}" required  
+                           placeholder="Beirut..." />
+                    <span class="error-message">Please enter your location</span>
+                </div>
+                
+                <div class="form-group">
+                  <label for="specialty">Specialty *</label>
+                  <select id="specialty" th:field="*{specialty}" required>
+                    <option value="" disabled selected>Select your specialty</option>
+
+                    <option value="Aesthetic Medicine">Aesthetic Medicine</option>
+                    <option value="Allergy and Immunology">Allergy and Immunology</option>
+                    <option value="Anatomical and Clinical Pathology">Anatomical and Clinical Pathology</option>
+                    <option value="Andrology">Andrology</option>
+                    <option value="Anesthesiology">Anesthesiology</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Clinical Nutrition">Clinical Nutrition</option>
+                    <option value="Dentistry">Dentistry</option>
+                    <option value="Dermatology">Dermatology</option>
+                    <option value="Diagnostic Radiology">Diagnostic Radiology</option>
+                    <option value="Diagnostic Radiology and Oncologic Radiotherapy">Diagnostic Radiology and Oncologic Radiotherapy</option>
+                    <option value="Echography">Echography</option>
+                    <option value="Emergency Medicine">Emergency Medicine</option>
+                    <option value="Endocrinology & Diabetes">Endocrinology & Diabetes</option>
+                    <option value="Endocrinology and Metabolism">Endocrinology and Metabolism</option>
+                    <option value="Family Medicine">Family Medicine</option>
+                    <option value="Gastroenterology">Gastroenterology</option>
+                    <option value="General Medicine">General Medicine</option>
+                    <option value="General Surgery">General Surgery</option>
+                    <option value="Geriatric medicine">Geriatric medicine</option>
+                    <option value="Head and Neck Surgery">Head and Neck Surgery</option>
+                    <option value="Health Concierge">Health Concierge</option>
+                    <option value="Hematology">Hematology</option>
+                    <option value="Hematology and Medical Oncology">Hematology and Medical Oncology</option>
+                    <option value="Infectious Diseases">Infectious Diseases</option>
+                    <option value="Intensive Care Medicine">Intensive Care Medicine</option>
+                    <option value="Internal Medicine">Internal Medicine</option>
+                    <option value="Internal Medicine & Clinical Immunology">Internal Medicine & Clinical Immunology</option>
+                    <option value="Interventional Cardiology">Interventional Cardiology</option>
+                    <option value="Interventional Radiology">Interventional Radiology</option>
+                    <option value="Laboratory Medicine">Laboratory Medicine</option>
+                    <option value="Legal Medicine">Legal Medicine</option>
+                    <option value="Medical Gynecology">Medical Gynecology</option>
+                    <option value="Medical Oncology">Medical Oncology</option>
+                    <option value="Neonatology">Neonatology</option>
+                    <option value="Nephrology">Nephrology</option>
+                    <option value="Neuro-Surgery">Neuro-Surgery</option>
+                    <option value="Neurology">Neurology</option>
+                    <option value="Nuclear Medicine">Nuclear Medicine</option>
+                    <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
+                    <option value="Oncologic Radiotherapy Medicine">Oncologic Radiotherapy Medicine</option>
+                    <option value="Oncologic Surgery">Oncologic Surgery</option>
+                    <option value="Ophthalmology">Ophthalmology</option>
+                    <option value="Orthopedic Surgery">Orthopedic Surgery</option>
+                    <option value="Oto-Rhinolaryngology (ENT)">Oto-Rhinolaryngology (ENT)</option>
+                    <option value="Pain Medicine">Pain Medicine</option>
+                    <option value="Palliative Medicine">Palliative Medicine</option>
+                    <option value="Pediatric Cardiology">Pediatric Cardiology</option>
+                    <option value="Pediatric Gastroenterology">Pediatric Gastroenterology</option>
+                    <option value="Pediatric Hematology and Oncology">Pediatric Hematology and Oncology</option>
+                    <option value="Pediatric Infectious Diseases">Pediatric Infectious Diseases</option>
+                    <option value="Pediatric Intensive Care">Pediatric Intensive Care</option>
+                    <option value="Pediatric Neurology">Pediatric Neurology</option>
+                    <option value="Pediatric Psychiatry">Pediatric Psychiatry</option>
+                    <option value="Pediatric Pulmonary Diseases">Pediatric Pulmonary Diseases</option>
+                    <option value="Pediatric Surgery">Pediatric Surgery</option>
+                    <option value="Pediatric Urology">Pediatric Urology</option>
+                    <option value="Pediatrics">Pediatrics</option>
+                    <option value="Physical Medicine and Rehabilitation">Physical Medicine and Rehabilitation</option>
+                    <option value="Plastic and Reconstructive Surgery">Plastic and Reconstructive Surgery</option>
+                    <option value="Psychiatry">Psychiatry</option>
+                    <option value="Public Health">Public Health</option>
+                    <option value="Pulmonary Diseases (Chest)">Pulmonary Diseases (Chest)</option>
+                    <option value="Rheumatology">Rheumatology</option>
+                    <option value="Sexual Medicine">Sexual Medicine</option>
+                    <option value="Sport Medicine">Sport Medicine</option>
+                    <option value="Surgery and Reconstruction of Maxillo-Facial">Surgery and Reconstruction of Maxillo-Facial</option>
+                    <option value="Thoracic and Cardiovascular Surgery">Thoracic and Cardiovascular Surgery</option>
+                    <option value="Thoracic Surgery">Thoracic Surgery</option>
+                    <option value="Urology">Urology</option>
+                    <option value="Vascular Surgery">Vascular Surgery</option>
+                    <option value="Venerology">Venerology</option>
+                    <option value="Veterinary">Veterinary</option>
+
+                    <option value="Clinical Psychology">Clinical Psychology</option>
+                    <option value="Educational psychologist and Counselor">Educational psychologist and Counselor</option>
+                    <option value="Lactation Consultant">Lactation Consultant</option>
+                    <option value="Licensed Dietitian">Licensed Dietitian</option>
+                    <option value="Life Coach">Life Coach</option>
+                    <option value="Nutritionist, Registered Dietitian">Nutritionist, Registered Dietitian</option>
+                    <option value="Personal Development Consultant">Personal Development Consultant</option>
+                    <option value="Physiotherapy">Physiotherapy</option>
+                    <option value="Psychomotor Therapy">Psychomotor Therapy</option>
+                  </select>
+                  <span class="error-message">Please select your specialty</span>
+                </div>
+
+              
+        
+                <div class="form-group">
+                    <label for="experience">Experience (Years) *</label>
+                    <input type="number" id="experience" th:field="*{experience}" required 
+                            title="Please enter your experience" />
+                    <span class="error-message">Please enter your experience</span>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email Address *</label>
+                    <input type="email" id="email" th:field="*{email}" required 
+                           placeholder="your.email@example.com" />
+                    <span class="error-message">Please enter a valid email address</span>
+                </div>
+                
+            <button type="submit" class="submit-btn">
+                Register Doctor
+            </button>
+        </form>
+       
+
+    </div>
+
+    <script>
+        // Form validation and enhancement
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            const submitBtn = document.querySelector('.submit-btn');
+            
+            // Real-time validation
+            const inputs = document.querySelectorAll('input[required], select[required]');
+            inputs.forEach(input => {
+                input.addEventListener('blur', validateField);
+                input.addEventListener('input', clearError);
+            });
+            
+            function validateField(e) {
+                const field = e.target;
+                const errorMsg = field.parentNode.querySelector('.error-message');
+                
+                if (!field.checkValidity()) {
+                    field.style.borderColor = '#e53e3e';
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                    }
+                } else {
+                    field.style.borderColor = '#48bb78';
+                    if (errorMsg) {
+                        errorMsg.style.display = 'none';
+                    }
+                }
+            }
+            
+            function clearError(e) {
+                const field = e.target;
+                const errorMsg = field.parentNode.querySelector('.error-message');
+                
+                if (field.checkValidity()) {
+                    field.style.borderColor = '#e2e8f0';
+                    if (errorMsg) {
+                        errorMsg.style.display = 'none';
+                    }
+                }
+            }
+            
+            // Form submission
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate all required fields
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!input.checkValidity()) {
+                        isValid = false;
+                        validateField({ target: input });
+                    }
+                });
+                
+                if (isValid) {
+                    // Add loading state
+                    submitBtn.disabled = true;
+                    submitBtn.textContent = 'Registering...';
+                    
+                    // Simulate form submission delay
+                    setTimeout(() => {
+                        // In a real application, this would submit to the server
+                        form.submit();
+                    }, 1000);
+                } else {
+                    // Scroll to first error
+                    const firstError = document.querySelector('input:invalid, select:invalid');
+                    if (firstError) {
+                        firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        firstError.focus();
+                    }
+                }
+            });
+            
+            // Phone number formatting
+            const phoneInput = document.getElementById('phoneNumber');
+            phoneInput.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\D/g, '');
+                if (value.length >= 6) {
+                    value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
+                } else if (value.length >= 3) {
+                    value = value.replace(/(\d{3})(\d{0,3})/, '($1) $2');
+                }
+                e.target.value = value;
+            });
+        });
+    </script>
+</body>
+</html>
