@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8" />
@@ -29,7 +28,7 @@
             border-radius: 20px;
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
             width: 100%;
-            max-width: 600px;
+            max-width: 800px;
             animation: slideUp 0.6s ease-out;
         }
 
@@ -63,6 +62,17 @@
             height: 3px;
             background: linear-gradient(90deg, #2e7d32, #1976d2);
             border-radius: 2px;
+        }
+
+        .section-title {
+            color: #2e7d32;
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #e8f5e8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
         .form-grid {
@@ -123,8 +133,61 @@
 
         textarea {
             resize: vertical;
-            min-height: 100px;
+            min-height: 120px;
             font-family: inherit;
+        }
+
+        /* Fixed file upload styles */
+        .file-upload {
+            position: relative;
+            display: block;
+            width: 100%;
+        }
+
+        .file-upload input[type="file"] {
+            position: absolute;
+            left: -9999px;
+            opacity: 0;
+            z-index: -1;
+        }
+
+        .file-upload-btn {
+            display: block;
+            width: 100%;
+            background: #f8fafc;
+            border: 2px dashed #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #718096;
+            font-size: 1rem;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .file-upload-btn:hover {
+            border-color: #2e7d32;
+            background: #e8f5e8;
+            color: #2e7d32;
+            transform: translateY(-1px);
+        }
+
+        .file-upload-btn.has-file {
+            border-color: #48bb78;
+            background: #e6ffed;
+            color: #2e7d32;
+        }
+
+        .file-info {
+            font-size: 0.8rem;
+            color: #718096;
+            margin-top: 5px;
         }
 
         .submit-btn {
@@ -140,7 +203,7 @@
             transition: all 0.3s ease;
             text-transform: uppercase;
             letter-spacing: 1px;
-            margin-top: 20px;
+            margin-top: 30px;
             position: relative;
             overflow: hidden;
         }
@@ -183,6 +246,7 @@
             .container {
                 padding: 30px 20px;
                 margin: 10px;
+                max-width: 95%;
             }
 
             .form-grid {
@@ -219,6 +283,15 @@
             color: #2e7d32;
             border-left: 4px solid #4caf50;
         }
+
+        /* Success message */
+        .success-message {
+            background: #e6ffed; 
+            border-left: 5px solid #38a169; 
+            padding: 15px; 
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
@@ -226,161 +299,304 @@
         <h1>Doctor Registration</h1>
         
         <div class="privacy-notice">
-            <strong>Privacy Notice:</strong> <div class="privacy-notice">
-    <strong>Privacy Notice:</strong> Your personal and professional information will be kept secure and used only for purposes related to your medical practice on this platform. 
-    This includes verifying your credentials, enabling patient communication, and complying with applicable healthcare regulations. 
-    We do not share your information with third parties without your consent.
-</div>
-
+            <strong>Privacy Notice:</strong> Your personal and professional information will be kept secure and used only for purposes related to your medical practice on this platform. 
+            This includes verifying your credentials, enabling patient communication, and complying with applicable healthcare regulations. 
+            We do not share your information with third parties without your consent.
         </div>
-         <div th:if="${success}" style="background: #e6ffed; border-left: 5px solid #38a169; padding: 15px; margin-bottom: 20px;">
-    ✅ Patient registered successfully!
-</div>
+
+        <div 
+            th:if="${successMessage}" 
+            class="success-message"
+            id="successMessage"
+          >
+            ✅ <span th:text="${successMessage}">Doctor registered successfully!</span>
+          </div>
         
-        <form th:action="@{/register-doctor}" th:object="${doctor}" method="post" novalidate>
+        <form action="/registerdoc" method="post" enctype="multipart/form-data" novalidate>
+            
+            <!-- Personal Information Section -->
+            <div class="section-title">Personal Information</div>
             <div class="form-grid">
                 <div class="form-group">
                     <label for="firstName">First Name *</label>
-                    <input type="text" id="firstName" th:field="*{firstName}" required 
+                    <input type="text" id="firstName" name="firstName" required 
                            pattern="[A-Za-z\s]+" title="Please enter a valid first name" />
                     <span class="error-message">Please enter your first name</span>
                 </div>
                 
                 <div class="form-group">
                     <label for="lastName">Last Name *</label>
-                    <input type="text" id="lastName" th:field="*{lastName}" required 
+                    <input type="text" id="lastName" name="lastName" required 
                            pattern="[A-Za-z\s]+" title="Please enter a valid last name" />
                     <span class="error-message">Please enter your last name</span>
                 </div>
                 
                 <div class="form-group">
-                    <label for="location"> Location *</label>
-                    <input type="text" id="location" th:field="*{location}" required  
-                           placeholder="Beirut..." />
-                    <span class="error-message">Please enter your location</span>
-                </div>
-                
-                <div class="form-group">
-                  <label for="specialty">Specialty *</label>
-                  <select id="specialty" th:field="*{specialty}" required>
-                    <option value="" disabled selected>Select your specialty</option>
-
-                    <option value="Aesthetic Medicine">Aesthetic Medicine</option>
-                    <option value="Allergy and Immunology">Allergy and Immunology</option>
-                    <option value="Anatomical and Clinical Pathology">Anatomical and Clinical Pathology</option>
-                    <option value="Andrology">Andrology</option>
-                    <option value="Anesthesiology">Anesthesiology</option>
-                    <option value="Cardiology">Cardiology</option>
-                    <option value="Clinical Nutrition">Clinical Nutrition</option>
-                    <option value="Dentistry">Dentistry</option>
-                    <option value="Dermatology">Dermatology</option>
-                    <option value="Diagnostic Radiology">Diagnostic Radiology</option>
-                    <option value="Diagnostic Radiology and Oncologic Radiotherapy">Diagnostic Radiology and Oncologic Radiotherapy</option>
-                    <option value="Echography">Echography</option>
-                    <option value="Emergency Medicine">Emergency Medicine</option>
-                    <option value="Endocrinology & Diabetes">Endocrinology & Diabetes</option>
-                    <option value="Endocrinology and Metabolism">Endocrinology and Metabolism</option>
-                    <option value="Family Medicine">Family Medicine</option>
-                    <option value="Gastroenterology">Gastroenterology</option>
-                    <option value="General Medicine">General Medicine</option>
-                    <option value="General Surgery">General Surgery</option>
-                    <option value="Geriatric medicine">Geriatric medicine</option>
-                    <option value="Head and Neck Surgery">Head and Neck Surgery</option>
-                    <option value="Health Concierge">Health Concierge</option>
-                    <option value="Hematology">Hematology</option>
-                    <option value="Hematology and Medical Oncology">Hematology and Medical Oncology</option>
-                    <option value="Infectious Diseases">Infectious Diseases</option>
-                    <option value="Intensive Care Medicine">Intensive Care Medicine</option>
-                    <option value="Internal Medicine">Internal Medicine</option>
-                    <option value="Internal Medicine & Clinical Immunology">Internal Medicine & Clinical Immunology</option>
-                    <option value="Interventional Cardiology">Interventional Cardiology</option>
-                    <option value="Interventional Radiology">Interventional Radiology</option>
-                    <option value="Laboratory Medicine">Laboratory Medicine</option>
-                    <option value="Legal Medicine">Legal Medicine</option>
-                    <option value="Medical Gynecology">Medical Gynecology</option>
-                    <option value="Medical Oncology">Medical Oncology</option>
-                    <option value="Neonatology">Neonatology</option>
-                    <option value="Nephrology">Nephrology</option>
-                    <option value="Neuro-Surgery">Neuro-Surgery</option>
-                    <option value="Neurology">Neurology</option>
-                    <option value="Nuclear Medicine">Nuclear Medicine</option>
-                    <option value="Obstetrics and Gynecology">Obstetrics and Gynecology</option>
-                    <option value="Oncologic Radiotherapy Medicine">Oncologic Radiotherapy Medicine</option>
-                    <option value="Oncologic Surgery">Oncologic Surgery</option>
-                    <option value="Ophthalmology">Ophthalmology</option>
-                    <option value="Orthopedic Surgery">Orthopedic Surgery</option>
-                    <option value="Oto-Rhinolaryngology (ENT)">Oto-Rhinolaryngology (ENT)</option>
-                    <option value="Pain Medicine">Pain Medicine</option>
-                    <option value="Palliative Medicine">Palliative Medicine</option>
-                    <option value="Pediatric Cardiology">Pediatric Cardiology</option>
-                    <option value="Pediatric Gastroenterology">Pediatric Gastroenterology</option>
-                    <option value="Pediatric Hematology and Oncology">Pediatric Hematology and Oncology</option>
-                    <option value="Pediatric Infectious Diseases">Pediatric Infectious Diseases</option>
-                    <option value="Pediatric Intensive Care">Pediatric Intensive Care</option>
-                    <option value="Pediatric Neurology">Pediatric Neurology</option>
-                    <option value="Pediatric Psychiatry">Pediatric Psychiatry</option>
-                    <option value="Pediatric Pulmonary Diseases">Pediatric Pulmonary Diseases</option>
-                    <option value="Pediatric Surgery">Pediatric Surgery</option>
-                    <option value="Pediatric Urology">Pediatric Urology</option>
-                    <option value="Pediatrics">Pediatrics</option>
-                    <option value="Physical Medicine and Rehabilitation">Physical Medicine and Rehabilitation</option>
-                    <option value="Plastic and Reconstructive Surgery">Plastic and Reconstructive Surgery</option>
-                    <option value="Psychiatry">Psychiatry</option>
-                    <option value="Public Health">Public Health</option>
-                    <option value="Pulmonary Diseases (Chest)">Pulmonary Diseases (Chest)</option>
-                    <option value="Rheumatology">Rheumatology</option>
-                    <option value="Sexual Medicine">Sexual Medicine</option>
-                    <option value="Sport Medicine">Sport Medicine</option>
-                    <option value="Surgery and Reconstruction of Maxillo-Facial">Surgery and Reconstruction of Maxillo-Facial</option>
-                    <option value="Thoracic and Cardiovascular Surgery">Thoracic and Cardiovascular Surgery</option>
-                    <option value="Thoracic Surgery">Thoracic Surgery</option>
-                    <option value="Urology">Urology</option>
-                    <option value="Vascular Surgery">Vascular Surgery</option>
-                    <option value="Venerology">Venerology</option>
-                    <option value="Veterinary">Veterinary</option>
-
-                    <option value="Clinical Psychology">Clinical Psychology</option>
-                    <option value="Educational psychologist and Counselor">Educational psychologist and Counselor</option>
-                    <option value="Lactation Consultant">Lactation Consultant</option>
-                    <option value="Licensed Dietitian">Licensed Dietitian</option>
-                    <option value="Life Coach">Life Coach</option>
-                    <option value="Nutritionist, Registered Dietitian">Nutritionist, Registered Dietitian</option>
-                    <option value="Personal Development Consultant">Personal Development Consultant</option>
-                    <option value="Physiotherapy">Physiotherapy</option>
-                    <option value="Psychomotor Therapy">Psychomotor Therapy</option>
-                  </select>
-                  <span class="error-message">Please select your specialty</span>
-                </div>
-
-              
-        
-                <div class="form-group">
-                    <label for="experience">Experience (Years) *</label>
-                    <input type="number" id="experience" th:field="*{experience}" required 
-                            title="Please enter your experience" />
-                    <span class="error-message">Please enter your experience</span>
-                </div>
-                
-                <div class="form-group">
                     <label for="email">Email Address *</label>
-                    <input type="email" id="email" th:field="*{email}" required 
+                    <input type="email" id="email" name="email" required 
                            placeholder="your.email@example.com" />
                     <span class="error-message">Please enter a valid email address</span>
                 </div>
                 
+                <div class="form-group">
+                    <label for="phoneNumber">Phone Number *</label>
+                    <input type="tel" id="phoneNumber" name="phoneNumber" required 
+                           placeholder="+961 XX XXX XXX" />
+                    <span class="error-message">Please enter your phone number</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password *</label>
+                    <input type="password" id="password" name="password" required 
+                           minlength="8" placeholder="Minimum 8 characters" />
+                    <span class="error-message">Password must be at least 8 characters</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password *</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required 
+                           minlength="8" placeholder="Confirm your password" />
+                    <span class="error-message">Passwords do not match</span>
+                </div>
+            </div>
+
+            <!-- Address Information Section -->
+            <div class="section-title">Address Information</div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label for="streetAddress">Street Address *</label>
+                    <input type="text" id="streetAddress" name="streetAddress" required 
+                           placeholder="123 Main Street" />
+                    <span class="error-message">Please enter your street address</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City *</label>
+                    <input type="text" id="city" name="city" required 
+                           placeholder="Beirut" />
+                    <span class="error-message">Please enter your city</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="postalCode">Postal Code</label>
+                    <input type="text" id="postalCode" name="postalCode" 
+                           placeholder="1234" />
+                </div>
+
+                <div class="form-group">
+                    <label for="country">Country *</label>
+                    <select id="country" name="country" required>
+                        <option value="">Select Country</option>
+                        <option value="Lebanon">Lebanon</option>
+                        <option value="Syria">Syria</option>
+                        <option value="Jordan">Jordan</option>
+                        <option value="Other">Other</option>
+                    </select>
+                    <span class="error-message">Please select your country</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="location">Practice Location *</label>
+                    <input type="text" id="location" name="location" required  
+                           placeholder="Hamra, Beirut..." />
+                    <span class="error-message">Please enter your practice location</span>
+                </div>
+            </div>
+
+            <!-- Professional Information Section -->
+            <div class="section-title">Professional Information</div>
+            <div class="form-grid">
+              <div class="form-group">
+            <label for="specialty">Specialty *</label>
+            <select name="specialty.id" id="specialty" required>
+                <option value="">-- Select Specialty --</option>
+                <!-- Replace hard-coded options with dynamic ones -->
+                <option th:each="specialty : ${specialties}" 
+                        th:value="${specialty.id}" 
+                        th:text="${specialty.name}">
+                </option>
+            </select>
+                <span class="error-message">Please select your specialty</span>
+             </div>
+                <div class="form-group">
+                    <label for="experience">Experience (Years) *</label>
+                    <input type="number" id="experience" name="experience" required 
+                           min="0" max="50" title="Please enter your experience" />
+                    <span class="error-message">Please enter your experience</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="medicalSchool">Medical School *</label>
+                    <input type="text" id="medicalSchool" name="medicalSchool" required 
+                           placeholder="American University of Beirut" />
+                    <span class="error-message">Please enter your medical school</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="graduationYear">Graduation Year *</label>
+                    <input type="number" id="graduationYear" name="graduationYear" required 
+                           min="1950" max="2024" placeholder="2010" />
+                    <span class="error-message">Please enter your graduation year</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="licenseNumber">Medical License Number *</label>
+                    <input type="text" id="licenseNumber" name="licenseNumber" required 
+                           placeholder="LB123456" />
+                    <span class="error-message">Please enter your license number</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="licenseExpiryDate">License Expiry Date *</label>
+                    <input type="date" id="licenseExpiryDate" name="licenseExpiryDate" required />
+                    <span class="error-message">Please enter your license expiry date</span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="hospitalAffiliations">Hospital Affiliations</label>
+                    <input type="text" id="hospitalAffiliations" name="hospitalAffiliations" 
+                           placeholder="American University of Beirut Medical Center, Hotel Dieu de France" />
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="boardCertifications">Board Certifications</label>
+                    <input type="text" id="boardCertifications" name="boardCertifications" 
+                           placeholder="American Board of Internal Medicine" />
+                </div>
+            </div>
+
+            <!-- Practice Information Section -->
+            <div class="section-title">Practice Information</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="consultationFee">Consultation Fee (USD) *</label>
+                    <input type="number" id="consultationFee" name="consultationFee" required 
+                           min="0" step="0.01" placeholder="50.00" />
+                    <span class="error-message">Please enter your consultation fee</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="workingDays">Working Days *</label>
+                    <select id="workingDays" name="workingDays" required>
+                        <option value="">Select Working Days</option>
+                        <option value="Monday to Friday">Monday to Friday</option>
+                        <option value="Monday to Saturday">Monday to Saturday</option>
+                        <option value="Sunday to Thursday">Sunday to Thursday</option>
+                        <option value="Custom Schedule">Custom Schedule</option>
+                    </select>
+                    <span class="error-message">Please select your working days</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="startTime">Start Time *</label>
+                    <input type="time" id="startTime" name="startTime" required />
+                    <span class="error-message">Please enter your start time</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="endTime">End Time *</label>
+                    <input type="time" id="endTime" name="endTime" required />
+                    <span class="error-message">Please enter your end time</span>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="biography">Professional Biography</label>
+                    <textarea id="biography" name="biography" 
+                              placeholder="Tell patients about your background, approach to medicine, and expertise..."></textarea>
+                </div>
+            </div>
+
+            <!-- Document Upload Section -->
+            <div class="section-title">Document Upload</div>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="profilePhoto">Profile Photo</label>
+                    <div class="file-upload">
+                        <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*" />
+                        <div class="file-upload-btn" id="profilePhotoBtn">
+                            <div>📷 Upload Profile Photo</div>
+                            <div class="file-info">JPG, PNG max 5MB</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="licenseDocument">Medical License Document *</label>
+                    <div class="file-upload">
+                        <input type="file" id="licenseDocument" name="licenseDocument" accept=".pdf,.jpg,.jpeg,.png" required />
+                        <div class="file-upload-btn" id="licenseDocumentBtn">
+                            <div>📄 Upload License Document</div>
+                            <div class="file-info">PDF, JPG, PNG max 10MB</div>
+                        </div>
+                    </div>
+                    <span class="error-message">Please upload your medical license</span>
+                </div>
+            </div>
+            
             <button type="submit" class="submit-btn">
                 Register Doctor
             </button>
         </form>
-       
-
     </div>
 
     <script>
-        // Form validation and enhancement
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
             const submitBtn = document.querySelector('.submit-btn');
+            
+            // File upload handlers
+            function setupFileUpload(inputId, btnId) {
+                const input = document.getElementById(inputId);
+                const btn = document.getElementById(btnId);
+                
+                // Click handler for the button
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    input.click();
+                });
+                
+                // Change handler for the input
+                input.addEventListener('change', function() {
+                    if (this.files && this.files.length > 0) {
+                        const file = this.files[0];
+                        btn.classList.add('has-file');
+                        
+                        if (inputId === 'profilePhoto') {
+                            btn.innerHTML = `
+                                <div>✅ ${file.name}</div>
+                                <div class="file-info">Click to change</div>
+                            `;
+                        } else {
+                            btn.innerHTML = `
+                                <div>✅ ${file.name}</div>
+                                <div class="file-info">Click to change</div>
+                            `;
+                            // Hide error message for required license document
+                            const errorMsg = this.closest('.form-group').querySelector('.error-message');
+                            if (errorMsg) {
+                                errorMsg.style.display = 'none';
+                            }
+                        }
+                    } else {
+                        btn.classList.remove('has-file');
+                        if (inputId === 'profilePhoto') {
+                            btn.innerHTML = `
+                                <div>📷 Upload Profile Photo</div>
+                                <div class="file-info">JPG, PNG max 5MB</div>
+                            `;
+                        } else {
+                            btn.innerHTML = `
+                                <div>📄 Upload License Document</div>
+                                <div class="file-info">PDF, JPG, PNG max 10MB</div>
+                            `;
+                        }
+                    }
+                });
+            }
+            
+            // Initialize file uploads
+            setupFileUpload('profilePhoto', 'profilePhotoBtn');
+            setupFileUpload('licenseDocument', 'licenseDocumentBtn');
             
             // Real-time validation
             const inputs = document.querySelectorAll('input[required], select[required]');
@@ -418,9 +634,35 @@
                 }
             }
             
+            // Password confirmation validation
+            const password = document.getElementById('password');
+            const confirmPassword = document.getElementById('confirmPassword');
+            
+            confirmPassword.addEventListener('blur', function() {
+                const errorMsg = this.parentNode.querySelector('.error-message');
+                if (this.value !== password.value) {
+                    this.style.borderColor = '#e53e3e';
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                    }
+                } else {
+                    this.style.borderColor = '#48bb78';
+                    if (errorMsg) {
+                        errorMsg.style.display = 'none';
+                    }
+                }
+            });
+            
             // Form submission
             form.addEventListener('submit', function(e) {
                 e.preventDefault();
+                
+                // Check password confirmation
+                if (password.value !== confirmPassword.value) {
+                    confirmPassword.focus();
+                    validateField({ target: confirmPassword });
+                    return;
+                }
                 
                 // Validate all required fields
                 let isValid = true;
@@ -431,16 +673,21 @@
                     }
                 });
                 
+                // Check file uploads
+                const licenseDoc = document.getElementById('licenseDocument');
+                if (!licenseDoc.files.length) {
+                    isValid = false;
+                    const errorMsg = licenseDoc.closest('.form-group').querySelector('.error-message');
+                    if (errorMsg) {
+                        errorMsg.style.display = 'block';
+                    }
+                }
+                
                 if (isValid) {
-                    // Add loading state
+                   
                     submitBtn.disabled = true;
                     submitBtn.textContent = 'Registering...';
-                    
-                    // Simulate form submission delay
-                    setTimeout(() => {
-                        // In a real application, this would submit to the server
-                        form.submit();
-                    }, 1000);
+                  form.submit();
                 } else {
                     // Scroll to first error
                     const firstError = document.querySelector('input:invalid, select:invalid');
@@ -455,12 +702,26 @@
             const phoneInput = document.getElementById('phoneNumber');
             phoneInput.addEventListener('input', function(e) {
                 let value = e.target.value.replace(/\D/g, '');
-                if (value.length >= 6) {
+                // Format for Lebanese numbers
+                if (value.startsWith('961')) {
+                    value = value.replace(/(\d{3})(\d{2})(\d{3})(\d{3})/, '+$1 $2 $3 $4');
+                } else if (value.length >= 6) {
                     value = value.replace(/(\d{3})(\d{3})(\d{4})/, '($1) $2-$3');
                 } else if (value.length >= 3) {
                     value = value.replace(/(\d{3})(\d{0,3})/, '($1) $2');
                 }
                 e.target.value = value;
+            });
+
+            // Time validation
+            const startTime = document.getElementById('startTime');
+            const endTime = document.getElementById('endTime');
+            
+            endTime.addEventListener('change', function() {
+                if (startTime.value && endTime.value && startTime.value >= endTime.value) {
+                    alert('End time must be after start time');
+                    this.value = '';
+                }
             });
         });
     </script>

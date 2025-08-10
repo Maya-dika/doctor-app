@@ -284,16 +284,39 @@
                 transition: none !important;
             }
         }
+   .login-btn {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    padding: 18px 36px;       /* bigger padding */
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    text-decoration: none;
+    border-radius: 30px;      /* slightly bigger radius */
+    font-weight: 600;
+    font-size: 1.2rem;        /* bigger font */
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    z-index: 10;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    background: linear-gradient(135deg, #764ba2, #667eea);
+}
+
     </style>
 </head>
 <body>
+    <a href="/login" class="login-btn">Already have an account? Login</a>
     <div class="container">
         <div class="logo">H+</div>
         <h1>Welcome to HealthCare Portal</h1>
         <p class="subtitle">Please select your role to continue</p>
         
         <div class="button-container">
-            <form th:action="@{/registerdoc}" method="get">
+            <form th:action="@{/register-doctor}" method="get">
                 <button type="submit" class="btn">
                     <div class="user-option doctor-option">
                         <div class="icon doctor-icon">👨‍⚕️</div>

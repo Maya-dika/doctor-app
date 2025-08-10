@@ -9,4 +9,6 @@ public class DoctorappApplication {
         System.setProperty("file.encoding", "UTF-8");
         SpringApplication.run(DoctorappApplication.class, args);
     }
+    
+    
 }

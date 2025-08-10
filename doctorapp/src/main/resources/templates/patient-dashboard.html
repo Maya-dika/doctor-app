@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Dashboard - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .dashboard-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .appointment-card {
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .upcoming-appointment {
+            border-left-color: var(--success-color);
+        }
+
+        .overdue-appointment {
+            border-left-color: var(--danger-color);
+        }
+
+        .health-metric {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .health-metric:last-child {
+            border-bottom: none;
+        }
+
+        .metric-value {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+        }
+
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${patient?.firstName + ' ' + patient?.lastName}">John Doe</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item active">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-pills me-3"></i>Prescriptions
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-chart-line me-3"></i>Health Metrics
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-comments me-3"></i>Messages
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-credit-card me-3"></i>Billing
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Welcome Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="profile-avatar me-3">
+                                    <span th:text="${patient?.firstName?.charAt(0)}">J</span>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0">Welcome back, <span th:text="${patient?.firstName}">John</span>!</h2>
+                                    <p class="text-muted mb-0">Here's your health overview for today</p>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary">
+                                <i class="fas fa-calendar-plus me-2"></i>Book Appointment
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${upcomingAppointments != null ? upcomingAppointments : '0'}">0</div>
+                            <div>Upcoming Appointments</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${totalVisits != null ? totalVisits : '0'}">0</div>
+                            <div>Total Visits</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${activePrescriptions != null ? activePrescriptions : '0'}">0</div>
+                            <div>Active Prescriptions</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${unreadMessages != null ? unreadMessages : '0'}">0</div>
+                            <div>Unread Messages</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerts/Notifications -->
+                <div class="row mb-4" th:if="${notifications != null and !notifications.empty}">
+                    <div class="col-12">
+                        <div class="alert alert-warning alert-custom" role="alert" th:each="notification : ${notifications}">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <strong>Reminder:</strong> <span th:text="${notification}">No notifications</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Upcoming Appointments -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-calendar-alt text-primary me-2"></i>
+                                    Upcoming Appointments
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${appointments != null and !appointments.empty}">
+                                    <div class="appointment-card card upcoming-appointment" th:each="appointment : ${appointments}">
+                                        <div class="card-body py-3">
+                                            <div class="d-flex justify-content-between">
+                                                <div>
+                                                    <h6 class="mb-1" th:text="${appointment.doctorName + ' - ' + appointment.specialty}">Doctor Name - Specialty</h6>
+                                                    <small class="text-muted" th:text="${appointment.dateTime}">Date and Time</small>
+                                                </div>
+                                                <span class="badge bg-success" th:text="${appointment.status}">Status</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${appointments == null or appointments.empty}" class="text-center py-4">
+                                    <i class="fas fa-calendar-times text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3">No upcoming appointments scheduled</p>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="#" class="btn btn-outline-primary btn-sm">View All Appointments</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Health Metrics -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-line text-success me-2"></i>
+                                    Recent Health Metrics
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${healthMetrics != null and !healthMetrics.empty}">
+                                    <div class="health-metric" th:each="metric : ${healthMetrics}">
+                                        <span><i th:class="${metric.icon}" th:text="${metric.name}"></i>Metric Name</span>
+                                        <span class="metric-value" th:text="${metric.value}">Value</span>
+                                    </div>
+                                </div>
+                                <div th:if="${healthMetrics == null or healthMetrics.empty}" class="text-center py-4">
+                                    <i class="fas fa-chart-line text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3">No health metrics recorded yet</p>
+                                </div>
+                                <div class="text-center mt-3">
+                                    <a href="#" class="btn btn-outline-success btn-sm">View Detailed Reports</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Current Prescriptions -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-pills text-info me-2"></i>
+                                    Current Prescriptions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${prescriptions != null and !prescriptions.empty}">
+                                    <div class="d-flex justify-content-between align-items-center mb-3 p-3 bg-light rounded" th:each="prescription : ${prescriptions}">
+                                        <div>
+                                            <h6 class="mb-1" th:text="${prescription.medicationName + ' ' + prescription.dosage}">Medication Name</h6>
+                                            <small class="text-muted" th:text="${prescription.instructions + ' - ' + prescription.purpose}">Instructions - Purpose</small>
+                                        </div>
+                                        <span th:class="${prescription.status == 'Active' ? 'badge bg-success' : 'badge bg-warning'}" th:text="${prescription.status}">Status</span>
+                                    </div>
+                                </div>
+                                <div th:if="${prescriptions == null or prescriptions.empty}" class="text-center py-4">
+                                    <i class="fas fa-pills text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3">No active prescriptions</p>
+                                </div>
+                                <div class="text-center">
+                                    <a href="#" class="btn btn-outline-info btn-sm">Manage Prescriptions</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Messages -->
+                    <div class="col-lg-6 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-envelope text-warning me-2"></i>
+                                    Recent Messages
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${messages != null and !messages.empty}">
+                                    <div class="d-flex align-items-center mb-3 p-3 border-bottom" th:each="message : ${messages}">
+                                        <div class="me-3">
+                                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                                <i class="fas fa-user-md text-white"></i>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1">
+                                            <h6 class="mb-1" th:text="${message.senderName}">Sender Name</h6>
+                                            <p class="mb-0 text-muted small" th:text="${message.preview}">Message preview...</p>
+                                            <small class="text-muted" th:text="${message.timestamp}">Timestamp</small>
+                                        </div>
+                                        <span th:if="${message.unread}" class="badge bg-danger">New</span>
+                                    </div>
+                                </div>
+                                <div th:if="${messages == null or messages.empty}" class="text-center py-4">
+                                    <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3">No messages yet</p>
+                                </div>
+                                <div class="text-center">
+                                    <a href="#" class="btn btn-outline-warning btn-sm">View All Messages</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add interactivity to sidebar items
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add smooth animations for card interactions
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 8px 15px rgba(0,0,0,0.2)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+        });
+    </script>
+</body>
+</html>

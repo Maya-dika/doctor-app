@@ -12,21 +12,20 @@ public class Patient implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private Long userId;       // foreign key to user table
+    private String password;
     private String firstName;
     private String lastName;
-    private String email;
     private String phoneNumber;
     private String address;
     private Integer age;
     private String gender;
     private String medicalHistory;
+    private String email;
 
     // Constructors
     public Patient() {}
 
-    public Patient(Long userId, String firstName, String lastName, Integer age, String gender, String medicalHistory, String email, String address,String phoneNumber) {
-        this.userId = userId;
+    public Patient(String firstName, String password, String lastName, Integer age, String gender, String medicalHistory, String email, String address,String phoneNumber) { 
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
@@ -35,12 +34,14 @@ public class Patient implements Serializable {
         this.age = age;
         this.gender = gender;
         this.medicalHistory = medicalHistory;
+        this.password=password;
     }
 
     // Getters and setters for all fields
     public Long getId() { return id; }
-    public Long getUserId() { return userId; }
-    public void setUserId(Long userId) { this.userId = userId; }
+       
+    public String getPassword() { return password; }
+    public void setPassword(String password) { this.password = password; }
 
     public String getFirstName() { return firstName; }
     public void setFirstName(String firstName) { this.firstName = firstName; }
