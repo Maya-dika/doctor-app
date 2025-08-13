@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Appointment - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .doctor-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .doctor-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .doctor-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e3d72;
+            border-color: #1e3d72;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 25px;
+            padding: 8px 16px;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+
+        .booking-form {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 0;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .booking-form.show {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .specialty-badge {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            display: inline-block;
+        }
+
+        .rating-stars {
+            color: #ffc107;
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .search-box {
+            border-radius: 25px;
+            border: 2px solid #e9ecef;
+            padding: 12px 20px;
+        }
+
+        .search-box:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+
+        .alert-custom {
+            border-radius: 10px;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${session.loggedInPatient?.firstName + ' ' + session.loggedInPatient?.lastName}">Patient Name</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                    </div>
+                    <div class="sidebar-item active">
+                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-pills me-3"></i>Prescriptions
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-chart-line me-3"></i>Health Metrics
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-comments me-3"></i>Messages
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-credit-card me-3"></i>Billing
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-2">
+                                <i class="fas fa-calendar-plus text-primary me-3"></i>
+                                Book an Appointment
+                            </h2>
+                            <p class="text-muted mb-0">Choose from our available doctors and schedule your visit</p>
+                        </div>
+                        <a href="/patient-dashboard" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="row mb-4">
+                    <div class="col-md-8 mx-auto">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-box" id="searchInput" 
+                                   placeholder="Search doctors by name or specialty...">
+                            <button class="btn btn-primary" type="button">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Error Alert -->
+                <div th:if="${error}" class="alert alert-danger alert-custom" role="alert">
+                    <i class="fas fa-exclamation-circle me-2"></i>
+                    <span th:text="${error}">Error message</span>
+                </div>
+
+                <!-- Doctors List -->
+                <div class="row" id="doctorsContainer">
+                    <div class="col-lg-6 mb-4" th:each="doctor : ${doctors}" th:attr="data-doctor-name=${doctor.firstName + ' ' + doctor.lastName}, data-specialty=${doctor.specialty.name}">
+                        <div class="card doctor-card">
+                            <div class="card-body p-4">
+                                <div class="d-flex align-items-center mb-3">
+                                    <div class="doctor-avatar me-4" th:if="${doctor.profilePhotoPath == null}">
+                                        <i class="fas fa-user-md"></i>
+                                    </div>
+                                    <div class="doctor-avatar me-4" th:if="${doctor.profilePhotoPath != null}">
+                                        <img th:src="@{${doctor.profilePhotoPath}}" alt="Doctor Photo" 
+                                             style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="mb-1" th:text="'Dr. ' + ${doctor.firstName} + ' ' + ${doctor.lastName}">Dr. Doctor Name</h5>
+                                        <span class="specialty-badge" th:text="${doctor.specialty.name}">Specialty</span>
+                                        <div class="rating-stars mt-2">
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <i class="fas fa-star"></i>
+                                            <span class="text-muted ms-2">(4.9/5)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3">
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-clock me-1"></i>
+                                            <span th:text="${doctor.workingDays != null ? doctor.workingDays : 'Mon-Fri'}">Mon-Fri</span>
+                                            <span th:if="${doctor.startTime != null and doctor.endTime != null}" 
+                                                  th:text="${#temporals.format(doctor.startTime, 'HH:mm') + '-' + #temporals.format(doctor.endTime, 'HH:mm')}">9AM-5PM</span>
+                                            <span th:unless="${doctor.startTime != null and doctor.endTime != null}">9AM-5PM</span>
+                                        </small>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-map-marker-alt me-1"></i>
+                                            <span th:text="${doctor.location != null ? doctor.location : 'Hospital'}">Hospital</span>
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="row mb-3" th:if="${doctor.experience != null or doctor.consultationFee != null}">
+                                    <div class="col-sm-6" th:if="${doctor.experience != null}">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-medal me-1"></i>
+                                            <span th:text="${doctor.experience} + ' years experience'">Experience</span>
+                                        </small>
+                                    </div>
+                                    <div class="col-sm-6" th:if="${doctor.consultationFee != null}">
+                                        <small class="text-muted d-block">
+                                            <i class="fas fa-dollar-sign me-1"></i>
+                                            $<span th:text="${doctor.consultationFee}">Fee</span> consultation
+                                        </small>
+                                    </div>
+                                </div>
+                                
+                                <div class="text-end">
+                                    <button type="button" class="btn btn-primary book-appointment-btn" 
+                                            th:data-doctor-id="${doctor.id}" 
+                                            th:data-doctor-name="${doctor.firstName + ' ' + doctor.lastName}"
+                                            th:data-doctor-specialty="${doctor.specialty.name}">
+                                        <i class="fas fa-calendar-plus me-2"></i>
+                                        Book Appointment
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- No Doctors Message -->
+                <div th:if="${doctors == null or doctors.empty}" class="text-center py-5">
+                    <i class="fas fa-user-md text-muted" style="font-size: 4rem;"></i>
+                    <h4 class="text-muted mt-3">No doctors available at the moment</h4>
+                    <p class="text-muted">Please check back later or contact our support team.</p>
+                </div>
+
+                <!-- Booking Form Modal -->
+                <div class="booking-form" id="bookingForm">
+                    <div class="card">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-calendar-check me-2"></i>
+                                Book Appointment with <span id="selectedDoctorName">Doctor Name</span>
+                            </h5>
+                        </div>
+                        <div class="card-body p-4">
+                            <form th:action="@{/book-appointment}" method="post" id="appointmentForm">
+                                <input type="hidden" name="doctorId" id="doctorId">
+                                
+                                <div class="mb-3">
+                                    <label for="appointmentDate" class="form-label">
+                                        <i class="fas fa-calendar me-2"></i>Appointment Date
+                                    </label>
+                                    <input type="date" class="form-control" id="appointmentDate" 
+                                           name="appointmentDate" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="appointmentTime" class="form-label">
+                                        <i class="fas fa-clock me-2"></i>Preferred Time
+                                    </label>
+                                    <input type="time" class="form-control" id="appointmentTime" 
+                                           name="appointmentTime" required>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="appointmentReason" class="form-label">
+                                        <i class="fas fa-clipboard-list me-2"></i>Reason for Visit
+                                    </label>
+                                    <select class="form-select" id="appointmentReason" name="reason" required>
+                                        <option value="">Select Reason</option>
+                                        <option value="Regular Checkup">Regular Checkup</option>
+                                        <option value="Follow-up">Follow-up Visit</option>
+                                        <option value="Consultation">Consultation</option>
+                                        <option value="Urgent Care">Urgent Care</option>
+                                        <option value="Prescription Renewal">Prescription Renewal</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="mb-4">
+                                    <label for="notes" class="form-label">
+                                        <i class="fas fa-sticky-note me-2"></i>Additional Notes for Doctor
+                                    </label>
+                                    <textarea class="form-control" id="notes" name="notes" rows="4" 
+                                              placeholder="Please describe your symptoms, concerns, or any additional information you'd like the doctor to know..."></textarea>
+                                </div>
+                                
+                                <div class="d-flex justify-content-end gap-3">
+                                    <button type="button" class="btn btn-outline-secondary" id="cancelBooking">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-check me-2"></i>Book Appointment
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Sidebar navigation
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                if (this.textContent.trim().includes('Dashboard')) {
+                    window.location.href = '/patient-dashboard';
+                }
+            });
+        });
+
+        // Search functionality
+        const searchInput = document.getElementById('searchInput');
+        const doctorsContainer = document.getElementById('doctorsContainer');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            const doctorCards = doctorsContainer.querySelectorAll('.col-lg-6');
+            
+            doctorCards.forEach(card => {
+                const doctorName = card.getAttribute('data-doctor-name').toLowerCase();
+                const specialty = card.getAttribute('data-specialty').toLowerCase();
+                
+                if (doctorName.includes(searchTerm) || specialty.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Booking form functionality
+        const bookingForm = document.getElementById('bookingForm');
+        const selectedDoctorName = document.getElementById('selectedDoctorName');
+        const doctorIdInput = document.getElementById('doctorId');
+        const appointmentForm = document.getElementById('appointmentForm');
+        const cancelBooking = document.getElementById('cancelBooking');
+
+        // Show booking form when doctor is selected
+        document.querySelectorAll('.book-appointment-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const doctorId = this.getAttribute('data-doctor-id');
+                const doctorName = this.getAttribute('data-doctor-name');
+                
+                selectedDoctorName.textContent = 'Dr. ' + doctorName;
+                doctorIdInput.value = doctorId;
+                
+                bookingForm.classList.add('show');
+                bookingForm.scrollIntoView({ behavior: 'smooth' });
+            });
+        });
+
+        // Cancel booking
+        cancelBooking.addEventListener('click', function() {
+            bookingForm.classList.remove('show');
+            appointmentForm.reset();
+        });
+
+        // Set minimum date to today
+        const appointmentDateInput = document.getElementById('appointmentDate');
+        const today = new Date().toISOString().split('T')[0];
+        appointmentDateInput.min = today;
+
+        // Form validation
+        appointmentForm.addEventListener('submit', function(e) {
+            const selectedDate = new Date(appointmentDateInput.value);
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            
+            if (selectedDate < today) {
+                e.preventDefault();
+                alert('Please select a future date for your appointment.');
+                return;
+            }
+        });
+
+        // Add hover effects to doctor cards
+        document.querySelectorAll('.doctor-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 8px 25px rgba(0,0,0,0.15)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+        });
+    </script>
+</body>
+</html>

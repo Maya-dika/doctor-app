@@ -54,6 +54,10 @@ public class DoctorService {
         return doctorRepository.findByLocationContainingIgnoreCase(location);
     }
     
+    public Doctor getDoctorById(Long id) {
+        return doctorRepository.findById(id).orElse(null);
+    }
+    
     public List<Doctor> getDoctorsByLastName(String lastName) {
         return doctorRepository.findByLastName(lastName);
     }
