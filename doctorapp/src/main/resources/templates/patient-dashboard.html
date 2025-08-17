@@ -151,7 +151,7 @@
                             <span th:text="${patient?.firstName + ' ' + patient?.lastName}">John Doe</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
@@ -170,18 +170,16 @@
                     <div class="sidebar-item active">
                         <i class="fas fa-tachometer-alt me-3"></i>Dashboard
                     </div>
-                    <div class="sidebar-item">
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
                         <i class="fas fa-calendar-alt me-3"></i>Appointments
-                    </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
                     </div>
                     <div class="sidebar-item">
                         <i class="fas fa-pills me-3"></i>Prescriptions
                     </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-chart-line me-3"></i>Health Metrics
-                    </div>
+                   <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
+                    <i class="fas fa-chart-line me-3"></i>Health Metrics
+                   </div>
+
                     <div class="sidebar-item">
                         <i class="fas fa-comments me-3"></i>Messages
                     </div>
@@ -202,7 +200,7 @@
                                     <span th:text="${patient?.firstName?.charAt(0)}">J</span>
                                 </div>
                                 <div>
-                                    <h2 class="mb-0">Welcome back, <span th:text="${patient?.firstName}">John</span>!</h2>
+                                    <h2 class="mb-0">Welcome, <span th:text="${patient?.firstName}">John</span>!</h2>
                                     <p class="text-muted mb-0">Here's your health overview for today</p>
                                 </div>
                             </div>

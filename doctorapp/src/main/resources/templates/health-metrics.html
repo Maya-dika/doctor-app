@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Health Metrics - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+            --info-color: #17a2b8;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        /* Navbar Styles */
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+            position: fixed;
+            top: 56px;
+            left: 0;
+            width: 250px;
+            z-index: 1000;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .sidebar-item i {
+            width: 20px;
+            margin-right: 12px;
+        }
+
+        /* Main Content Area */
+        .main-content {
+            margin-left: 250px;
+            padding: 20px;
+            min-height: calc(100vh - 56px);
+        }
+
+        /* Metric Cards */
+        .metric-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            border: 1px solid #e9ecef;
+            transition: transform 0.2s ease;
+            height: 100%;
+        }
+
+        .metric-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+        }
+
+        .card-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            border-bottom: 2px solid #f8f9fa;
+            padding-bottom: 10px;
+        }
+
+        .card-title i {
+            margin-right: 10px;
+            color: var(--secondary-color);
+            font-size: 1.3rem;
+        }
+
+        /* Vital Signs */
+        .vital-box {
+            text-align: center;
+            padding: 20px 15px;
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .vital-box:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .vital-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+        }
+
+        .vital-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* BMI Indicator */
+        .bmi-indicator {
+            height: 10px;
+            border-radius: 5px;
+            background: linear-gradient(90deg, 
+                #3498db 0% 18.5%, 
+                var(--success-color) 18.5% 25%, 
+                var(--warning-color) 25% 30%, 
+                var(--danger-color) 30% 100%);
+            position: relative;
+            margin: 15px 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bmi-pointer {
+            position: absolute;
+            top: -4px;
+            width: 3px;
+            height: 18px;
+            background: #333;
+            border-radius: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-excellent {
+            background: linear-gradient(135deg, #d4edda, #c3e6cb);
+            color: #155724;
+            border: 1px solid #b8dabc;
+        }
+
+        .status-good {
+            background: linear-gradient(135deg, #d1ecf1, #bee5eb);
+            color: #0c5460;
+            border: 1px solid #b6dfeb;
+        }
+
+        .status-warning {
+            background: linear-gradient(135deg, #fff3cd, #ffeaa7);
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+
+        .status-danger {
+            background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Condition Tags */
+        .condition-tag {
+            display: inline-block;
+            background: linear-gradient(135deg, var(--primary-color), #1e3d72);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 3px;
+            font-weight: 500;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .condition-tag.family {
+            background: linear-gradient(135deg, var(--info-color), #138496);
+        }
+
+        /* Metric Rows */
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f3f4;
+        }
+
+        .metric-row:last-child {
+            border-bottom: none;
+        }
+
+        .metric-label {
+            color: #495057;
+            font-weight: 500;
+        }
+
+        .metric-value {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Progress Ring */
+        .progress-ring {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+        }
+
+        .progress-ring svg {
+            transform: rotate(-90deg);
+            width: 100%;
+            height: 100%;
+        }
+
+        .progress-ring circle {
+            fill: transparent;
+            stroke-width: 6;
+            r: 40;
+            cx: 50;
+            cy: 50;
+        }
+
+        .progress-ring .bg {
+            stroke: #e9ecef;
+        }
+
+        .progress-ring .progress {
+            stroke: var(--primary-color);
+            stroke-linecap: round;
+            transition: stroke-dasharray 0.3s ease;
+        }
+
+        /* Goal Cards */
+        .goal-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        /* No Data State */
+        .no-data {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .no-data i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            opacity: 0.4;
+        }
+
+        .no-data p {
+            font-size: 1.1rem;
+            margin: 0;
+        }
+
+        /* Button Styles */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), #1e3d72);
+            border: none;
+            border-radius: 25px;
+            padding: 12px 24px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+
+            .sidebar.show {
+                transform: translateX(0);
+            }
+
+            .main-content {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .vital-value {
+                font-size: 1.5rem;
+            }
+
+            .metric-card {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${session.loggedInPatient?.firstName + ' ' + session.loggedInPatient?.lastName}">Patient Name</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
+            <i class="fas fa-tachometer-alt"></i>Dashboard
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
+            <i class="fas fa-calendar-alt"></i>Appointments
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-pills"></i>Prescriptions
+        </div>
+        <div class="sidebar-item active">
+            <i class="fas fa-chart-line"></i>Health Metrics
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-comments"></i>Messages
+        </div>
+        <div class="sidebar-item">
+            <i class="fas fa-credit-card"></i>Billing
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" style="margin-top: 56px;">
+        <!-- Page Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="metric-card">
+                    <h2 class="mb-0" style="color: var(--primary-color);">
+                        <i class="fas fa-chart-line me-3"></i>
+                        Health Metrics Dashboard
+                    </h2>
+                    <p class="text-muted mt-2 mb-0">Monitor your vital signs, track progress, and manage your health goals</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Vitals Section -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-heartbeat"></i>Current Vitals
+                    </h5>
+                    <div class="row g-4">
+                        <div class="col-xl-3 col-lg-6">
+                            <div class="vital-box">
+                                <div class="vital-value" th:text="${additionalPatientInfo?.currentWeight != null ? additionalPatientInfo.currentWeight : '--'}">--</div>
+                                <div class="vital-label">Weight (lbs)</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-6">
+                            <div class="vital-box">
+                                <div class="vital-value">
+                                    <span th:if="${additionalPatientInfo?.heightFeet != null and additionalPatientInfo?.heightInches != null}"
+                                          th:text="${additionalPatientInfo.heightFeet + '''''' + additionalPatientInfo.heightInches + ''''''}">--</span>
+                                    <span th:unless="${additionalPatientInfo?.heightFeet != null and additionalPatientInfo?.heightInches != null}">--</span>
+                                </div>
+                                <div class="vital-label">Height</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-6">
+                            <div class="vital-box">
+                                <div class="vital-value" th:text="${additionalPatientInfo?.restingHeartRate != null ? additionalPatientInfo.restingHeartRate : '--'}">--</div>
+                                <div class="vital-label">Heart Rate (bpm)</div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-6">
+                            <div class="vital-box">
+                                <div class="vital-value" th:text="${additionalPatientInfo?.normalBodyTemp != null ? additionalPatientInfo.normalBodyTemp : '--'}">--</div>
+                                <div class="vital-label">Body Temp (°F)</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Cards Row -->
+        <div class="row mb-4">
+            <!-- BMI Analysis -->
+            <div class="col-lg-4 mb-4">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-calculator"></i>BMI Analysis
+                    </h5>
+                    <div th:if="${additionalPatientInfo?.currentWeight != null and additionalPatientInfo?.heightFeet != null and additionalPatientInfo?.heightInches != null}">
+                        <div class="text-center mb-3">
+                            <div class="vital-value" id="bmi-value">0</div>
+                            <div class="vital-label">BMI Index</div>
+                        </div>
+                        <div class="bmi-indicator">
+                            <div class="bmi-pointer" id="bmi-pointer"></div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <span id="bmi-status" class="status-badge status-good">
+                                <i class="fas fa-check-circle"></i>Normal
+                            </span>
+                        </div>
+                    </div>
+                    <div th:unless="${additionalPatientInfo?.currentWeight != null and additionalPatientInfo?.heightFeet != null and additionalPatientInfo?.heightInches != null}" class="no-data">
+                        <i class="fas fa-calculator"></i>
+                        <p>Height and weight data needed for BMI calculation</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Blood Pressure -->
+            <div class="col-lg-4 mb-4">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-heartbeat"></i>Blood Pressure
+                    </h5>
+                    <div th:if="${additionalPatientInfo?.baselineSystolic != null and additionalPatientInfo?.baselineDiastolic != null}">
+                        <div class="text-center mb-3">
+                            <div class="vital-value" th:text="${additionalPatientInfo.baselineSystolic + '/' + additionalPatientInfo.baselineDiastolic}">--/--</div>
+                            <div class="vital-label">Baseline (mmHg)</div>
+                        </div>
+                        <div th:if="${additionalPatientInfo?.systolicGoal != null and additionalPatientInfo?.diastolicGoal != null}" class="goal-card">
+                            <div class="metric-row">
+                                <span class="metric-label">Target Goal:</span>
+                                <span class="metric-value" th:text="${additionalPatientInfo.systolicGoal + '/' + additionalPatientInfo.diastolicGoal}">Goal</span>
+                            </div>
+                        </div>
+                        <div class="text-center mt-3">
+                            <span id="bp-status" class="status-badge status-good">
+                                <i class="fas fa-check-circle"></i>Normal Range
+                            </span>
+                        </div>
+                    </div>
+                    <div th:unless="${additionalPatientInfo?.baselineSystolic != null and additionalPatientInfo?.baselineDiastolic != null}" class="no-data">
+                        <i class="fas fa-heartbeat"></i>
+                        <p>No baseline blood pressure data available</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Goals -->
+            <div class="col-lg-4 mb-4">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-bullseye"></i>Health Goals
+                    </h5>
+                    
+                    <div th:if="${additionalPatientInfo?.targetWeight != null}" class="goal-card">
+                        <div class="text-center">
+                            <div class="progress-ring">
+                                <svg>
+                                    <circle class="bg" />
+                                    <circle class="progress" id="weight-progress" />
+                                </svg>
+                            </div>
+                            <div class="metric-row">
+                                <span class="metric-label">Weight Goal:</span>
+                                <span class="metric-value" th:text="${additionalPatientInfo.targetWeight + ' lbs'}">Target</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.fastingGlucoseTarget != null}" class="goal-card">
+                        <div class="metric-row">
+                            <span class="metric-label">Glucose Target:</span>
+                            <span class="metric-value" th:text="${additionalPatientInfo.fastingGlucoseTarget + ' mg/dL'}">Target</span>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.totalCholesterolTarget != null}" class="goal-card">
+                        <div class="metric-row">
+                            <span class="metric-label">Cholesterol Target:</span>
+                            <span class="metric-value" th:text="${additionalPatientInfo.totalCholesterolTarget + ' mg/dL'}">Target</span>
+                        </div>
+                    </div>
+                    
+                    <div th:unless="${additionalPatientInfo?.targetWeight != null or additionalPatientInfo?.fastingGlucoseTarget != null}" class="no-data">
+                        <i class="fas fa-bullseye"></i>
+                        <p>No health goals currently set</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Medical Profile & Lifestyle Row -->
+        <div class="row mb-4">
+            <!-- Medical Profile -->
+            <div class="col-lg-4 mb-4">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-file-medical"></i>Medical Profile
+                    </h5>
+                    
+                    <div th:if="${additionalPatientInfo?.bloodType != null}" class="mb-3">
+                        <div class="metric-row">
+                            <span class="metric-label">Blood Type:</span>
+                            <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.bloodType, '_', '')}">Type</span>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.chronicConditions != null and !additionalPatientInfo.chronicConditions.empty}" class="mb-3">
+                        <small class="text-muted d-block mb-2">Chronic Conditions:</small>
+                        <div>
+                            <span th:each="condition : ${additionalPatientInfo.chronicConditions}" 
+                                  class="condition-tag" 
+                                  th:text="${#strings.replace(condition, '_', ' ')}">
+                                Condition
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.familyHistory != null and !additionalPatientInfo.familyHistory.empty}" class="mb-3">
+                        <small class="text-muted d-block mb-2">Family History:</small>
+                        <div>
+                            <span th:each="history : ${additionalPatientInfo.familyHistory}" 
+                                  class="condition-tag family" 
+                                  th:text="${#strings.replace(history, '_', ' ')}">
+                                History
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div th:unless="${additionalPatientInfo?.bloodType != null or (additionalPatientInfo?.chronicConditions != null and !additionalPatientInfo.chronicConditions.empty)}" class="no-data">
+                        <i class="fas fa-user-md"></i>
+                        <p>Medical profile incomplete</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle Factors -->
+            <div class="col-lg-4 mb-4">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-running"></i>Lifestyle Factors
+                    </h5>
+                    
+                    <div th:if="${additionalPatientInfo?.activityLevel != null}" class="metric-row">
+                        <span class="metric-label">Activity Level:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.activityLevel, '_', ' ')}">Level</span>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.smokingStatus != null}" class="metric-row">
+                        <span class="metric-label">Smoking Status:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.smokingStatus, '_', ' ')}">Status</span>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.alcoholConsumption != null}" class="metric-row">
+                        <span class="metric-label">Alcohol Consumption:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.alcoholConsumption, '_', ' ')}">Consumption</span>
+                    </div>
+                    
+                    <div th:unless="${additionalPatientInfo?.activityLevel != null or additionalPatientInfo?.smokingStatus != null}" class="no-data">
+                        <i class="fas fa-clipboard-list"></i>
+                        <p>No lifestyle data recorded</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monitoring Schedule -->
+            <div class="col-lg-4 mb-4">
+                <div class="metric-card">
+                    <h5 class="card-title">
+                        <i class="fas fa-calendar-check"></i>Monitoring Schedule
+                    </h5>
+                    
+                    <div th:if="${additionalPatientInfo?.weightMonitoringFreq != null}" class="metric-row">
+                        <span class="metric-label">Weight Monitoring:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.weightMonitoringFreq, '_', ' ')}">Frequency</span>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.bpMonitoringFreq != null}" class="metric-row">
+                        <span class="metric-label">Blood Pressure:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.bpMonitoringFreq, '_', ' ')}">Frequency</span>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.glucoseMonitoringFreq != null}" class="metric-row">
+                        <span class="metric-label">Blood Sugar:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.glucoseMonitoringFreq, '_', ' ')}">Frequency</span>
+                    </div>
+                    
+                    <div th:if="${additionalPatientInfo?.reminderPreference != null}" class="metric-row">
+                        <span class="metric-label">Reminder Method:</span>
+                        <span class="metric-value" th:text="${#strings.replace(additionalPatientInfo.reminderPreference, '_', ' ')}">Method</span>
+                    </div>
+                    
+                    <div th:unless="${additionalPatientInfo?.weightMonitoringFreq != null or additionalPatientInfo?.bpMonitoringFreq != null}" class="no-data">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No monitoring schedule configured</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            calculateBMI();
+            updateWeightProgress();
+            assessBloodPressure();
+        });
+
+        function calculateBMI() {
+            const bmiValueElement = document.getElementById('bmi-value');
+            const bmiPointerElement = document.getElementById('bmi-pointer');
+            const bmiStatusElement = document.getElementById('bmi-status');
+            
+            if (bmiValueElement && bmiPointerElement && bmiStatusElement) {
+                // Demo values - in production these would come from your model
+                const weight = 150;
+                const feet = 5;
+                const inches = 8;
+                
+                if (weight && feet >= 0 && inches >= 0) {
+                    const totalInches = (feet * 12) + inches;
+                    const bmi = (weight * 703) / (totalInches * totalInches);
+                    
+                    bmiValueElement.textContent = bmi.toFixed(1);
+                    
+                    let position = 0;
+                    let status = '';
+                    let statusClass = '';
+                    let icon = '';
+                    
+                    if (bmi < 18.5) {
+                        position = (bmi / 18.5) * 18.5;
+                        status = 'Underweight';
+                        statusClass = 'status-warning';
+                        icon = 'fas fa-exclamation-triangle';
+                    } else if (bmi < 25) {
+                        position = 18.5 + ((bmi - 18.5) / 6.5) * 6.5;
+                        status = 'Normal';
+                        statusClass = 'status-excellent';
+                        icon = 'fas fa-check-circle';
+                    } else if (bmi < 30) {
+                        position = 25 + ((bmi - 25) / 5) * 5;
+                        status = 'Overweight';
+                        statusClass = 'status-warning';
+                        icon = 'fas fa-exclamation-triangle';
+                    } else {
+                        position = Math.min(95, 30 + ((bmi - 30) / 10) * 70);
+                        status = 'Obese';
+                        statusClass = 'status-danger';
+                        icon = 'fas fa-exclamation-circle';
+                    }
+                    
+                    bmiPointerElement.style.left = position + '%';
+                    bmiStatusElement.innerHTML = `<i class="${icon}"></i>${status}`;
+                    bmiStatusElement.className = 'status-badge ' + statusClass;
+                }
+            }
+        }
+
+        function updateWeightProgress() {
+            const progressCircle = document.getElementById('weight-progress');
+            if (progressCircle) {
+                // Demo values - in production these would come from your model
+                const current = 150;
+                const target = 140;
+                const start = 160;
+                
+                const progress = ((start - current) / (start - target)) * 100;
+                const circumference = 2 * Math.PI * 40; // Updated radius to match CSS
+                const offset = circumference - (Math.min(progress, 100) / 100) * circumference;
+                
+                progressCircle.style.strokeDasharray = circumference;
+                progressCircle.style.strokeDashoffset = offset;
+            }
+        }
+
+        function assessBloodPressure() {
+            const bpStatusElement = document.getElementById('bp-status');
+            if (bpStatusElement) {
+                // Demo values - in production these would come from your model
+                const systolic = 120;
+                const diastolic = 80;
+                
+                let status = '';
+                let statusClass = '';
+                let icon = '';
+                
+                if (systolic < 120 && diastolic < 80) {
+                    status = 'Optimal';
+                    statusClass = 'status-excellent';
+                    icon = 'fas fa-check-circle';
+                } else if (systolic < 140 && diastolic < 90) {
+                    status = 'Normal';
+                    statusClass = 'status-good';
+                    icon = 'fas fa-check-circle';
+                } else if (systolic < 160 && diastolic < 100) {
+                    status = 'Elevated';
+                    statusClass = 'status-warning';
+                    icon = 'fas fa-exclamation-triangle';
+                } else {
+                    status = 'High';
+                    statusClass = 'status-danger';
+                    icon = 'fas fa-exclamation-circle';
+                }
+                
+                bpStatusElement.innerHTML = `<i class="${icon}"></i>${status}`;
+                bpStatusElement.className = 'status-badge ' + statusClass;
+            }
+        }
+
+        // Mobile sidebar toggle
+        function toggleSidebar() {
+            const sidebar = document.querySelector('.sidebar');
+            sidebar.classList.toggle('show');
+        }
+
+        // Add click handlers for sidebar items
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                // Remove active class from all items
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                // Add active class to clicked item
+                this.classList.add('active');
+            });
+        });
+
+        // Handle responsive behavior
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                document.querySelector('.sidebar').classList.remove('show');
+            }
+        });
+    </script>
+</body>
+</html>

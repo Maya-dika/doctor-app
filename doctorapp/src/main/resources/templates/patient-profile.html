@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Profile - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .profile-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .profile-header {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 48px;
+            font-weight: bold;
+            margin: 0 auto 20px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .avatar-upload {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            width: 36px;
+            height: 36px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .btn-outline-secondary {
+            border-color: #6c757d;
+            color: #6c757d;
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .medical-condition-item {
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+        }
+
+        .condition-input {
+            flex: 1;
+            margin-right: 10px;
+        }
+
+        .remove-condition {
+            background: var(--danger-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .add-condition-btn {
+            background: var(--success-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 10px 20px;
+            margin-top: 10px;
+        }
+
+        .insurance-card {
+            border: 2px dashed #dee2e6;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .insurance-card:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa;
+        }
+
+        .progress-indicator {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+        }
+
+        .progress-step {
+            flex: 1;
+            text-align: center;
+            position: relative;
+        }
+
+        .progress-step::before {
+            content: '';
+            position: absolute;
+            top: 15px;
+            left: 50%;
+            right: -50%;
+            height: 2px;
+            background: #dee2e6;
+            z-index: -1;
+        }
+
+        .progress-step:last-child::before {
+            display: none;
+        }
+
+        .step-circle {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background: #dee2e6;
+            color: #6c757d;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-weight: 600;
+        }
+
+        .progress-step.active .step-circle {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .progress-step.completed .step-circle {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .alert-info {
+            border-radius: 10px;
+            border: none;
+            background: linear-gradient(45deg, #d1ecf1, #bee5eb);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/patient/dashboard">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <div class="navbar-nav ms-auto">
+                <a class="nav-link" href="/patient-dashboard">
+                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="profile-container">
+        <!-- Progress Indicator -->
+        <div class="progress-indicator">
+            <div class="progress-step active">
+                <div class="step-circle">1</div>
+                <small>Health Profile</small>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">2</div>
+                <small>Medical History</small>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">3</div>
+                <small>Emergency Contact</small>
+            </div>
+            <div class="progress-step">
+                <div class="step-circle">4</div>
+                <small>Preferences</small>
+            </div>
+        </div>
+
+        <form th:action="@{/patient/profile/save}" method="post" enctype="multipart/form-data" th:object="${additionalPatientInfo}">
+            <!-- Profile Header -->
+            <div class="profile-header">
+                <h3 th:text="${patient?.firstName + ' ' + patient?.lastName ?: 'Complete Your Profile'}">Complete Your Profile</h3>
+                <p class="text-muted">Please fill in your information to help us provide better healthcare services</p>
+            </div>
+
+            <!-- Health Profile & Baseline Metrics -->
+            <div class="form-section">
+                <h4 class="section-title"><i class="fas fa-heartbeat me-2"></i>Health Profile & Baseline Metrics</h4>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    This information will be used to track your health metrics and set personalized normal ranges.
+                </div>
+
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="height" class="form-label">Height *</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="heightFeet" name="heightFeet" 
+                                   th:field="*{heightFeet}" placeholder="5" min="3" max="8" required>
+                            <span class="input-group-text">ft</span>
+                            <input type="number" class="form-control" id="heightInches" name="heightInches" 
+                                   th:field="*{heightInches}" placeholder="8" min="0" max="11" required>
+                            <span class="input-group-text">in</span>
+                        </div>
+                        <small class="form-text text-muted">Used to calculate BMI</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="currentWeight" class="form-label">Current Weight *</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="currentWeight" name="currentWeight" 
+                                   th:field="*{currentWeight}" placeholder="150" min="50" max="500" step="0.1" required>
+                            <span class="input-group-text">lbs</span>
+                        </div>
+                        <small class="form-text text-muted">Your most recent weight</small>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="targetWeight" class="form-label">Target Weight</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="targetWeight" name="targetWeight" 
+                                   th:field="*{targetWeight}" placeholder="145" min="50" max="500" step="0.1">
+                            <span class="input-group-text">lbs</span>
+                        </div>
+                        <small class="form-text text-muted">Your weight goal</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="bloodType" class="form-label">Blood Type</label>
+                        <select class="form-select" id="bloodType" name="bloodType" th:field="*{bloodType}">
+                            <option value="">Select Blood Type</option>
+                            <option value="A_POSITIVE">A+</option>
+                            <option value="A_NEGATIVE">A-</option>
+                            <option value="B_POSITIVE">B+</option>
+                            <option value="B_NEGATIVE">B-</option>
+                            <option value="AB_POSITIVE">AB+</option>
+                            <option value="AB_NEGATIVE">AB-</option>
+                            <option value="O_POSITIVE">O+</option>
+                            <option value="O_NEGATIVE">O-</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="activityLevel" class="form-label">Activity Level</label>
+                        <select class="form-select" id="activityLevel" name="activityLevel" th:field="*{activityLevel}">
+                            <option value="">Select Activity Level</option>
+                            <option value="SEDENTARY">Sedentary (little/no exercise)</option>
+                            <option value="LIGHTLY_ACTIVE">Lightly Active (light exercise 1-3 days/week)</option>
+                            <option value="MODERATELY_ACTIVE">Moderately Active (moderate exercise 3-5 days/week)</option>
+                            <option value="VERY_ACTIVE">Very Active (hard exercise 6-7 days/week)</option>
+                            <option value="EXTREMELY_ACTIVE">Extremely Active (very hard exercise, physical job)</option>
+                        </select>
+                        <small class="form-text text-muted">Affects target heart rate and calorie needs</small>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-primary">Baseline Vital Signs (if known)</h6>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="restingHeartRate" class="form-label">Resting Heart Rate</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="restingHeartRate" name="restingHeartRate" 
+                                   th:field="*{restingHeartRate}" placeholder="70" min="40" max="120">
+                            <span class="input-group-text">bpm</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="baselineSystolic" class="form-label">Systolic BP</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="baselineSystolic" name="baselineSystolic" 
+                                   th:field="*{baselineSystolic}" placeholder="120" min="80" max="200">
+                            <span class="input-group-text">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="baselineDiastolic" class="form-label">Diastolic BP</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="baselineDiastolic" name="baselineDiastolic" 
+                                   th:field="*{baselineDiastolic}" placeholder="80" min="50" max="120">
+                            <span class="input-group-text">mmHg</span>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="normalBodyTemp" class="form-label">Normal Body Temp</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="normalBodyTemp" name="normalBodyTemp" 
+                                   th:field="*{normalBodyTemp}" placeholder="98.6" min="95" max="102" step="0.1">
+                            <span class="input-group-text">°F</span>
+                        </div>
+                    </div>
+                </div>
+
+                <small class="text-muted">*Baseline values help us detect significant changes in your health metrics</small>
+            </div>
+
+            <!-- Medical History & Risk Factors -->
+            <div class="form-section">
+                <h4 class="section-title"><i class="fas fa-file-medical me-2"></i>Medical History & Risk Factors</h4>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    This information helps establish personalized health monitoring and alert thresholds.
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Smoking Status</label>
+                        <div class="d-flex gap-3">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="smokingStatus" id="never" value="NEVER" th:field="*{smokingStatus}">
+                                <label class="form-check-label" for="never">Never</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="smokingStatus" id="former" value="FORMER" th:field="*{smokingStatus}">
+                                <label class="form-check-label" for="former">Former</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="smokingStatus" id="current" value="CURRENT" th:field="*{smokingStatus}">
+                                <label class="form-check-label" for="current">Current</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="alcoholConsumption" class="form-label">Alcohol Consumption</label>
+                        <select class="form-select" id="alcoholConsumption" name="alcoholConsumption" th:field="*{alcoholConsumption}">
+                            <option value="">Select</option>
+                            <option value="NEVER">Never</option>
+                            <option value="RARELY">Rarely (few times a year)</option>
+                            <option value="OCCASIONALLY">Occasionally (1-2 times per week)</option>
+                            <option value="REGULARLY">Regularly (3-4 times per week)</option>
+                            <option value="DAILY">Daily</option>
+                        </select>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-primary">Chronic Conditions & Risk Factors</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check-group">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="DIABETES" id="diabetes" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="diabetes">Diabetes (Type 1 or 2)</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="HYPERTENSION" id="hypertension" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="hypertension">High Blood Pressure</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="HIGH_CHOLESTEROL" id="cholesterol" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="cholesterol">High Cholesterol</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="HEART_DISEASE" id="heart" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="heart">Heart Disease</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="ASTHMA" id="asthma" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="asthma">Asthma/Respiratory Issues</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check-group">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="THYROID" id="thyroid" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="thyroid">Thyroid Disorder</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="KIDNEY_DISEASE" id="kidney" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="kidney">Kidney Disease</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="ARTHRITIS" id="arthritis" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="arthritis">Arthritis</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="MENTAL_HEALTH" id="mentalHealth" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="mentalHealth">Mental Health Condition</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="chronicConditions" value="OTHER" id="otherCondition" th:field="*{chronicConditions}">
+                                <label class="form-check-label" for="otherCondition">Other (specify below)</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="otherConditionsDetails" class="form-label">Other Medical Conditions (if any)</label>
+                    <textarea class="form-control" id="otherConditionsDetails" name="otherConditionsDetails" rows="2" 
+                              th:field="*{otherConditionsDetails}" 
+                              placeholder="Specify any other medical conditions not listed above"></textarea>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-primary">Medications & Allergies</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="currentMedications" class="form-label">Current Medications</label>
+                        <textarea class="form-control" id="currentMedications" name="currentMedications" rows="4" 
+                                  th:field="*{currentMedications}" 
+                                  placeholder="List all medications, supplements, and vitamins you're currently taking (include dosages if known)"></textarea>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="allergies" class="form-label">Allergies & Reactions</label>
+                        <textarea class="form-control" id="allergiesText" name="allergiesText" rows="4" 
+                                  th:field="*{allergiesText}" 
+                                  placeholder="List any drug allergies, food allergies, or other allergic reactions"></textarea>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-primary">Family Medical History</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check-group">
+                            <label class="form-label">Family History of:</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="DIABETES" id="familyDiabetes" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyDiabetes">Diabetes</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="HEART_DISEASE" id="familyHeart" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyHeart">Heart Disease</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="HYPERTENSION" id="familyBP" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyBP">High Blood Pressure</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="STROKE" id="familyStroke" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyStroke">Stroke</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check-group">
+                            <label class="form-label">&nbsp;</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="CANCER" id="familyCancer" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyCancer">Cancer</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="HIGH_CHOLESTEROL" id="familyCholesterol" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyCholesterol">High Cholesterol</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="MENTAL_HEALTH" id="familyMental" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="familyMental">Mental Health Issues</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="familyHistory" value="NONE" id="noFamilyHistory" th:field="*{familyHistory}">
+                                <label class="form-check-label" for="noFamilyHistory">No significant family history</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Emergency Contact -->
+            <div class="form-section">
+                <h4 class="section-title"><i class="fas fa-phone-alt me-2"></i>Emergency Contact</h4>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    This person will be contacted in case of medical emergency.
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="emergencyContactName" class="form-label">Full Name *</label>
+                        <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" 
+                               th:field="*{emergencyContactName}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="emergencyContactRelation" class="form-label">Relationship *</label>
+                        <select class="form-select" id="emergencyContactRelation" name="emergencyContactRelation" 
+                                th:field="*{emergencyContactRelation}" required>
+                            <option value="">Select Relationship</option>
+                            <option value="SPOUSE">Spouse</option>
+                            <option value="PARENT">Parent</option>
+                            <option value="CHILD">Child</option>
+                            <option value="SIBLING">Sibling</option>
+                            <option value="FRIEND">Friend</option>
+                            <option value="OTHER">Other</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="emergencyContactPhone" class="form-label">Phone Number *</label>
+                        <input type="tel" class="form-control" id="emergencyContactPhone" name="emergencyContactPhone" 
+                               th:field="*{emergencyContactPhone}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="emergencyContactEmail" class="form-label">Email Address</label>
+                        <input type="email" class="form-control" id="emergencyContactEmail" name="emergencyContactEmail" 
+                               th:field="*{emergencyContactEmail}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Insurance Information -->
+            <div class="form-section">
+                <h4 class="section-title"><i class="fas fa-id-card me-2"></i>Insurance Information</h4>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Insurance information helps us process your claims faster.
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="insuranceProvider" class="form-label">Insurance Provider</label>
+                        <input type="text" class="form-control" id="insuranceProvider" name="insuranceProvider" 
+                               th:field="*{insuranceProvider}" placeholder="e.g., Blue Cross Blue Shield">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="policyNumber" class="form-label">Policy Number</label>
+                        <input type="text" class="form-control" id="policyNumber" name="policyNumber" 
+                               th:field="*{policyNumber}">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="groupNumber" class="form-label">Group Number</label>
+                        <input type="text" class="form-control" id="groupNumber" name="groupNumber" 
+                               th:field="*{groupNumber}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="insurancePhone" class="form-label">Insurance Phone</label>
+                        <input type="tel" class="form-control" id="insurancePhone" name="insurancePhone" 
+                               th:field="*{insurancePhone}">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Health Preferences & Monitoring Settings -->
+            <div class="form-section">
+                <h4 class="section-title"><i class="fas fa-cog me-2"></i>Health Monitoring Preferences</h4>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Set your preferences for health monitoring, alerts, and goal tracking.
+                </div>
+
+                <h6 class="mb-3 text-primary">Alert Preferences</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check-group">
+                            <label class="form-label">Send alerts when:</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="BLOOD_PRESSURE_HIGH" id="alertBP" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertBP">Blood pressure is above normal</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="HEART_RATE_ABNORMAL" id="alertHR" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertHR">Heart rate is abnormal</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="WEIGHT_SIGNIFICANT_CHANGE" id="alertWeight" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertWeight">Weight changes significantly</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="BLOOD_SUGAR_ABNORMAL" id="alertBS" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertBS">Blood sugar is out of range</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="form-check-group">
+                            <label class="form-label">Additional alerts:</label>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="TEMPERATURE_FEVER" id="alertTemp" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertTemp">Temperature indicates fever</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="OXYGEN_LOW" id="alertO2" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertO2">Oxygen saturation is low</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="MISSED_READINGS" id="alertMissed" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertMissed">No readings for extended period</label>
+                            </div>
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="checkbox" name="alertPreferences" value="APPOINTMENT_REMINDERS" id="alertAppt" th:field="*{alertPreferences}">
+                                <label class="form-check-label" for="alertAppt">Upcoming appointments</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-primary">Health Goals</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="bloodPressureGoal" class="form-label">Blood Pressure Goal</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="systolicGoal" name="systolicGoal" 
+                                   th:field="*{systolicGoal}" placeholder="120" min="90" max="140">
+                            <span class="input-group-text">/</span>
+                            <input type="number" class="form-control" id="diastolicGoal" name="diastolicGoal" 
+                                   th:field="*{diastolicGoal}" placeholder="80" min="60" max="90">
+                            <span class="input-group-text">mmHg</span>
+                        </div>
+                        <small class="form-text text-muted">Target blood pressure range</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="targetHeartRateRange" class="form-label">Target Heart Rate Range</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="minTargetHR" name="minTargetHR" 
+                                   th:field="*{minTargetHR}" placeholder="60" min="40" max="100">
+                            <span class="input-group-text">-</span>
+                            <input type="number" class="form-control" id="maxTargetHR" name="maxTargetHR" 
+                                   th:field="*{maxTargetHR}" placeholder="100" min="80" max="150">
+                            <span class="input-group-text">bpm</span>
+                        </div>
+                        <small class="form-text text-muted">Resting heart rate goals</small>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="bloodSugarTarget" class="form-label">Blood Sugar Target (if diabetic)</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="fastingGlucoseTarget" name="fastingGlucoseTarget" 
+                                   th:field="*{fastingGlucoseTarget}" placeholder="100" min="70" max="130">
+                            <span class="input-group-text">mg/dL</span>
+                        </div>
+                        <small class="form-text text-muted">Fasting glucose target</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cholesterolTarget" class="form-label">Cholesterol Target</label>
+                        <div class="input-group">
+                            <input type="number" class="form-control" id="totalCholesterolTarget" name="totalCholesterolTarget" 
+                                   th:field="*{totalCholesterolTarget}" placeholder="200" min="150" max="240">
+                            <span class="input-group-text">mg/dL</span>
+                        </div>
+                        <small class="form-text text-muted">Total cholesterol goal</small>
+                    </div>
+                </div>
+
+                <h6 class="mt-4 mb-3 text-primary">Monitoring Frequency Preferences</h6>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="weightMonitoringFreq" class="form-label">Weight Monitoring</label>
+                        <select class="form-select" id="weightMonitoringFreq" name="weightMonitoringFreq" th:field="*{weightMonitoringFreq}">
+                            <option value="">Select frequency</option>
+                            <option value="DAILY">Daily</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                            <option value="AS_NEEDED">As needed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="bpMonitoringFreq" class="form-label">Blood Pressure Monitoring</label>
+                        <select class="form-select" id="bpMonitoringFreq" name="bpMonitoringFreq" th:field="*{bpMonitoringFreq}">
+                            <option value="">Select frequency</option>
+                            <option value="DAILY">Daily</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                            <option value="AS_NEEDED">As needed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="glucoseMonitoringFreq" class="form-label">Blood Sugar Monitoring</label>
+                        <select class="form-select" id="glucoseMonitoringFreq" name="glucoseMonitoringFreq" th:field="*{glucoseMonitoringFreq}">
+                            <option value="">Select frequency</option>
+                            <option value="MULTIPLE_DAILY">Multiple times daily</option>
+                            <option value="DAILY">Daily</option>
+                            <option value="WEEKLY">Weekly</option>
+                            <option value="MONTHLY">Monthly</option>
+                            <option value="NOT_APPLICABLE">Not applicable</option>
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="reminderPreference" class="form-label">Monitoring Reminders</label>
+                        <select class="form-select" id="reminderPreference" name="reminderPreference" th:field="*{reminderPreference}">
+                            <option value="">Select preference</option>
+                            <option value="EMAIL">Email reminders</option>
+                            <option value="SMS">SMS reminders</option>
+                            <option value="APP_NOTIFICATION">App notifications</option>
+                            <option value="NONE">No reminders</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="healthGoalsNotes" class="form-label">Additional Health Goals & Notes</label>
+                    <textarea class="form-control" id="healthGoalsNotes" name="healthGoalsNotes" rows="3" 
+                              th:field="*{healthGoalsNotes}" 
+                              placeholder="Any specific health goals, concerns, or notes you'd like your healthcare team to know about"></textarea>
+                </div>
+            </div>
+
+            <!-- Form Actions -->
+            <div class="text-center mb-4">
+                <button type="submit" class="btn btn-primary me-3">
+                    <i class="fas fa-save me-2"></i>Save Profile
+                </button>
+                <a href="/patient-dashboard" class="btn btn-outline-secondary">
+                    <i class="fas fa-times me-2"></i>Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Image preview
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const avatar = document.querySelector('.profile-avatar');
+                    avatar.style.backgroundImage = `url(${e.target.result})`;
+                    avatar.style.backgroundSize = 'cover';
+                    avatar.style.backgroundPosition = 'center';
+                    avatar.innerHTML = '<div class="avatar-upload"><i class="fas fa-camera"></i></div>';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // BMI Calculator
+        function calculateBMI() {
+            const feet = parseInt(document.getElementById('heightFeet').value);
+            const inches = parseInt(document.getElementById('heightInches').value);
+            const weight = parseFloat(document.getElementById('currentWeight').value);
+            
+            if (feet && inches >= 0 && weight) {
+                const totalInches = (feet * 12) + inches;
+                const bmi = (weight * 703) / (totalInches * totalInches);
+                console.log('Calculated BMI:', bmi.toFixed(1));
+            }
+        }
+
+        // Add BMI calculation on weight/height change
+        document.getElementById('currentWeight').addEventListener('input', calculateBMI);
+        document.getElementById('heightFeet').addEventListener('input', calculateBMI);
+        document.getElementById('heightInches').addEventListener('input', calculateBMI);
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    field.classList.add('is-invalid');
+                    isValid = false;
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validate height combination
+            const feet = document.getElementById('heightFeet').value;
+            const inches = document.getElementById('heightInches').value;
+            if (feet && !inches) {
+                document.getElementById('heightInches').classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields.');
+                // Scroll to first error
+                const firstError = this.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        // Progress indicator
+        function updateProgress() {
+            const sections = document.querySelectorAll('.form-section');
+            const steps = document.querySelectorAll('.progress-step');
+            
+            sections.forEach((section, index) => {
+                const requiredInputs = section.querySelectorAll('input[required], select[required]');
+                let completed = true;
+                
+                // Check required fields
+                requiredInputs.forEach(input => {
+                    if (!input.value.trim()) {
+                        completed = false;
+                    }
+                });
+                
+                // For health profile section, require at least height and weight
+                if (index === 0) {
+                    const heightFeet = document.getElementById('heightFeet').value;
+                    const heightInches = document.getElementById('heightInches').value;
+                    const weight = document.getElementById('currentWeight').value;
+                    
+                    if (!heightFeet || !heightInches || !weight) {
+                        completed = false;
+                    }
+                }
+                
+                if (completed && steps[index]) {
+                    steps[index].classList.add('completed');
+                    steps[index].classList.remove('active');
+                    if (steps[index + 1]) {
+                        steps[index + 1].classList.add('active');
+                    }
+                } else if (steps[index]) {
+                    steps[index].classList.remove('completed');
+                }
+            });
+        }
+
+        // Check progress on form changes
+        document.addEventListener('input', updateProgress);
+        document.addEventListener('change', updateProgress);
+
+        // Initialize progress check
+        document.addEventListener('DOMContentLoaded', updateProgress);
+
+        // Handle "No family history" checkbox
+        document.getElementById('noFamilyHistory').addEventListener('change', function() {
+            if (this.checked) {
+                // Uncheck other family history options
+                const otherCheckboxes = document.querySelectorAll('input[name="familyHistory"]:not(#noFamilyHistory)');
+                otherCheckboxes.forEach(cb => cb.checked = false);
+            }
+        });
+
+        // Handle other family history checkboxes
+        document.querySelectorAll('input[name="familyHistory"]:not(#noFamilyHistory)').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    document.getElementById('noFamilyHistory').checked = false;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

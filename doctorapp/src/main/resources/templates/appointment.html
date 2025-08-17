@@ -198,7 +198,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
                             <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
                             <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
@@ -214,19 +214,16 @@
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 p-0">
                 <div class="sidebar">
-                    <div class="sidebar-item">
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
                         <i class="fas fa-tachometer-alt me-3"></i>Dashboard
                     </div>
                     <div class="sidebar-item active">
                         <i class="fas fa-calendar-alt me-3"></i>Appointments
                     </div>
                     <div class="sidebar-item">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
-                    </div>
-                    <div class="sidebar-item">
                         <i class="fas fa-pills me-3"></i>Prescriptions
                     </div>
-                    <div class="sidebar-item">
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
                         <i class="fas fa-chart-line me-3"></i>Health Metrics
                     </div>
                     <div class="sidebar-item">

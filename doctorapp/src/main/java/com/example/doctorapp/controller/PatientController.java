@@ -2,12 +2,16 @@ package com.example.doctorapp.controller;
 
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.repository.PatientRepository;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.doctorapp.service.PatientService;
+import com.example.doctorapp.service.PatientProfileService;
+import com.example.doctorapp.model.AdditionalPatientInfo;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.transaction.annotation.Transactional;
 
 @Controller
 public class PatientController {
@@ -17,6 +21,9 @@ public class PatientController {
     
     @Autowired
     private PatientService patientService;
+    
+     @Autowired
+    private PatientProfileService patientProfileService;
     
     @GetMapping("/register-patient")
     public String showRegistrationForm(@RequestParam(required = false) String success, Model model) {
@@ -67,4 +74,60 @@ public class PatientController {
     private Patient getLoggedInPatient(HttpSession session) {
         return (Patient) session.getAttribute("loggedInPatient");
     }
+    
+  @GetMapping("/patient-profile")
+public String patientProfile(Model model, HttpSession session) {
+    Patient patient = (Patient) session.getAttribute("loggedInPatient");
+    
+    if (patient == null) {
+        return "redirect:/login"; // Redirect if no patient in session
+    }
+    
+    System.out.println("Patient ID: " + patient.getId());
+    
+    // Get existing profile or create new one
+    AdditionalPatientInfo patientInfo = patientProfileService.findByPatientId(patient.getId());
+    if (patientInfo == null) {
+        patientInfo = new AdditionalPatientInfo();
+        patientInfo.setPatient(patient);
+    }
+    
+    model.addAttribute("additionalPatientInfo", patientInfo);
+    model.addAttribute("patient", patient);
+    
+    return "patient-profile";
+}
+
+@PostMapping("/patient/profile/save")
+@Transactional // Add this annotation
+public String saveProfile(@ModelAttribute AdditionalPatientInfo additionalPatientInfo,
+                         HttpSession session, RedirectAttributes redirectAttributes) {
+    try {
+        Patient patient = (Patient) session.getAttribute("loggedInPatient");
+        
+        if (patient == null) {
+            redirectAttributes.addFlashAttribute("error", "Session expired. Please login again.");
+            return "redirect:/login";
+        }
+        
+        // Set the patient relationship
+        additionalPatientInfo.setPatient(patient);
+        
+        // Debug logging
+        System.out.println("Saving profile for patient ID: " + patient.getId());
+        System.out.println("Profile ID: " + additionalPatientInfo.getId());
+        
+        AdditionalPatientInfo saved = patientProfileService.save(additionalPatientInfo);
+        System.out.println("Saved profile with ID: " + saved.getId());
+        
+        redirectAttributes.addFlashAttribute("success", "Profile updated successfully!");
+        return "redirect:/patient-dashboard";
+        
+    } catch (Exception e) {
+        System.err.println("Error saving profile: " + e.getMessage());
+        e.printStackTrace();
+        redirectAttributes.addFlashAttribute("error", "Error updating profile: " + e.getMessage());
+        return "redirect:/patient-profile";
+    }
+}
 }
