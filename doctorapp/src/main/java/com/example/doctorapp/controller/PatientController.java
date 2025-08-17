@@ -2,12 +2,14 @@ package com.example.doctorapp.controller;
 
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.repository.PatientRepository;
+import com.example.doctorapp.service.PrescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.doctorapp.service.PatientService;
 import jakarta.servlet.http.HttpSession;
+import java.util.ArrayList;
 
 @Controller
 public class PatientController {
@@ -54,7 +56,7 @@ public class PatientController {
         
         return "patient-dashboard"; // This corresponds to patient-dashboard.html in templates
     }
-    
+   
     // Optional: Add logout functionality
     @GetMapping("/logout")
     public String logout(HttpSession session) {
@@ -66,5 +68,5 @@ public class PatientController {
     // Optional: Helper method to get logged-in patient
     private Patient getLoggedInPatient(HttpSession session) {
         return (Patient) session.getAttribute("loggedInPatient");
-    }
+    }   
 }

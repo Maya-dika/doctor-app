@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Messages - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .dashboard-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .coming-soon-container {
+            text-align: center;
+            padding: 80px 20px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .coming-soon-icon {
+            font-size: 5rem;
+            color: var(--primary-color);
+            margin-bottom: 30px;
+        }
+
+        .coming-soon-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 20px;
+        }
+
+        .coming-soon-subtitle {
+            font-size: 1.2rem;
+            color: #6c757d;
+            margin-bottom: 30px;
+        }
+
+        .coming-soon-description {
+            color: #6c757d;
+            font-size: 1rem;
+            max-width: 500px;
+            margin: 0 auto 40px;
+            line-height: 1.6;
+        }
+
+        .notification-bell {
+            animation: bell 2s infinite;
+        }
+
+        @keyframes bell {
+            0%, 50%, 100% { transform: rotate(0deg); }
+            10%, 30% { transform: rotate(-10deg); }
+            20%, 40% { transform: rotate(10deg); }
+        }
+
+        .feature-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .feature-icon {
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${patient?.firstName + ' ' + patient?.lastName}">John Doe</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item">
+                        <a th:href="@{/dashboard}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <a th:href="@{/myappointments}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-calendar-alt me-3"></i>Appointments
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item">
+                        <a th:href="@{/prescriptions}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-pills me-3"></i>Prescriptions
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-chart-line me-3"></i>Health Metrics
+                    </div>
+                    <div class="sidebar-item active">
+                        <a th:href="@{/messages}" class="text-decoration-none text-white d-block">
+                            <i class="fas fa-comments me-3"></i>Messages
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <a th:href="@{/billing}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-credit-card me-3"></i>Billing
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Welcome Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="profile-avatar me-3">
+                                    <i class="fas fa-comments notification-bell"></i>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0">Messages</h2>
+                                    <p class="text-muted mb-0">Communicate with your healthcare providers</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number pulse">0</div>
+                            <div>Unread Messages</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number">0</div>
+                            <div>Total Conversations</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number">0</div>
+                            <div>Healthcare Providers</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number">Soon</div>
+                            <div>Launch Date</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Coming Soon Main Content -->
+                <div class="row">
+                    <div class="col-12">
+                        <div class="coming-soon-container">
+                            <div class="coming-soon-icon">
+                                <i class="fas fa-envelope notification-bell"></i>
+                            </div>
+                            <h1 class="coming-soon-title">Coming Soon!</h1>
+                            <p class="coming-soon-subtitle">We're working hard to bring you an amazing messaging experience</p>
+                            <p class="coming-soon-description">
+                                Our secure messaging platform will allow you to communicate directly with your healthcare providers, 
+                                receive important updates about your health, ask questions about your treatment, and get quick responses 
+                                from your medical team. Stay tuned for this exciting new feature!
+                            </p>
+                            <button class="btn btn-primary btn-lg" onclick="showNotifyModal()">
+                                <i class="fas fa-bell me-2"></i>Notify Me When Ready
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Features Preview -->
+                <div class="row mt-5">
+                    <div class="col-12">
+                        <h4 class="text-center mb-4 text-muted">What's Coming</h4>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-shield-alt"></i>
+                            </div>
+                            <h5>Secure Communication</h5>
+                            <p class="text-muted">HIPAA-compliant messaging with end-to-end encryption for your privacy and security.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-clock"></i>
+                            </div>
+                            <h5>24/7 Access</h5>
+                            <p class="text-muted">Send messages anytime and receive responses from your healthcare team when available.</p>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="feature-card text-center">
+                            <div class="feature-icon">
+                                <i class="fas fa-file-medical"></i>
+                            </div>
+                            <h5>Share Documents</h5>
+                            <p class="text-muted">Easily share test results, photos, and other medical documents with your providers.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Add interactivity to sidebar items
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add smooth animations for card interactions
+        document.querySelectorAll('.dashboard-card, .feature-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 8px 15px rgba(0,0,0,0.2)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+        });
+
+        // Show notification modal
+        function showNotifyModal() {
+            alert('Thank you for your interest! 📧\n\nWe\'ll notify you as soon as the messaging feature is ready.\n\nIn the meantime, you can reach us at:\n📞 (555) 123-4567\n✉️ support@healthcareportal.com');
+        }
+
+        // Add some interactive elements
+        document.addEventListener('DOMContentLoaded', function() {
+            // Animate the coming soon icon
+            const icon = document.querySelector('.coming-soon-icon i');
+            setInterval(() => {
+                icon.style.transform = 'scale(1.1)';
+                setTimeout(() => {
+                    icon.style.transform = 'scale(1)';
+                }, 200);
+            }, 3000);
+
+            // Add click handlers for feature cards
+            document.querySelectorAll('.feature-card').forEach(card => {
+                card.addEventListener('click', function() {
+                    const title = this.querySelector('h5').textContent;
+                    alert(`${title} feature coming soon! 🚀\n\nWe're working hard to bring you this amazing functionality.`);
+                });
+            });
+        });
+
+        // Add some hover effects for the stats
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body>
+</html>
