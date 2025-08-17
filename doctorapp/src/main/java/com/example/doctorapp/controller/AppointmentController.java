@@ -7,7 +7,6 @@ import com.example.doctorapp.model.Doctor;
 import com.example.doctorapp.service.AppointmentService;
 import com.example.doctorapp.service.DoctorService;
 import jakarta.servlet.http.HttpSession;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -69,7 +68,7 @@ public class AppointmentController {
         
         appointmentService.save(appointment);
 
-        return "redirect:/patient-dashboard";
+        return "redirect:/myappointments";
     }
 
 
@@ -84,6 +83,22 @@ public String viewMyAppointments(Model model, HttpSession session) {
     }
     model.addAttribute("appointments", appointmentService.getAppointmentsByPatient(loggedInPatient.getId()));
     return "myappointments";
+}
+
+@PostMapping("/cancel-appointment/{id}")
+public String cancelAppointment(@PathVariable Long id, HttpSession session) {
+    Patient loggedInPatient = (Patient) session.getAttribute("loggedInPatient");
+    if (loggedInPatient == null) {
+        return "redirect:/login";
+    }
+    
+    Appointment appointment = appointmentService.getAppointmentById(id);
+    if (appointment != null && appointment.getPatient().getId().equals(loggedInPatient.getId())) {
+        appointment.setStatus("CANCELLED");
+        appointmentService.save(appointment);
+    }
+    
+    return "redirect:/myappointments";
 }
         
     

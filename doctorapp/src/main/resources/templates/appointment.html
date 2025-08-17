@@ -213,27 +213,32 @@
         <div class="row">
             <!-- Sidebar -->
             <div class="col-md-3 col-lg-2 p-0">
-                <div class="sidebar">
-                    <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
-                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
-                    </div>
-                    <div class="sidebar-item active">
-                        <i class="fas fa-calendar-alt me-3"></i>Appointments
-                    </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-pills me-3"></i>Prescriptions
-                    </div>
-                    <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-                        <i class="fas fa-chart-line me-3"></i>Health Metrics
-                    </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-comments me-3"></i>Messages
-                    </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-credit-card me-3"></i>Billing
-                    </div>
-                </div>
-            </div>
+    <div class="sidebar">
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
+            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
+            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
+            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
+            <i class="fas fa-pills me-3"></i>Prescriptions
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
+            <i class="fas fa-chart-line me-3"></i>Health Metrics
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
+            <i class="fas fa-comments me-3"></i>Messages
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
+            <i class="fas fa-credit-card me-3"></i>Billing
+        </div>
+    </div>
+</div>
+            
+
 
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10 p-4">
@@ -431,6 +436,14 @@
                 }
             });
         });
+        
+    // Dynamically set the active sidebar item based on current URL
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        const onclickAttr = item.getAttribute('th:onclick');
+        if (onclickAttr && onclickAttr.includes(window.location.pathname)) {
+            item.classList.add('active');
+        }
+    });
 
         // Search functionality
         const searchInput = document.getElementById('searchInput');

@@ -3,17 +3,20 @@ package com.example.doctorapp.controller;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.repository.PatientRepository;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import com.example.doctorapp.service.PrescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import com.example.doctorapp.service.PatientService;
+import com.example.doctorapp.service.AppointmentService;
+import com.example.doctorapp.model.Appointment;
 import com.example.doctorapp.service.PatientProfileService;
 import com.example.doctorapp.model.AdditionalPatientInfo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.ArrayList;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 public class PatientController {
@@ -25,7 +28,10 @@ public class PatientController {
     private PatientService patientService;
     
      @Autowired
-    private PatientProfileService patientProfileService;
+    private PatientProfileService patientProfileService; 
+     @Autowired
+    private AppointmentService appointmentService; 
+    
     
     @GetMapping("/register-patient")
     public String showRegistrationForm(@RequestParam(required = false) String success, Model model) {
@@ -42,27 +48,52 @@ public class PatientController {
         return "redirect:/register-patient?success";
     }
     
-    @GetMapping("/patient-dashboard")
-    public String showPatientDashboard(Model model, HttpSession session) {
-        // Get the logged-in patient from session
-        Patient loggedInPatient = (Patient) session.getAttribute("loggedInPatient");
-        
-        // Security check - ensure patient is logged in
-        if (loggedInPatient == null) {
-            // If no patient in session, redirect to login
-            return "redirect:/login";
-        }
-        
-        // Add patient data to model for the template
-        model.addAttribute("patient", loggedInPatient);
-        
-           model.addAttribute("upcomingAppointments", 0);
-           model.addAttribute("totalVisits", 0);
-           model.addAttribute("activePrescriptions", 0);
-           model.addAttribute("unreadMessages", 0);
-        
-        return "patient-dashboard"; // This corresponds to patient-dashboard.html in templates
+  // Update your Patient Dashboard Controller method like this:
+
+@GetMapping("/patient-dashboard")
+public String patientDashboard(Model model, HttpSession session) {
+    Patient loggedInPatient = (Patient) session.getAttribute("loggedInPatient");
+    if (loggedInPatient == null) {
+        return "redirect:/login";
     }
+    
+    // Add patient to model
+    model.addAttribute("patient", loggedInPatient);
+    
+    // Get all appointments for this patient
+List<Appointment> allAppointments = appointmentService.getAppointmentsByPatient(loggedInPatient.getId());    
+    // Calculate upcoming appointments (BOOKED or CONFIRMED, and date is today or future)
+    LocalDate today = LocalDate.now();
+    long upcomingAppointments = allAppointments.stream()
+        .filter(app -> ("BOOKED".equals(app.getStatus()) || "CONFIRMED".equals(app.getStatus())) 
+                      && (app.getAppointmentDate().isEqual(today) || app.getAppointmentDate().isAfter(today)))
+        .count();
+    
+    // Calculate total visits (COMPLETED appointments)
+    long totalVisits = allAppointments.stream()
+        .filter(app -> "COMPLETED".equals(app.getStatus()))
+        .count();
+    
+    // Add stats to model
+    model.addAttribute("upcomingAppointments", upcomingAppointments);
+    model.addAttribute("totalVisits", totalVisits);
+    
+    // Keep these as static for now (you mentioned they stay as is)
+    model.addAttribute("activePrescriptions", 0);
+    model.addAttribute("unreadMessages", 0);
+    
+    // Optional: Add recent appointments for display
+    List<Appointment> recentAppointments = allAppointments.stream()
+        .filter(app -> ("BOOKED".equals(app.getStatus()) || "CONFIRMED".equals(app.getStatus())) 
+                      && (app.getAppointmentDate().isEqual(today) || app.getAppointmentDate().isAfter(today)))
+        .sorted((a1, a2) -> a1.getAppointmentDate().compareTo(a2.getAppointmentDate()))
+        .limit(3)
+        .collect(Collectors.toList());
+    
+    model.addAttribute("appointments", recentAppointments);
+    
+    return "patient-dashboard";
+}
    
     // Optional: Add logout functionality
     @GetMapping("/logout")

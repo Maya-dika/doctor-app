@@ -148,7 +148,7 @@
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
-                            <span th:text="${patient?.firstName + ' ' + patient?.lastName}">John Doe</span>
+                            <span th:text="${patient != null ? (patient.firstName + ' ' + patient.lastName) : 'Guest User'}">John Doe</span>
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
@@ -165,50 +165,32 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 p-0">
-                <div class="sidebar">
-                    <div class="sidebar-item active">
-                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
-                    </div>
-                    <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
-                        <i class="fas fa-calendar-alt me-3"></i>Appointments
-                    <div class="sidebar-item">
-                        <a th:href="@{/myappointments}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-calendar-alt me-3"></i>Appointments
-                        </a>
-                    </div>
+             <div class="col-md-3 col-lg-2 p-0">
+    <div class="sidebar">
+        <div class="sidebar-item active" th:onclick="|window.location.href='@{/patient-dashboard}'|">
+            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
+            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
+            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
+            <i class="fas fa-pills me-3"></i>Prescriptions
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
+            <i class="fas fa-chart-line me-3"></i>Health Metrics
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
+            <i class="fas fa-comments me-3"></i>Messages
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
+            <i class="fas fa-credit-card me-3"></i>Billing
+        </div>
+    </div>
+</div>
 
-                    <div class="sidebar-item">
-                        <i class="fas fa-pills me-3"></i>Prescriptions
-                    </div>
-                   <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-                    <i class="fas fa-chart-line me-3"></i>Health Metrics
-                   </div>
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
-                    </div>
-                    <div class="sidebar-item">
-                        <a th:href="@{/prescriptions}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-pills me-3"></i>Prescriptions
-                        </a>
-                    </div>
-
-                    <div class="sidebar-item">
-                        <i class="fas fa-chart-line me-3"></i>Health Metrics
-                    </div>
-                    <div class="sidebar-item">
-                        <a th:href="@{/messages}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-comments me-3"></i>Messages
-                        </a>
-                    </div>
-
-                    <div class="sidebar-item">
-                        <a th:href="@{/billing}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-credit-card me-3"></i>Billing
-                        </a>
-                    </div>
-
-                </div>
-            </div>
 
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10 p-4">
@@ -218,10 +200,10 @@
                         <div class="d-flex justify-content-between align-items-center">
                             <div class="d-flex align-items-center">
                                 <div class="profile-avatar me-3">
-                                    <span th:text="${patient?.firstName?.charAt(0)}">J</span>
+                                    <span th:text="${patient != null and patient.firstName != null ? patient.firstName.substring(0,1) : 'U'}">J</span>
                                 </div>
                                 <div>
-                                    <h2 class="mb-0">Welcome, <span th:text="${patient?.firstName}">John</span>!</h2>
+                                    <h2 class="mb-0">Welcome, <span th:text="${patient != null ? patient.firstName : 'Guest'}">John</span>!</h2>
                                     <p class="text-muted mb-0">Here's your health overview for today</p>
                                 </div>
                             </div>
@@ -289,10 +271,10 @@
                                         <div class="card-body py-3">
                                             <div class="d-flex justify-content-between">
                                                 <div>
-                                                    <h6 class="mb-1" th:text="${appointment.doctorName + ' - ' + appointment.specialty}">Doctor Name - Specialty</h6>
-                                                    <small class="text-muted" th:text="${appointment.dateTime}">Date and Time</small>
+                                                    <h6 class="mb-1" th:text="'Dr. ' + ${appointment.doctor != null ? (appointment.doctor.firstName + ' ' + appointment.doctor.lastName) : 'Unknown Doctor'}">Doctor Name</h6>
+                                                    <small class="text-muted" th:text="${appointment.appointmentDate != null ? #temporals.format(appointment.appointmentDate, 'MMM dd, yyyy') : 'Date TBD'}">Date</small>
                                                 </div>
-                                                <span class="badge bg-success" th:text="${appointment.status}">Status</span>
+                                                <span class="badge bg-success" th:text="${appointment.status != null ? appointment.status : 'UNKNOWN'}">Status</span>
                                             </div>
                                         </div>
                                     </div>
@@ -302,7 +284,7 @@
                                     <p class="text-muted mt-3">No upcoming appointments scheduled</p>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a href="#" class="btn btn-outline-primary btn-sm">View All Appointments</a>
+                                    <a href="/myappointments" class="btn btn-outline-primary btn-sm">View All Appointments</a>
                                 </div>
                             </div>
                         </div>
@@ -359,7 +341,7 @@
                                     <p class="text-muted mt-3">No active prescriptions</p>
                                 </div>
                                 <div class="text-center">
-                                    <a href="@{/prescriptions}" class="btn btn-outline-info btn-sm">Manage Prescriptions</a>
+                                    <a href="#" class="btn btn-outline-info btn-sm">Manage Prescriptions</a>
                                 </div>
                             </div>
                         </div>
@@ -414,6 +396,14 @@
                 this.classList.add('active');
             });
         });
+        
+        // Dynamically set the active sidebar item based on current URL
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        const onclickAttr = item.getAttribute('th:onclick');
+        if (onclickAttr && onclickAttr.includes(window.location.pathname)) {
+            item.classList.add('active');
+        }
+    });
 
         // Add smooth animations for card interactions
         document.querySelectorAll('.dashboard-card').forEach(card => {

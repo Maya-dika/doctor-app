@@ -3,9 +3,10 @@ package com.example.doctorapp.service;
 import com.example.doctorapp.model.Billing;
 import com.example.doctorapp.repository.BillingRepository;
 import org.springframework.stereotype.Service;
-
 import java.util.Optional;
 import java.util.List;
+import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Service
 public class BillingService {
@@ -21,6 +22,9 @@ public class BillingService {
        public List<Billing> getBillsByPatient(Long patientId) {
         return billingRepository.findByPatient_Id(patientId);
     }
+        public Billing getBillsByID(Long id) {
+    return billingRepository.findById(id).orElse(null);
+}
 
     public Optional<Billing> getBillsByBillNumber(String billNumber) {
         return billingRepository.findByBillNumber(billNumber);

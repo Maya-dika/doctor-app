@@ -186,14 +186,8 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
-                            <i class="fas fa-user-circle me-1"></i>
-                            <span th:text="${patient?.firstName + ' ' + patient?.lastName}">John Doe</span>
-                        </a>
+                        
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
-                            <li><hr class="dropdown-divider"></li>
                             <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
                         </ul>
                     </li>
@@ -205,41 +199,32 @@
     <div class="container-fluid">
         <div class="row">
             <!-- Sidebar -->
-            <div class="col-md-3 col-lg-2 p-0">
-                <div class="sidebar">
-                    <div class="sidebar-item">
-                        <a th:href="@{/dashboard}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
-                        </a>
-                    </div>
-                    <div class="sidebar-item">
-                        <a th:href="@{/myappointments}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-calendar-alt me-3"></i>Appointments
-                        </a>
-                    </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
-                    </div>
-                    <div class="sidebar-item">
-                        <a th:href="@{/prescriptions}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-pills me-3"></i>Prescriptions
-                        </a>
-                    </div>
-                    <div class="sidebar-item">
-                        <i class="fas fa-chart-line me-3"></i>Health Metrics
-                    </div>
-                    <div class="sidebar-item active">
-                        <a th:href="@{/messages}" class="text-decoration-none text-white d-block">
-                            <i class="fas fa-comments me-3"></i>Messages
-                        </a>
-                    </div>
-                    <div class="sidebar-item">
-                        <a th:href="@{/billing}" class="text-decoration-none text-dark d-block">
-                            <i class="fas fa-credit-card me-3"></i>Billing
-                        </a>
-                    </div>
-                </div>
-            </div>
+          <div class="col-md-3 col-lg-2 p-0">
+    <div class="sidebar">
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
+            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
+            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
+            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
+            <i class="fas fa-pills me-3"></i>Prescriptions
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
+            <i class="fas fa-chart-line me-3"></i>Health Metrics
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
+            <i class="fas fa-comments me-3"></i>Messages
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
+            <i class="fas fa-credit-card me-3"></i>Billing
+        </div>
+    </div>
+</div>
+
 
             <!-- Main Content -->
             <div class="col-md-9 col-lg-10 p-4">
@@ -355,6 +340,14 @@
                 this.classList.add('active');
             });
         });
+        
+        // Dynamically set the active sidebar item based on current URL
+    document.querySelectorAll('.sidebar-item').forEach(item => {
+        const onclickAttr = item.getAttribute('th:onclick');
+        if (onclickAttr && onclickAttr.includes(window.location.pathname)) {
+            item.classList.add('active');
+        }
+    });
 
         // Add smooth animations for card interactions
         document.querySelectorAll('.dashboard-card, .feature-card').forEach(card => {

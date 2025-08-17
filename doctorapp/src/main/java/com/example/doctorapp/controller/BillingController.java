@@ -1,6 +1,7 @@
 package com.example.doctorapp.controller;
 
 import com.example.doctorapp.model.Patient;
+import com.example.doctorapp.model.Billing;
 import com.example.doctorapp.service.BillingService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.time.LocalDate;
 
 @Controller
 public class BillingController {
@@ -17,11 +20,15 @@ public class BillingController {
 
     @GetMapping("/billing")
     public String viewBilling(Model model, HttpSession session) {
-        Patient loggedInPatient = (Patient) session.getAttribute("loggedInPatient");
-        if (loggedInPatient == null) {
+        Patient patient = (Patient) session.getAttribute("loggedInPatient");
+
+        if (patient == null) {
             return "redirect:/login";
         }
-        model.addAttribute("billing", billingService.getBillsByPatient(loggedInPatient.getId()));
+
+        model.addAttribute("billing", billingService.getBillsByPatient(patient.getId()));
+        model.addAttribute("patientName", patient.getFirstName() + " " + patient.getLastName());
+
         return "billing";
     }
 
@@ -35,6 +42,15 @@ public class BillingController {
             return "redirect:/login";
         }
 
+        Billing bill = billingService.getBillsByID(billId);
+        if (bill != null) {
+            bill.setStatus("PAID");
+            bill.setPaidDate(LocalDate.now());
+            bill.setPatient(loggedInPatient); // ensure bill belongs to patient
+            billingService.save(bill);
+        }
+
+        redirectAttributes.addFlashAttribute("success", "Bill paid successfully!");
         return "redirect:/billing";
     }
 
@@ -46,21 +62,7 @@ public class BillingController {
         if (loggedInPatient == null) {
             return "redirect:/login";
         }
-
-
+        redirectAttributes.addFlashAttribute("success", "All bills paid successfully!");
         return "redirect:/billing";
-    }
-
-    // Helper method
-    private String getPaymentMethodName(String method) {
-        switch (method) {
-            case "credit-card": return "Credit Card";
-            case "bank-transfer": return "Bank Transfer";
-            case "paypal": return "PayPal";
-            case "digital-wallet": return "Digital Wallet";
-            case "insurance": return "Insurance";
-            case "cash-check": return "Cash/Check";
-            default: return "Selected Payment Method";
-        }
     }
 }

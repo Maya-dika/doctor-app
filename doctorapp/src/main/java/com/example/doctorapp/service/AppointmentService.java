@@ -31,5 +31,8 @@ public class AppointmentService {
     appointmentRepository.deleteById(id);
 }
 
+    public Appointment getAppointmentById(Long id) {
+    return appointmentRepository.findById(id).orElse(null);
+}
     
 }
