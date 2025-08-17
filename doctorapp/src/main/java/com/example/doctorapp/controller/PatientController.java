@@ -3,6 +3,7 @@ package com.example.doctorapp.controller;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.repository.PatientRepository;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import com.example.doctorapp.service.PrescriptionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,6 +13,7 @@ import com.example.doctorapp.service.PatientProfileService;
 import com.example.doctorapp.model.AdditionalPatientInfo;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.ArrayList;
 
 @Controller
 public class PatientController {
@@ -61,7 +63,7 @@ public class PatientController {
         
         return "patient-dashboard"; // This corresponds to patient-dashboard.html in templates
     }
-    
+   
     // Optional: Add logout functionality
     @GetMapping("/logout")
     public String logout(HttpSession session) {
@@ -130,4 +132,4 @@ public String saveProfile(@ModelAttribute AdditionalPatientInfo additionalPatien
         return "redirect:/patient-profile";
     }
 }
-}
+    }   

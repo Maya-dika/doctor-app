@@ -1,0 +1,751 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .dashboard-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+        }
+
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .bill-card {
+            border-left: 4px solid var(--primary-color);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .bill-card:hover {
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+        }
+
+        .bill-paid {
+            border-left-color: var(--success-color);
+        }
+
+        .bill-pending {
+            border-left-color: var(--warning-color);
+        }
+
+        .bill-overdue {
+            border-left-color: var(--danger-color);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+        }
+
+        .profile-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .amount-large {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .payment-method-card {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .payment-method-card:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa;
+        }
+
+        .payment-method-card.selected {
+            border-color: var(--primary-color);
+            background-color: #e7f3ff;
+        }
+
+        .payment-modal {
+            backdrop-filter: blur(5px);
+        }
+
+        .payment-option {
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .payment-option:hover {
+            border-color: var(--primary-color);
+            background-color: #f8f9fa;
+            transform: translateY(-2px);
+        }
+
+        .payment-option.selected {
+            border-color: var(--primary-color);
+            background-color: #e7f3ff;
+            box-shadow: 0 4px 8px rgba(44, 90, 160, 0.2);
+        }
+
+        .payment-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .payment-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .payment-description {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${patient?.firstName + ' ' + patient?.lastName}">John Doe</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item">
+                        <a th:href="@{/dashboard}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <a th:href="@{/myappointments}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-calendar-alt me-3"></i>Appointments
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item">
+                        <a th:href="@{/prescriptions}" class="text-decoration-none text-dark d-block">
+                            <i class="fas fa-pills me-3"></i>Prescriptions
+                        </a>
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-chart-line me-3"></i>Health Metrics
+                    </div>
+                    <div class="sidebar-item">
+                        <i class="fas fa-comments me-3"></i>Messages
+                    </div>
+                    <div class="sidebar-item active">
+                        <a th:href="@{/billing}" class="text-decoration-none text-white d-block">
+                            <i class="fas fa-credit-card me-3"></i>Billing
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Welcome Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="d-flex align-items-center">
+                                <div class="profile-avatar me-3">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div>
+                                    <h2 class="mb-0">Billing & Payments</h2>
+                                    <p class="text-muted mb-0">Manage your medical bills and payment methods</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quick Stats -->
+                <div class="row mb-4">
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${totalBalance != null ? '$' + totalBalance : '$0.00'}">$0.00</div>
+                            <div>Total Balance</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${pendingBills != null ? pendingBills : '0'}">0</div>
+                            <div>Pending Bills</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${paidBillsCount != null ? paidBillsCount : '0'}">0</div>
+                            <div>Paid Bills</div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-number" th:text="${overdueBillsCount != null ? overdueBillsCount : '0'}">0</div>
+                            <div>Overdue Bills</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Recent Bills -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-file-invoice text-primary me-2"></i>
+                                    Recent Bills
+                                </h5>
+                                <button class="btn btn-outline-primary btn-sm">
+                                    <i class="fas fa-download me-1"></i>Download All
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${bills != null and !bills.empty}">
+                                    <div th:each="bill : ${bills}" 
+                                         th:class="'bill-card card ' + (${bill.status} == 'Paid' ? 'bill-paid' : (${bill.status} == 'Pending' ? 'bill-pending' : 'bill-overdue'))">
+                                        <div class="card-body">
+                                            <div class="d-flex justify-content-between align-items-start">
+                                                <div>
+                                                    <h6 class="mb-1" th:text="${bill.description}">Medical Service</h6>
+                                                    <p class="text-muted mb-1" th:text="${bill.serviceDate}">Service Date</p>
+                                                    <small class="text-muted">
+                                                        Bill #<span th:text="${bill.billNumber}">12345</span> | 
+                                                        Due: <span th:text="${bill.dueDate}">Date</span>
+                                                    </small>
+                                                </div>
+                                                <div class="text-end">
+                                                    <div class="amount-large" th:text="'$' + ${bill.amount}">$0.00</div>
+                                                    <span th:class="'badge ' + (${bill.status} == 'Paid' ? 'bg-success' : (${bill.status} == 'Pending' ? 'bg-warning' : 'bg-danger'))" 
+                                                          th:text="${bill.status}">Status</span>
+                                                </div>
+                                            </div>
+                                            <div class="mt-3" th:if="${bill.status != 'Paid'}">
+                                                <button type="button" class="btn btn-primary btn-sm me-2" 
+                                                        th:onclick="'openPaymentModal(' + ${bill.id} + ', ' + ${bill.amount} + ')'"
+                                                        data-bs-toggle="modal" data-bs-target="#paymentModal">
+                                                    <i class="fas fa-credit-card me-1"></i>Pay Now
+                                                </button>
+                                                <button class="btn btn-outline-secondary btn-sm" th:onclick="'viewBillDetails(' + ${bill.id} + ')'">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div th:if="${bills == null or bills.empty}" class="text-center py-4">
+                                    <i class="fas fa-file-invoice text-muted" style="font-size: 3rem;"></i>
+                                    <p class="text-muted mt-3">No bills found</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Bill Summary & Actions -->
+                    <div class="col-lg-4">
+                        <!-- Quick Actions -->
+                        <div class="card dashboard-card mb-4">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-bolt text-warning me-2"></i>
+                                    Quick Actions
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <button type="button" class="btn btn-primary w-100 mb-3" 
+                                        onclick="openPayAllModal()" 
+                                        data-bs-toggle="modal" data-bs-target="#paymentModal">
+                                    <i class="fas fa-credit-card me-2"></i>Pay All Outstanding
+                                </button>
+                                <a th:href="@{/download-statement}" class="btn btn-outline-primary w-100 mb-3">
+                                    <i class="fas fa-download me-2"></i>Download Statement
+                                </a>
+                                <button class="btn btn-outline-secondary w-100" onclick="showBillingSupport()">
+                                    <i class="fas fa-question-circle me-2"></i>Billing Support
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Payment Summary -->
+                        <div class="card dashboard-card">
+                            <div class="card-header bg-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-chart-pie text-info me-2"></i>
+                                    Payment Summary
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <span>Paid Bills</span>
+                                    <span class="fw-bold text-success" th:text="${paidBillsCount != null ? paidBillsCount : '0'}">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center mb-3 pb-3 border-bottom">
+                                    <span>Pending Bills</span>
+                                    <span class="fw-bold text-warning" th:text="${pendingBills != null ? pendingBills : '0'}">0</span>
+                                </div>
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span>Overdue Bills</span>
+                                    <span class="fw-bold text-danger" th:text="${overdueBillsCount != null ? overdueBillsCount : '0'}">0</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payment Modal -->
+    <div class="modal fade payment-modal" id="paymentModal" tabindex="-1" aria-labelledby="paymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="paymentModalLabel">
+                        <i class="fas fa-credit-card me-2 text-primary"></i>Choose Payment Method
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                <span id="paymentAmount">Select a payment method to continue</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <!-- Credit Card -->
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-option" onclick="selectPaymentMethod('credit-card')">
+                                <div class="payment-icon">
+                                    <i class="fas fa-credit-card"></i>
+                                </div>
+                                <div class="payment-title">Credit Card</div>
+                                <div class="payment-description">Visa, Mastercard, American Express</div>
+                            </div>
+                        </div>
+
+                        <!-- Bank Transfer -->
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-option" onclick="selectPaymentMethod('bank-transfer')">
+                                <div class="payment-icon">
+                                    <i class="fas fa-university"></i>
+                                </div>
+                                <div class="payment-title">Bank Transfer</div>
+                                <div class="payment-description">Direct bank account transfer</div>
+                            </div>
+                        </div>
+
+                        <!-- PayPal -->
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-option" onclick="selectPaymentMethod('paypal')">
+                                <div class="payment-icon">
+                                    <i class="fab fa-paypal"></i>
+                                </div>
+                                <div class="payment-title">PayPal</div>
+                                <div class="payment-description">Pay with your PayPal account</div>
+                            </div>
+                        </div>
+
+                        <!-- Digital Wallet -->
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-option" onclick="selectPaymentMethod('digital-wallet')">
+                                <div class="payment-icon">
+                                    <i class="fas fa-mobile-alt"></i>
+                                </div>
+                                <div class="payment-title">Digital Wallet</div>
+                                <div class="payment-description">Apple Pay, Google Pay, Samsung Pay</div>
+                            </div>
+                        </div>
+
+                        <!-- Insurance -->
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-option" onclick="selectPaymentMethod('insurance')">
+                                <div class="payment-icon">
+                                    <i class="fas fa-shield-alt"></i>
+                                </div>
+                                <div class="payment-title">Insurance</div>
+                                <div class="payment-description">Submit to insurance provider</div>
+                            </div>
+                        </div>
+
+                        <!-- Cash/Check -->
+                        <div class="col-md-6 mb-3">
+                            <div class="payment-option" onclick="selectPaymentMethod('cash-check')">
+                                <div class="payment-icon">
+                                    <i class="fas fa-money-bill-wave"></i>
+                                </div>
+                                <div class="payment-title">Cash/Check</div>
+                                <div class="payment-description">Pay at the clinic counter</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Selected Payment Method Form -->
+                    <div id="paymentForm" style="display: none;">
+                        <hr>
+                        <h6 class="mb-3">Payment Details</h6>
+                        <div id="paymentFormContent">
+                            <!-- Dynamic content based on selected method -->
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="processPaymentBtn" onclick="processPayment()" disabled>
+                        <i class="fas fa-lock me-1"></i>Process Payment
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let currentBillId = null;
+        let currentPaymentAmount = 0;
+        let selectedPaymentMethod = null;
+        let isPayingAll = false;
+
+        // Add interactivity to sidebar items
+        document.querySelectorAll('.sidebar-item').forEach(item => {
+            item.addEventListener('click', function() {
+                document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+
+        // Add smooth animations for card interactions
+        document.querySelectorAll('.dashboard-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.boxShadow = '0 8px 15px rgba(0,0,0,0.2)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.boxShadow = '0 4px 6px rgba(0,0,0,0.1)';
+            });
+        });
+
+        // Open payment modal for individual bill
+        function openPaymentModal(billId, amount) {
+            currentBillId = billId;
+            currentPaymentAmount = amount;
+            isPayingAll = false;
+            document.getElementById('paymentAmount').innerHTML = 
+                `<strong>Amount to pay: ${amount.toFixed(2)}</strong> for Bill #${billId}`;
+            resetPaymentModal();
+        }
+
+        // Open payment modal for all bills
+        function openPayAllModal() {
+            currentBillId = null;
+            isPayingAll = true;
+            const totalBalance = document.querySelector('[th\\:text*="totalBalance"]')?.textContent || '$0.00';
+            document.getElementById('paymentAmount').innerHTML = 
+                `<strong>Total amount to pay: ${totalBalance}</strong> for all outstanding bills`;
+            resetPaymentModal();
+        }
+
+        // Reset payment modal
+        function resetPaymentModal() {
+            selectedPaymentMethod = null;
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('paymentForm').style.display = 'none';
+            document.getElementById('processPaymentBtn').disabled = true;
+        }
+
+        // Select payment method
+        function selectPaymentMethod(method) {
+            selectedPaymentMethod = method;
+            
+            // Remove previous selections
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            
+            // Add selection to clicked option
+            event.currentTarget.classList.add('selected');
+            
+            // Show payment form based on method
+            showPaymentForm(method);
+            
+            // Enable process payment button
+            document.getElementById('processPaymentBtn').disabled = false;
+        }
+
+        // Show payment form based on selected method
+        function showPaymentForm(method) {
+            const formContent = document.getElementById('paymentFormContent');
+            const paymentForm = document.getElementById('paymentForm');
+            
+            let formHTML = '';
+            
+            switch(method) {
+                case 'credit-card':
+                    formHTML = `
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Card Number</label>
+                                <input type="text" class="form-control" placeholder="1234 5678 9012 3456" maxlength="19">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" placeholder="MM/YY" maxlength="5">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">CVV</label>
+                                <input type="text" class="form-control" placeholder="123" maxlength="4">
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" placeholder="John Doe">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'bank-transfer':
+                    formHTML = `
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle me-2"></i>
+                            Bank transfer details will be provided after confirmation.
+                        </div>
+                    `;
+                    break;
+                case 'paypal':
+                    formHTML = `
+                        <div class="alert alert-info">
+                            <i class="fab fa-paypal me-2"></i>
+                            You will be redirected to PayPal to complete the payment.
+                        </div>
+                    `;
+                    break;
+                case 'digital-wallet':
+                    formHTML = `
+                        <div class="text-center">
+                            <p>Select your preferred digital wallet:</p>
+                            <div class="d-flex justify-content-center gap-3">
+                                <button class="btn btn-outline-dark"><i class="fab fa-apple me-1"></i>Apple Pay</button>
+                                <button class="btn btn-outline-primary"><i class="fab fa-google me-1"></i>Google Pay</button>
+                                <button class="btn btn-outline-info"><i class="fas fa-mobile me-1"></i>Samsung Pay</button>
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'insurance':
+                    formHTML = `
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Insurance Provider</label>
+                                <select class="form-select">
+                                    <option value="">Select your insurance</option>
+                                    <option value="aetna">Aetna</option>
+                                    <option value="cigna">Cigna</option>
+                                    <option value="bluecross">Blue Cross Blue Shield</option>
+                                    <option value="united">United Healthcare</option>
+                                    <option value="other">Other</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12 mb-3">
+                                <label class="form-label">Policy Number</label>
+                                <input type="text" class="form-control" placeholder="Enter your policy number">
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'cash-check':
+                    formHTML = `
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            Please visit our clinic to complete the payment. Bring this bill reference with you.
+                        </div>
+                    `;
+                    break;
+                default:
+                    formHTML = '<p>Please select a payment method.</p>';
+            }
+            
+            formContent.innerHTML = formHTML;
+            paymentForm.style.display = 'block';
+        }
+
+        // Process payment
+        function processPayment() {
+            if (!selectedPaymentMethod) {
+                alert('Please select a payment method.');
+                return;
+            }
+
+            // Show loading state
+            const btn = document.getElementById('processPaymentBtn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i>Processing...';
+            btn.disabled = true;
+
+            // Simulate payment processing
+            setTimeout(() => {
+                if (isPayingAll) {
+                    // Submit form for paying all bills
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/pay-all-with-method';
+                    
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = 'paymentMethod';
+                    methodInput.value = selectedPaymentMethod;
+                    
+                    form.appendChild(methodInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                } else {
+                    // Submit form for individual bill
+                    const form = document.createElement('form');
+                    form.method = 'POST';
+                    form.action = '/pay-bill-with-method';
+                    
+                    const billIdInput = document.createElement('input');
+                    billIdInput.type = 'hidden';
+                    billIdInput.name = 'billId';
+                    billIdInput.value = currentBillId;
+                    
+                    const methodInput = document.createElement('input');
+                    methodInput.type = 'hidden';
+                    methodInput.name = 'paymentMethod';
+                    methodInput.value = selectedPaymentMethod;
+                    
+                    form.appendChild(billIdInput);
+                    form.appendChild(methodInput);
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            }, 2000);
+        }
+
+        // Billing support function
+        function showBillingSupport() {
+            alert('For billing questions, please call: (555) 123-4567\nOr email: billing@healthcareportal.com');
+        }
+
+        // View bill details function
+        function viewBillDetails(billId) {
+            alert('Bill details for ID: ' + billId + '\n(This would open a detailed view)');
+        }
+    </script>
+</body>
+</html>

@@ -66,23 +66,25 @@ public class AppointmentController {
         appointment.setPatient(loggedInPatient);
         appointment.setDoctor(doctor);
         appointment.setStatus("BOOKED");
-
+        
         appointmentService.save(appointment);
 
         return "redirect:/patient-dashboard";
     }
 
 
-//    
-//    @GetMapping("/my-appointments")
-//    public String viewMyAppointments(Model model, HttpSession session) {
-//        Patient loggedInPatient = (Patient) session.getAttribute("loggedInPatient");
-//        if (loggedInPatient == null) {
-//            return "redirect:/login";
-//        }
-//        model.addAttribute("appointments", appointmentService.getAppointmentsByPatient(loggedInPatient.getId()));
-//        return "my-appointments";
-//    }
+  
+   
+
+@GetMapping("/myappointments")
+public String viewMyAppointments(Model model, HttpSession session) {
+    Patient loggedInPatient = (Patient) session.getAttribute("loggedInPatient");
+    if (loggedInPatient == null) {
+        return "redirect:/login";
+    }
+    model.addAttribute("appointments", appointmentService.getAppointmentsByPatient(loggedInPatient.getId()));
+    return "myappointments";
+}
         
     
    
