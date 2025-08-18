@@ -3,6 +3,7 @@ package com.example.doctorapp.controller;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.model.Billing;
 import com.example.doctorapp.service.BillingService;
+import com.example.doctorapp.service.AppointmentService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -17,6 +18,8 @@ public class BillingController {
 
     @Autowired
     private BillingService billingService;
+     @Autowired
+    private AppointmentService appointmentService;
 
     @GetMapping("/billing")
     public String viewBilling(Model model, HttpSession session) {
@@ -28,6 +31,9 @@ public class BillingController {
 
         model.addAttribute("billing", billingService.getBillsByPatient(patient.getId()));
         model.addAttribute("patientName", patient.getFirstName() + " " + patient.getLastName());
+        model.addAttribute("totalBalance", appointmentService.getTotalBalance(patient));
+        System.out.println(appointmentService.getTotalBalance(patient));
+
 
         return "billing";
     }

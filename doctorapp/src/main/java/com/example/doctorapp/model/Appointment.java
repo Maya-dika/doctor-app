@@ -6,7 +6,7 @@ import java.time.LocalTime;
 import java.math.BigDecimal;   
 
 @Entity
-@Table(name="appointment")
+@Table(name="appointments")
 public class Appointment implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -21,7 +21,8 @@ public class Appointment implements Serializable {
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private Patient patient;
-
+    
+    
     @Column(nullable = false)
     private LocalDate appointmentDate;
     
@@ -37,7 +38,7 @@ public class Appointment implements Serializable {
     // Constructors
     public Appointment() {}
 
-    public Appointment(Long id, Doctor doctor, Patient patient, LocalDate appointmentDate,LocalTime appointmentTime, String status, String notes) {
+    public Appointment(Long id,Doctor doctor, Patient patient, LocalDate appointmentDate,LocalTime appointmentTime, String status, String notes) {
         this.id = id;
         this.doctor = doctor;
         this.patient = patient;
@@ -53,7 +54,7 @@ public class Appointment implements Serializable {
 
     public Doctor getDoctor() { return doctor; }
     public void setDoctor(Doctor doctor) { this.doctor = doctor; }
-
+    
     public Patient getPatient() { return patient; }
     public void setPatient(Patient patient) { this.patient = patient; }
 
