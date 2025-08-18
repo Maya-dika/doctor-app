@@ -1,10 +1,12 @@
 package com.example.doctorapp.controller;
 
 import com.example.doctorapp.model.Doctor;
+import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.model.Specialty;
 import com.example.doctorapp.repository.DoctorRepository;
 import com.example.doctorapp.repository.SpecialtyRepository;
 import com.example.doctorapp.service.DoctorService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -35,6 +37,17 @@ public class DoctorController {
         model.addAttribute("specialties", specialtyRepository.findAll());
         model.addAttribute("success", success != null);
         return "doctorregister";
+    }
+    @GetMapping("/doctor-dashboard")
+    public String doctorDashboard(Model model, HttpSession session) {
+        Doctor loggedInDoctor = (Doctor) session.getAttribute("loggedInDoctor");
+        if (loggedInDoctor == null) {
+            return "redirect:/login";
+        }
+
+       
+        model.addAttribute("doctor", loggedInDoctor);
+        return "doctor-dashboard";
     }
 
     @PostMapping("/registerdoc")
