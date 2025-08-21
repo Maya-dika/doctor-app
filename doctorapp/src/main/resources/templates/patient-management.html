@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Management - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .patient-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--success-color);
+        }
+
+        .patient-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .filter-tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filter-tab {
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            padding: 12px 15px;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md me-2"></i>
+                Healthcare Portal - Doctor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
+                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                    </div>
+                    <div class="sidebar-item active" onclick="window.location.href='/patient-management'">
+                        <i class="fas fa-users me-3"></i>Patient Management
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/medical-records'">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/prescriptions-manage'">
+                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-billing'">
+                        <i class="fas fa-credit-card me-3"></i>Billing
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/analytics'">
+                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Page Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-0">
+                            <i class="fas fa-users text-primary me-2"></i>
+                            Patient Management
+                        </h2>
+                        <p class="text-muted mb-0">Manage your patient information and records</p>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control search-input border-start-0" 
+                                       placeholder="Search patients by name, ID, or phone number..." 
+                                       id="patientSearch">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterPatients('all')">
+                        All Patients
+                    </button>
+                    <button class="filter-tab" onclick="filterPatients('active')">
+                        Active
+                    </button>
+                    <button class="filter-tab" onclick="filterPatients('recent')">
+                        Recent Visits
+                    </button>
+                </div>
+
+                <!-- Patients List -->
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Patient Cards -->
+                        <div th:if="${patients != null and !patients.empty}">
+                            <div class="patient-card card" 
+                                 th:each="patient : ${patients}"
+                                 th:attr="data-status=${patient.status}">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <!-- Patient Avatar -->
+                                        <div class="col-md-1">
+                                            <div class="patient-avatar">
+                                                <span th:text="${patient.firstName != null ? patient.firstName.substring(0,1) : 'P'}">P</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Patient Info -->
+                                        <div class="col-md-4">
+                                            <h5 class="mb-1" th:text="${patient.firstName != null ? (patient.firstName + ' ' + patient.lastName) : 'Patient Name'}">Patient Name</h5>
+                                            <p class="text-muted mb-0">
+                                                <i class="fas fa-id-card me-1"></i>
+                                                Patient ID: <span th:text="${patient.id != null ? patient.id : 'N/A'}">#N/A</span>
+                                            </p>
+                                            <p class="text-muted mb-0" th:if="${patient.email != null}">
+                                                <i class="fas fa-envelope me-1"></i>
+                                                <span th:text="${patient.email}">Email</span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Contact Info -->
+                                        <div class="col-md-3">
+                                            <p class="mb-1" th:if="${patient.phone != null}">
+                                                <i class="fas fa-phone me-1 text-primary"></i>
+                                                <span th:text="${patient.phone}">Phone</span>
+                                            </p>
+                                            <p class="text-muted mb-0" th:if="${patient.dateOfBirth != null}">
+                                                <i class="fas fa-birthday-cake me-1"></i>
+                                                DOB: <span th:text="${patient.dateOfBirth}">Date of Birth</span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Last Visit -->
+                                        <div class="col-md-2">
+                                            <p class="text-muted small mb-0">Last Visit:</p>
+                                            <span class="text-primary fw-bold" th:text="${patient.lastVisit != null ? patient.lastVisit : 'No visits'}">Date</span>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="col-md-2 text-end">
+                                            <div class="btn-group-vertical btn-group-sm">
+                                                <button class="btn btn-primary btn-sm mb-1" title="View Patient Details">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </button>
+                                                <button class="btn btn-outline-primary btn-sm mb-1" title="Edit Patient">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </button>
+                                                <button class="btn btn-success btn-sm" title="Schedule Appointment">
+                                                    <i class="fas fa-calendar-plus me-1"></i>Schedule
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div th:if="${patients == null or patients.empty}" class="text-center py-5">
+                            <div class="card" style="border: none; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <div class="card-body py-5">
+                                    <i class="fas fa-user-friends text-muted" style="font-size: 4rem;"></i>
+                                    <h4 class="text-muted mt-3">No Patients Found</h4>
+                                    <p class="text-muted">You don't have any patients registered yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filter patients by status
+        function filterPatients(status) {
+            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const patients = document.querySelectorAll('.patient-card');
+            patients.forEach(patient => {
+                if (status === 'all') {
+                    patient.style.display = 'block';
+                } else {
+                    const patientStatus = patient.getAttribute('data-status');
+                    if (patientStatus && patientStatus.toLowerCase() === status.toLowerCase()) {
+                        patient.style.display = 'block';
+                    } else {
+                        patient.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Search functionality
+        document.getElementById('patientSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const patients = document.querySelectorAll('.patient-card');
+            
+            patients.forEach(patient => {
+                const patientText = patient.textContent.toLowerCase();
+                if (patientText.includes(searchTerm)) {
+                    patient.style.display = 'block';
+                } else {
+                    patient.style.display = 'none';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

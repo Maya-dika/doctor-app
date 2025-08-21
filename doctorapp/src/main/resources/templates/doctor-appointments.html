@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Appointments - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .appointment-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--success-color);
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .appointment-completed {
+            border-left-color: #6c757d;
+            opacity: 0.8;
+        }
+
+        .appointment-canceled {
+            border-left-color: var(--danger-color);
+            opacity: 0.7;
+        }
+
+        .patient-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .filter-tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filter-tab {
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .appointment-time {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .appointment-date {
+            font-size: 0.9rem;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md me-2"></i>
+                Healthcare Portal - Doctor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                    </div>
+                    <div class="sidebar-item active" onclick="window.location.href='/doctor-appointments'">
+                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/patient-management'">
+                        <i class="fas fa-users me-3"></i>Patient Management
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/medical-records'">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/prescriptions-manage'">
+                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-billing'">
+                        <i class="fas fa-credit-card me-3"></i>Billing
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/analytics'">
+                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Page Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-0">
+                            <i class="fas fa-calendar-alt text-primary me-2"></i>
+                            My Appointments
+                        </h2>
+                        <p class="text-muted mb-0">Manage your scheduled patient appointments</p>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterAppointments('all')">
+                        All Appointments
+                    </button>
+                    <button class="filter-tab" onclick="filterAppointments('scheduled')">
+                        Scheduled
+                    </button>
+                    <button class="filter-tab" onclick="filterAppointments('completed')">
+                        Completed
+                    </button>
+                </div>
+
+                <!-- Appointments List -->
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Appointments Cards -->
+                        <div th:if="${appointments != null and !appointments.empty}">
+                            <div class="appointment-card card" 
+                                 th:each="appointment : ${appointments}"
+                                 th:classappend="${appointment.status == 'COMPLETED' ? 'appointment-completed' : (appointment.status == 'CANCELED' ? 'appointment-canceled' : '')}"
+                                 th:attr="data-status=${appointment.status}">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <!-- Patient Avatar -->
+                                        <div class="col-md-1">
+                                            <div class="patient-avatar">
+                                                <span th:text="${appointment.patient != null and appointment.patient.firstName != null ? appointment.patient.firstName.substring(0,1) : 'P'}">P</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Patient Info -->
+                                        <div class="col-md-3">
+                                            <h5 class="mb-1" th:text="${appointment.patient != null ? (appointment.patient.firstName + ' ' + appointment.patient.lastName) : 'Unknown Patient'}">Patient Name</h5>
+                                            <p class="text-muted mb-0">
+                                                <i class="fas fa-id-card me-1"></i>
+                                                ID: <span th:text="${appointment.patient != null ? appointment.patient.id : 'N/A'}">#N/A</span>
+                                            </p>
+                                            <p class="text-muted mb-0" th:if="${appointment.patient != null and appointment.patient.phone != null}">
+                                                <i class="fas fa-phone me-1"></i>
+                                                <span th:text="${appointment.patient.phone}">Phone</span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Date & Time -->
+                                        <div class="col-md-3">
+                                            <div class="appointment-date" th:text="${appointment.appointmentDate != null ? appointment.appointmentDate : 'Date TBD'}">Date</div>
+                                            <div class="appointment-time" th:text="${appointment.appointmentTime != null ? appointment.appointmentTime : 'Time TBD'}">Time</div>
+                                        </div>
+
+                                        <!-- Appointment Type -->
+                                        <div class="col-md-3">
+                                            <span class="badge bg-info mb-2" th:text="${appointment.appointmentType != null ? appointment.appointmentType : 'General Consultation'}">Type</span>
+                                            <p class="text-muted small mb-0" th:if="${appointment.notes != null}">
+                                                <i class="fas fa-sticky-note me-1"></i>
+                                                <span th:text="${appointment.notes}">Notes</span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Actions -->
+                                        <div class="col-md-2 text-end">
+                                            <div class="mb-2">
+                                                <span th:class="${appointment.status == 'COMPLETED' ? 'badge bg-secondary' : (appointment.status == 'CANCELED' ? 'badge bg-danger' : 'badge bg-success')}" 
+                                                      th:text="${appointment.status != null ? appointment.status : 'SCHEDULED'}">Status</span>
+                                            </div>
+                                            <div th:if="${appointment.status == null or appointment.status == 'SCHEDULED'}" class="btn-group-vertical btn-group-sm">
+                                                <button class="btn btn-success btn-sm mb-1" title="Mark as Completed">
+                                                    <i class="fas fa-check me-1"></i>Complete
+                                                </button>
+                                                <button class="btn btn-danger btn-sm" title="Cancel Appointment">
+                                                    <i class="fas fa-times me-1"></i>Cancel
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div th:if="${appointments == null or appointments.empty}" class="text-center py-5">
+                            <div class="card" style="border: none; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <div class="card-body py-5">
+                                    <i class="fas fa-calendar-times text-muted" style="font-size: 4rem;"></i>
+                                    <h4 class="text-muted mt-3">No Appointments Found</h4>
+                                    <p class="text-muted">You don't have any appointments scheduled yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filter appointments by status
+        function filterAppointments(status) {
+            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const appointments = document.querySelectorAll('.appointment-card');
+            appointments.forEach(appointment => {
+                if (status === 'all') {
+                    appointment.style.display = 'block';
+                } else {
+                    const appointmentStatus = appointment.getAttribute('data-status');
+                    if (appointmentStatus && appointmentStatus.toLowerCase() === status.toLowerCase()) {
+                        appointment.style.display = 'block';
+                    } else {
+                        appointment.style.display = 'none';
+                    }
+                }
+            });
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .stats-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+            background: white;
+        }
+
+        .stats-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .stats-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin: 0;
+        }
+
+        .stats-label {
+            font-size: 1rem;
+            color: #6c757d;
+            margin: 0;
+        }
+
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .chart-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        .diagnosis-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .diagnosis-item:last-child {
+            border-bottom: none;
+        }
+
+        .diagnosis-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .diagnosis-count {
+            background: var(--primary-color);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .period-selector {
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .period-tab {
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            color: #6c757d;
+        }
+
+        .period-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md me-2"></i>
+                Healthcare Portal - Doctor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
+                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/patient-management'">
+                        <i class="fas fa-users me-3"></i>Patient Management
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/medical-records'">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/prescriptions-manage'">
+                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-billing'">
+                        <i class="fas fa-credit-card me-3"></i>Billing
+                    </div>
+                    <div class="sidebar-item active" onclick="window.location.href='/analytics'">
+                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Page Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-0">
+                            <i class="fas fa-chart-bar text-primary me-2"></i>
+                            Statistics & Insights
+                        </h2>
+                        <p class="text-muted mb-0">Overview of your practice performance and patient statistics</p>
+                    </div>
+                </div>
+
+                <!-- Period Selector -->
+                <div class="period-selector">
+                    <button class="period-tab active" onclick="changePeriod('today')">
+                        Today
+                    </button>
+                    <button class="period-tab" onclick="changePeriod('week')">
+                        This Week
+                    </button>
+                    <button class="period-tab" onclick="changePeriod('month')">
+                        This Month
+                    </button>
+                </div>
+
+                <!-- Statistics Cards -->
+                <div class="row mb-4">
+                    <div th:if="${analyticsList != null and !analyticsList.empty}">
+                        <div class="col-md-6 col-lg-4" th:each="analytics : ${analyticsList}">
+                            <div class="stats-card card">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <div class="col-8">
+                                            <p class="stats-number" th:text="${analytics.value != null ? analytics.value : '0'}">0</p>
+                                            <p class="stats-label" th:text="${analytics.metricName != null ? analytics.metricName : 'Metric'}">Metric</p>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <div class="stats-icon">
+                                                <i class="fas fa-user-friends" th:if="${analytics.metricName != null and analytics.metricName.contains('Patients')}"></i>
+                                                <i class="fas fa-calendar-week" th:if="${analytics.metricName != null and analytics.metricName.contains('Week')}"></i>
+                                                <i class="fas fa-dollar-sign" th:if="${analytics.metricName != null and analytics.metricName.contains('Revenue')}"></i>
+                                                <i class="fas fa-chart-bar" th:unless="${analytics.metricName != null and (analytics.metricName.contains('Patients') or analytics.metricName.contains('Week') or analytics.metricName.contains('Revenue'))}"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Empty State for Statistics -->
+                    <div th:if="${analyticsList == null or analyticsList.empty}" class="col-12">
+                        <div class="stats-card card">
+                            <div class="card-body text-center py-4">
+                                <i class="fas fa-chart-bar text-muted mb-3" style="font-size: 2rem;"></i>
+                                <h5 class="text-muted">No Analytics Data</h5>
+                                <p class="text-muted mb-0">No statistics available for your account yet.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Analytics Summary -->
+                    <div class="col-lg-6">
+                        <div class="chart-card card">
+                            <div class="card-header bg-transparent border-bottom-0">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-stethoscope me-2 text-primary"></i>
+                                    Analytics Summary
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div th:if="${analyticsList != null and !analyticsList.empty}">
+                                    <div class="diagnosis-item" th:each="analytics : ${analyticsList}">
+                                        <span class="diagnosis-name" th:text="${analytics.metricName != null ? analytics.metricName : 'Metric'}">Metric Name</span>
+                                        <span class="diagnosis-count" th:text="${analytics.value != null ? analytics.value : '0'}">0</span>
+                                    </div>
+                                </div>
+                                <div th:if="${analyticsList == null or analyticsList.empty}" class="empty-state">
+                                    <i class="fas fa-chart-pie"></i>
+                                    <h5>No Analytics Data</h5>
+                                    <p>No analytics data available for this period.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Revenue Trends Chart -->
+                    <div class="col-lg-6">
+                        <div class="chart-card card">
+                            <div class="card-header bg-transparent border-bottom-0">
+                                <h5 class="card-title mb-0">
+                                    <i class="fas fa-chart-line me-2 text-primary"></i>
+                                    Performance Overview
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="revenueChart" width="400" height="200"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Initialize revenue chart
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        let revenueChart;
+
+        // Sample chart configuration
+        function initializeChart() {
+            const chartData = window.revenueData || [];
+            
+            if (revenueChart) {
+                revenueChart.destroy();
+            }
+
+            revenueChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: chartData.map(item => item.period) || ['No Data'],
+                    datasets: [{
+                        label: 'Revenue',
+                        data: chartData.map(item => item.amount) || [0],
+                        borderColor: '#2c5aa0',
+                        backgroundColor: 'rgba(44, 90, 160, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.4,
+                        pointBackgroundColor: '#2c5aa0',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2,
+                        pointRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value;
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: 'rgba(0,0,0,0.05)'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Period change functionality
+        function changePeriod(period) {
+            // Update active tab
+            document.querySelectorAll('.period-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update labels based on period
+            const revenueLabel = document.getElementById('revenueLabel');
+            switch(period) {
+                case 'today':
+                    revenueLabel.textContent = 'Revenue Today';
+                    break;
+                case 'week':
+                    revenueLabel.textContent = 'Revenue This Week';
+                    break;
+                case 'month':
+                    revenueLabel.textContent = 'Revenue This Month';
+                    break;
+            }
+
+            // Here you would typically make an AJAX call to fetch new data
+            // For now, we'll just update the chart with the existing data
+            initializeChart();
+        }
+
+        // Initialize chart on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeChart();
+        });
+    </script>
+</body>
+</html>

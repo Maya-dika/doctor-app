@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Billing - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .billing-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-color);
+        }
+
+        .billing-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+
+        .doctor-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        .filter-tabs {
+            background: white;
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .filter-tab {
+            border: none;
+            background: transparent;
+            padding: 10px 20px;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .filter-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .search-input {
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            padding: 12px 15px;
+        }
+
+        .search-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+
+        .payment-status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .status-paid {
+            background-color: #e8f5e8;
+            color: #388e3c;
+        }
+
+        .status-pending {
+            background-color: #fff3e0;
+            color: #f57c00;
+        }
+
+        .status-failed {
+            background-color: #ffebee;
+            color: #d32f2f;
+        }
+
+        .payment-method-icon {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 5px;
+            font-size: 12px;
+        }
+
+        .method-card {
+            background: #1976d2;
+            color: white;
+        }
+
+        .method-bank {
+            background: #388e3c;
+            color: white;
+        }
+
+        .method-paypal {
+            background: #0070ba;
+            color: white;
+        }
+
+        .method-other {
+            background: #757575;
+            color: white;
+        }
+
+        .new-payment-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .new-payment-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+        }
+
+        .amount-display {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .discount-text {
+            color: var(--success-color);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md me-2"></i>
+                Healthcare Portal - Doctor
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
+                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
+                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/patient-management'">
+                        <i class="fas fa-users me-3"></i>Patient Management
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/medical-records'">
+                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/prescriptions-manage'">
+                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                    </div>
+                    <div class="sidebar-item active" onclick="window.location.href='/doctor-billing'">
+                        <i class="fas fa-credit-card me-3"></i>Billing
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/analytics'">
+                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Page Header -->
+                <div class="row mb-4">
+                    <div class="col-12">
+                        <h2 class="mb-0">
+                            <i class="fas fa-credit-card text-primary me-2"></i>
+                            Billing Management
+                        </h2>
+                        <p class="text-muted mb-0">Manage registration fees, payments, and billing information</p>
+                    </div>
+                </div>
+
+                <!-- Search Section -->
+                <div class="search-section">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0">
+                                    <i class="fas fa-search text-muted"></i>
+                                </span>
+                                <input type="text" class="form-control search-input border-start-0" 
+                                       placeholder="Search by doctor name, transaction ID, or specialty..." 
+                                       id="billingSearch">
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select search-input" id="paymentMethodFilter">
+                                <option value="">All Payment Methods</option>
+                                <option value="card">Credit/Debit Card</option>
+                                <option value="bank">Bank Transfer</option>
+                                <option value="paypal">PayPal</option>
+                                <option value="other">Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select search-input" id="specialtyFilter">
+                                <option value="">All Specialties</option>
+                                <option th:each="specialty : ${specialties}" 
+                                        th:value="${specialty}" 
+                                        th:text="${specialty}">
+                                    Specialty
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Filter Tabs -->
+                <div class="filter-tabs">
+                    <button class="filter-tab active" onclick="filterBilling('all')">
+                        All Payments
+                    </button>
+                    <button class="filter-tab" onclick="filterBilling('paid')">
+                        Paid
+                    </button>
+                    <button class="filter-tab" onclick="filterBilling('pending')">
+                        Pending
+                    </button>
+                    <button class="filter-tab" onclick="filterBilling('failed')">
+                        Failed
+                    </button>
+                </div>
+
+                <!-- Billing Records List -->
+                <div class="row">
+                    <div class="col-12">
+                        <!-- Billing Cards -->
+                        <div th:if="${billingRecords != null and !billingRecords.empty}">
+                            <div class="billing-card card" 
+                                 th:each="billing : ${billingRecords}"
+                                 th:attr="data-status=${billing.paymentStatus}, data-method=${billing.paymentMethod}, data-specialty=${billing.doctor?.specialty}">
+                                <div class="card-body">
+                                    <div class="row align-items-center">
+                                        <!-- Doctor Avatar -->
+                                        <div class="col-md-1">
+                                            <div class="doctor-avatar">
+                                                <span th:text="${billing.doctor?.firstName != null ? billing.doctor.firstName.substring(0,1) : 'D'}">D</span>
+                                            </div>
+                                        </div>
+                                        
+                                        <!-- Doctor Info -->
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <h5 class="mb-0 me-2" th:text="${billing.doctor?.firstName != null ? ('Dr. ' + billing.doctor.firstName + ' ' + billing.doctor.lastName) : 'Unknown Doctor'}">Doctor Name</h5>
+                                                <span class="payment-status-badge" 
+                                                      th:classappend="'status-' + ${billing.paymentStatus}"
+                                                      th:text="${billing.paymentStatus != null ? billing.paymentStatus : 'Pending'}">Status</span>
+                                            </div>
+                                            <p class="text-muted mb-1">
+                                                <i class="fas fa-id-card me-1"></i>
+                                                ID: <span th:text="${billing.doctor?.doctorId != null ? billing.doctor.doctorId : 'N/A'}">#N/A</span>
+                                            </p>
+                                            <p class="text-muted mb-0" th:if="${billing.doctor?.specialty != null}">
+                                                <i class="fas fa-user-md me-1"></i>
+                                                <span th:text="${billing.doctor.specialty}">Specialty</span>
+                                            </p>
+                                        </div>
+
+                                        <!-- Fee Details -->
+                                        <div class="col-md-3">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Registration Fee:</small><br>
+                                                <span class="amount-display" th:text="${billing.registrationFee != null ? '$' + billing.registrationFee : '$0.00'}">$0.00</span>
+                                            </div>
+                                            <div class="mb-1" th:if="${billing.recommendedFee != null}">
+                                                <small class="text-muted">Recommended Fee:</small>
+                                                <span class="text-primary" th:text="'$' + ${billing.recommendedFee}">$0.00</span>
+                                            </div>
+                                            <div class="mb-0" th:if="${billing.discount != null and billing.discount > 0}">
+                                                <small class="discount-text">
+                                                    <i class="fas fa-tag me-1"></i>
+                                                    Discount: <span th:text="'$' + ${billing.discount}">$0.00</span>
+                                                </small>
+                                            </div>
+                                            <div th:if="${billing.promoCode != null}">
+                                                <small class="text-success">
+                                                    <i class="fas fa-ticket-alt me-1"></i>
+                                                    Code: <span th:text="${billing.promoCode}">PROMO</span>
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Payment Info -->
+                                        <div class="col-md-3">
+                                            <div class="mb-2">
+                                                <small class="text-muted">Total Amount:</small><br>
+                                                <span class="amount-display text-primary" th:text="${billing.totalAmount != null ? '$' + billing.totalAmount : '$0.00'}">$0.00</span>
+                                            </div>
+                                            <div class="mb-1" th:if="${billing.paymentMethod != null}">
+                                                <span class="payment-method-icon" 
+                                                      th:classappend="'method-' + ${billing.paymentMethod}">
+                                                    <i class="fas fa-credit-card" th:if="${billing.paymentMethod == 'card'}"></i>
+                                                    <i class="fas fa-university" th:if="${billing.paymentMethod == 'bank'}"></i>
+                                                    <i class="fab fa-paypal" th:if="${billing.paymentMethod == 'paypal'}"></i>
+                                                    <i class="fas fa-wallet" th:if="${billing.paymentMethod == 'other'}"></i>
+                                                </span>
+                                                <small th:text="${billing.paymentMethod}">Payment Method</small>
+                                            </div>
+                                            <div class="mb-0" th:if="${billing.transactionId != null}">
+                                                <small class="text-muted">
+                                                    <i class="fas fa-receipt me-1"></i>
+                                                    ID: <span th:text="${billing.transactionId}">TXN123</span>
+                                                </small>
+                                            </div>
+                                        </div>
+
+                                        <!-- Date and Actions -->
+                                        <div class="col-md-2 text-end">
+                                            <div class="mb-2">
+                                                <p class="text-muted small mb-1">Payment Date:</p>
+                                                <span class="text-primary fw-bold small" th:text="${billing.paymentDate != null ? billing.paymentDate : 'Pending'}">Date</span>
+                                            </div>
+                                            <div class="btn-group-vertical btn-group-sm">
+                                                <button class="btn btn-primary btn-sm mb-1" 
+                                                        title="View Details"
+                                                        th:onclick="'viewBilling(' + ${billing.id} + ')'">
+                                                    <i class="fas fa-eye me-1"></i>View
+                                                </button>
+                                                <button class="btn btn-outline-primary btn-sm mb-1" 
+                                                        title="Edit Billing"
+                                                        th:onclick="'editBilling(' + ${billing.id} + ')'">
+                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                </button>
+                                                <button class="btn btn-success btn-sm" 
+                                                        title="Print Invoice"
+                                                        th:onclick="'printInvoice(' + ${billing.id} + ')'">
+                                                    <i class="fas fa-print me-1"></i>Invoice
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Empty State -->
+                        <div th:if="${billingRecords == null or billingRecords.empty}" class="text-center py-5">
+                            <div class="card" style="border: none; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+                                <div class="card-body py-5">
+                                    <i class="fas fa-credit-card text-muted" style="font-size: 4rem;"></i>
+                                    <h4 class="text-muted mt-3">No Billing Records Found</h4>
+                                    <p class="text-muted">No billing records are available yet.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating Add Button -->
+    <button class="new-payment-btn" onclick="createNewPayment()" title="Add New Payment Record">
+        <i class="fas fa-plus"></i>
+    </button>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Filter billing by payment status
+        function filterBilling(status) {
+            document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const billingCards = document.querySelectorAll('.billing-card');
+            billingCards.forEach(card => {
+                if (status === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const cardStatus = card.getAttribute('data-status');
+                    if (cardStatus && cardStatus.toLowerCase() === status.toLowerCase()) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Search functionality
+        document.getElementById('billingSearch').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const billingCards = document.querySelectorAll('.billing-card');
+            
+            billingCards.forEach(card => {
+                const cardText = card.textContent.toLowerCase();
+                if (cardText.includes(searchTerm)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter by payment method
+        document.getElementById('paymentMethodFilter').addEventListener('change', function(e) {
+            const selectedMethod = e.target.value;
+            const billingCards = document.querySelectorAll('.billing-card');
+            
+            billingCards.forEach(card => {
+                if (!selectedMethod) {
+                    card.style.display = 'block';
+                } else {
+                    const cardMethod = card.getAttribute('data-method');
+                    if (cardMethod === selectedMethod) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Filter by specialty
+        document.getElementById('specialtyFilter').addEventListener('change', function(e) {
+            const selectedSpecialty = e.target.value;
+            const billingCards = document.querySelectorAll('.billing-card');
+            
+            billingCards.forEach(card => {
+                if (!selectedSpecialty) {
+                    card.style.display = 'block';
+                } else {
+                    const cardSpecialty = card.getAttribute('data-specialty');
+                    if (cardSpecialty === selectedSpecialty) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
+
+        // Action functions (to be implemented in your backend)
+        function viewBilling(billingId) {
+            window.location.href = `/doctor-billing/view/${billingId}`;
+        }
+
+        function editBilling(billingId) {
+            window.location.href = `/doctor-billing/edit/${billingId}`;
+        }
+
+        function printInvoice(billingId) {
+            window.open(`/doctor-billing/invoice/${billingId}`, '_blank');
+        }
+
+        function createNewPayment() {
+            window.location.href = '/doctor-billing/new';
+        }
+    </script>
+</body>
+</html>
