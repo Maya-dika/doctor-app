@@ -65,13 +65,13 @@ List<Appointment> allAppointments = appointmentService.getAppointmentsByPatient(
     // Calculate upcoming appointments (BOOKED or CONFIRMED, and date is today or future)
     LocalDate today = LocalDate.now();
     long upcomingAppointments = allAppointments.stream()
-        .filter(app -> ("BOOKED".equals(app.getStatus()) || "CONFIRMED".equals(app.getStatus())) 
+        .filter(app -> ("BOOKED".equals(app.getPaymentStatus()) || "CONFIRMED".equals(app.getPaymentStatus())) 
                       && (app.getAppointmentDate().isEqual(today) || app.getAppointmentDate().isAfter(today)))
         .count();
     
     // Calculate total visits (COMPLETED appointments)
     long totalVisits = allAppointments.stream()
-        .filter(app -> "COMPLETED".equals(app.getStatus()))
+        .filter(app -> "COMPLETED".equals(app.getPaymentStatus()))
         .count();
     
     // Add stats to model
@@ -84,7 +84,7 @@ List<Appointment> allAppointments = appointmentService.getAppointmentsByPatient(
     
     // Optional: Add recent appointments for display
     List<Appointment> recentAppointments = allAppointments.stream()
-        .filter(app -> ("BOOKED".equals(app.getStatus()) || "CONFIRMED".equals(app.getStatus())) 
+        .filter(app -> ("BOOKED".equals(app.getPaymentStatus()) || "CONFIRMED".equals(app.getPaymentStatus())) 
                       && (app.getAppointmentDate().isEqual(today) || app.getAppointmentDate().isAfter(today)))
         .sorted((a1, a2) -> a1.getAppointmentDate().compareTo(a2.getAppointmentDate()))
         .limit(3)

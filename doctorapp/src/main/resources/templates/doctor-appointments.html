@@ -74,6 +74,11 @@
             opacity: 0.7;
         }
 
+        .appointment-overdue {
+            border-left-color: var(--warning-color);
+            background-color: #fff8e1;
+        }
+
         .patient-avatar {
             width: 50px;
             height: 50px;
@@ -167,11 +172,8 @@
                     <div class="sidebar-item" onclick="window.location.href='/medical-records'">
                         <i class="fas fa-file-medical me-3"></i>Medical Records
                     </div>
-                    <div class="sidebar-item" onclick="window.location.href='/prescriptions-manage'">
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-prescriptions'">
                         <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
-                    </div>
-                    <div class="sidebar-item" onclick="window.location.href='/doctor-billing'">
-                        <i class="fas fa-credit-card me-3"></i>Billing
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/analytics'">
                         <i class="fas fa-chart-bar me-3"></i>Analytics
@@ -213,7 +215,7 @@
                             <div class="appointment-card card" 
                                  th:each="appointment : ${appointments}"
                                  th:classappend="${appointment.status == 'COMPLETED' ? 'appointment-completed' : (appointment.status == 'CANCELED' ? 'appointment-canceled' : '')}"
-                                 th:attr="data-status=${appointment.status}">
+                                 th:attr="data-status=${appointment.status},data-date=${appointment.appointmentDate}">
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <!-- Patient Avatar -->
@@ -230,9 +232,9 @@
                                                 <i class="fas fa-id-card me-1"></i>
                                                 ID: <span th:text="${appointment.patient != null ? appointment.patient.id : 'N/A'}">#N/A</span>
                                             </p>
-                                            <p class="text-muted mb-0" th:if="${appointment.patient != null and appointment.patient.phone != null}">
+                                            <p class="text-muted mb-0" th:if="${appointment.patient != null and appointment.patient.phoneNumber != null}">
                                                 <i class="fas fa-phone me-1"></i>
-                                                <span th:text="${appointment.patient.phone}">Phone</span>
+                                                <span th:text="${appointment.patient.phoneNumber}">Phone</span>
                                             </p>
                                         </div>
 
@@ -242,28 +244,23 @@
                                             <div class="appointment-time" th:text="${appointment.appointmentTime != null ? appointment.appointmentTime : 'Time TBD'}">Time</div>
                                         </div>
 
-                                        <!-- Appointment Type -->
+                                        <!-- Notes -->
                                         <div class="col-md-3">
-                                            <span class="badge bg-info mb-2" th:text="${appointment.appointmentType != null ? appointment.appointmentType : 'General Consultation'}">Type</span>
-                                            <p class="text-muted small mb-0" th:if="${appointment.notes != null}">
+                                            <p class="text-muted small mb-0" th:if="${appointment.notes != null and !#strings.isEmpty(appointment.notes)}">
                                                 <i class="fas fa-sticky-note me-1"></i>
                                                 <span th:text="${appointment.notes}">Notes</span>
+                                            </p>
+                                            <p class="text-muted small mb-0" th:if="${appointment.notes == null or #strings.isEmpty(appointment.notes)}">
+                                                <i class="fas fa-calendar me-1"></i>
+                                                General Consultation
                                             </p>
                                         </div>
 
                                         <!-- Actions -->
                                         <div class="col-md-2 text-end">
                                             <div class="mb-2">
-                                                <span th:class="${appointment.status == 'COMPLETED' ? 'badge bg-secondary' : (appointment.status == 'CANCELED' ? 'badge bg-danger' : 'badge bg-success')}" 
-                                                      th:text="${appointment.status != null ? appointment.status : 'SCHEDULED'}">Status</span>
-                                            </div>
-                                            <div th:if="${appointment.status == null or appointment.status == 'SCHEDULED'}" class="btn-group-vertical btn-group-sm">
-                                                <button class="btn btn-success btn-sm mb-1" title="Mark as Completed">
-                                                    <i class="fas fa-check me-1"></i>Complete
-                                                </button>
-                                                <button class="btn btn-danger btn-sm" title="Cancel Appointment">
-                                                    <i class="fas fa-times me-1"></i>Cancel
-                                                </button>
+                                                <span class="appointment-status-badge"
+                                                      th:text="${appointment.status != null ? appointment.status : 'BOOKED'}">Status</span>
                                             </div>
                                         </div>
                                     </div>
@@ -289,6 +286,93 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
+        // Check and mark overdue appointments on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            sortAppointmentsByDate();
+            checkOverdueAppointments();
+        });
+
+        function sortAppointmentsByDate() {
+            const appointmentsContainer = document.querySelector('.col-12 > div:first-child');
+            if (!appointmentsContainer) return;
+            
+            const appointments = Array.from(appointmentsContainer.querySelectorAll('.appointment-card'));
+            
+            // Sort appointments by date (newest first)
+            appointments.sort((a, b) => {
+                const dateA = new Date(a.getAttribute('data-date') || '1900-01-01');
+                const dateB = new Date(b.getAttribute('data-date') || '1900-01-01');
+                return dateB - dateA; // Newest first (descending order)
+            });
+            
+            // Reorder the DOM elements
+            appointments.forEach(appointment => {
+                appointmentsContainer.appendChild(appointment);
+            });
+        }
+
+        function checkOverdueAppointments() {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+            const appointments = document.querySelectorAll('.appointment-card');
+            
+            appointments.forEach(appointment => {
+                const appointmentDate = appointment.getAttribute('data-date');
+                const appointmentStatus = appointment.getAttribute('data-status');
+                
+                if (appointmentDate && 
+                    (appointmentStatus === null || appointmentStatus === '' || 
+                     appointmentStatus.toLowerCase() === 'booked')) {
+                    
+                    const appDate = new Date(appointmentDate);
+                    appDate.setHours(0, 0, 0, 0); // Set to start of day for accurate comparison
+                    
+                    // Check if appointment date is BEFORE today (not today or future)
+                    if (appDate < today) {
+                        // Mark as overdue
+                        appointment.classList.add('appointment-overdue');
+                        appointment.setAttribute('data-status', 'OVERDUE');
+                        
+                        // Update status badge
+                        const statusBadge = appointment.querySelector('.appointment-status-badge');
+                        if (statusBadge) {
+                            statusBadge.textContent = 'OVERDUE';
+                            statusBadge.className = 'appointment-status-badge badge bg-warning';
+                        }
+                        
+                        // Hide action buttons for overdue appointments
+                        const actionsDiv = appointment.querySelector('.appointment-actions');
+                        if (actionsDiv) {
+                            actionsDiv.style.display = 'none';
+                        }
+                    } else {
+                        // Set status badge for non-overdue appointments
+                        const statusBadge = appointment.querySelector('.appointment-status-badge');
+                        if (statusBadge) {
+                            const status = appointmentStatus || 'BOOKED';
+                            statusBadge.textContent = status;
+                            
+                            if (status.toLowerCase() === 'completed') {
+                                statusBadge.className = 'appointment-status-badge badge bg-secondary';
+                            } else if (status.toLowerCase() === 'canceled') {
+                                statusBadge.className = 'appointment-status-badge badge bg-danger';
+                            } else if (status.toLowerCase() === 'checked_in') {
+                                statusBadge.className = 'appointment-status-badge badge bg-info';
+                            } else {
+                                statusBadge.className = 'appointment-status-badge badge bg-success';
+                            }
+                        }
+                        
+                        // No action buttons for doctors - hide all action buttons
+                        const actionsDiv = appointment.querySelector('.appointment-actions');
+                        if (actionsDiv) {
+                            actionsDiv.style.display = 'none';
+                        }
+                    }
+                }
+            });
+        }
+
         // Filter appointments by status
         function filterAppointments(status) {
             document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));

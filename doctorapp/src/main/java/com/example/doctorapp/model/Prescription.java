@@ -2,9 +2,7 @@ package com.example.doctorapp.model;
 
 import jakarta.persistence.*;
 import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalTime;
-import java.math.BigDecimal;  
+import java.time.LocalDate;  
 
 @Entity
 @Table(name="prescription")

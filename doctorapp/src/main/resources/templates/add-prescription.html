@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Prescription - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .form-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            padding: 40px;
+            margin: 30px auto;
+            max-width: 800px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .form-control, .form-select {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #1e3d72;
+            border-color: #1e3d72;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline-secondary {
+            border-radius: 25px;
+            padding: 12px 30px;
+            font-weight: 600;
+        }
+
+        .form-section {
+            background-color: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+
+        .required {
+            color: #dc3545;
+        }
+
+        .patient-info {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+
+        .is-invalid {
+            border-color: #dc3545;
+            box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                Healthcare Portal
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-1"></i>
+                        <span th:text="${session.loggedInDoctor?.firstName + ' ' + session.loggedInDoctor?.lastName}">Dr. Name</span>
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="/doctor-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                        <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-pills text-primary me-3"></i>Add New Prescription</h2>
+                <p class="text-muted mb-0">Create a prescription for patients with completed appointments</p>
+            </div>
+
+            <!-- Success/Error Messages -->
+            <div th:if="${success}" class="alert alert-success" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <span th:text="${success}">Success message</span>
+            </div>
+
+            <div th:if="${error}" class="alert alert-danger" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <span th:text="${error}">Error message</span>
+            </div>
+
+            <!-- Prescription Form -->
+            <form th:action="@{/save-prescription}" th:object="${prescription}" method="post">
+                
+                <!-- Patient Selection Section -->
+                <div class="form-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-user me-2"></i>Patient Information
+                    </h5>
+                    
+                    <div class="mb-3">
+                        <label for="patientId" class="form-label">Select Patient <span class="required">*</span></label>
+                        <select class="form-select" id="patientId" name="patientId" required onchange="updatePatientInfo()">
+                            <option value="">-- Select a patient --</option>
+                            <option th:each="patient : ${patients}" 
+                                    th:value="${patient.id}" 
+                                    th:text="${patient.firstName + ' ' + patient.lastName + ' (ID: ' + patient.id + ')'}"
+                                    th:selected="${selectedPatientId != null && selectedPatientId == patient.id}">
+                                Patient Name
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Patient Info Display -->
+                    <div id="patientInfo" class="patient-info" style="display: none;">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Patient:</strong> <span id="selectedPatientName">-</span>
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Patient ID:</strong> <span id="selectedPatientIdDisplay">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Medication Information Section -->
+                <div class="form-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-pills me-2"></i>Medication Information
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label for="medicationName" class="form-label">Medication Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="medicationName" 
+                                   th:field="*{medicationName}" required placeholder="Enter medication name">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="dosage" class="form-label">Dosage <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="dosage" 
+                                   th:field="*{dosage}" required placeholder="e.g., 500mg, 2 tablets">
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <label for="frequency" class="form-label">Frequency <span class="required">*</span></label>
+                            <select class="form-select" id="frequency" th:field="*{frequency}" required>
+                                <option value="">-- Select frequency --</option>
+                                <option value="Once daily">Once daily</option>
+                                <option value="Twice daily">Twice daily</option>
+                                <option value="Three times daily">Three times daily</option>
+                                <option value="Four times daily">Four times daily</option>
+                                <option value="Every 4 hours">Every 4 hours</option>
+                                <option value="Every 6 hours">Every 6 hours</option>
+                                <option value="Every 8 hours">Every 8 hours</option>
+                                <option value="Every 12 hours">Every 12 hours</option>
+                                <option value="As needed">As needed</option>
+                                <option value="Before meals">Before meals</option>
+                                <option value="After meals">After meals</option>
+                                <option value="At bedtime">At bedtime</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Additional Information Section -->
+                <div class="form-section">
+                    <h5 class="section-title">
+                        <i class="fas fa-info-circle me-2"></i>Additional Information
+                    </h5>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="startDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control" id="startDate" th:field="*{startDate}">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="endDate" class="form-label">End Date</label>
+                            <input type="date" class="form-control" id="endDate" th:field="*{endDate}">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="instructions" class="form-label">Instructions <span class="required">*</span></label>
+                        <textarea class="form-control" id="instructions" th:field="*{instructions}" 
+                                  rows="4" required placeholder="Enter detailed instructions for the patient..."></textarea>
+                        <div class="form-text">Include dosage instructions, timing, duration, and any important notes or warnings.</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="pharmacy" class="form-label">Preferred Pharmacy (Optional)</label>
+                        <input type="text" class="form-control" id="pharmacy" th:field="*{pharmacy}" 
+                               placeholder="Enter pharmacy name or leave blank">
+                    </div>
+                </div>
+
+                <!-- Form Actions -->
+                <div class="text-center pt-3">
+                    <a href="/doctor-prescriptions" class="btn btn-outline-secondary me-3">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save me-2"></i>Save Prescription
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <script th:inline="javascript">
+        // Patient data for JavaScript
+        const patients = /*[[${patients}]]*/ [];
+        
+        function updatePatientInfo() {
+            const patientSelect = document.getElementById('patientId');
+            const patientInfo = document.getElementById('patientInfo');
+            const selectedPatientName = document.getElementById('selectedPatientName');
+            const selectedPatientIdDisplay = document.getElementById('selectedPatientIdDisplay');
+            
+            if (patientSelect.value) {
+                const selectedPatient = patients.find(p => p.id == patientSelect.value);
+                if (selectedPatient) {
+                    selectedPatientName.textContent = selectedPatient.firstName + ' ' + selectedPatient.lastName;
+                    selectedPatientIdDisplay.textContent = selectedPatient.id;
+                    patientInfo.style.display = 'block';
+                }
+            } else {
+                patientInfo.style.display = 'none';
+            }
+        }
+
+        // Initialize patient info if pre-selected
+        document.addEventListener('DOMContentLoaded', function() {
+            updatePatientInfo();
+            
+            // Set today's date as default for start date
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('startDate').value = today;
+        });
+
+        // Form validation
+        document.querySelector('form').addEventListener('submit', function(e) {
+            const requiredFields = this.querySelectorAll('[required]');
+            let isValid = true;
+            
+            requiredFields.forEach(field => {
+                if (!field.value.trim()) {
+                    isValid = false;
+                    field.classList.add('is-invalid');
+                } else {
+                    field.classList.remove('is-invalid');
+                }
+            });
+            
+            // Validate end date is after start date
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            
+            if (startDate && endDate && new Date(endDate) <= new Date(startDate)) {
+                alert('End date must be after start date.');
+                document.getElementById('endDate').classList.add('is-invalid');
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                e.preventDefault();
+                alert('Please fill in all required fields correctly.');
+            }
+        });
+
+        // Add input validation styling
+        document.querySelectorAll('.form-control, .form-select').forEach(field => {
+            field.addEventListener('blur', function() {
+                if (this.hasAttribute('required') && !this.value.trim()) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+            
+            field.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid') && this.value.trim()) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+
+        // Auto-calculate end date based on common durations
+        document.getElementById('frequency').addEventListener('change', function() {
+            const frequency = this.value;
+            const startDate = document.getElementById('startDate').value;
+            
+            if (startDate && frequency) {
+                let daysToAdd = 7; // default 1 week
+                
+                // Suggest end dates based on frequency
+                if (frequency.includes('daily')) {
+                    if (frequency === 'Once daily') daysToAdd = 30;
+                    else if (frequency === 'Twice daily') daysToAdd = 14;
+                    else daysToAdd = 10;
+                } else if (frequency.includes('hours')) {
+                    daysToAdd = 5;
+                }
+                
+                const start = new Date(startDate);
+                const end = new Date(start);
+                end.setDate(start.getDate() + daysToAdd);
+                
+                document.getElementById('endDate').value = end.toISOString().split('T')[0];
+            }
+        });
+    </script>
+</body>
+</html>

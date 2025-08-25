@@ -328,7 +328,7 @@
                                         <div>
                                             <h5 class="mb-1" th:text="${prescription.medicationName}">Medication Name</h5>
                                             <p class="mb-0 opacity-75">
-                                                Prescribed by Dr. <span th:text="${prescription.doctorName}">Doctor Name</span>
+                                                Prescribed by <span th:text="${prescription.doctor.firstName + ' ' + prescription.doctor.lastName}">Doctor Name</span>
                                             </p>
                                         </div>
                                     </div>
@@ -349,8 +349,7 @@
                                                 <i class="fas fa-prescription-bottle me-2"></i>Dosage Information
                                             </h6>
                                             <p class="mb-1"><strong>Dosage:</strong> <span th:text="${prescription.dosage}">Dosage</span></p>
-                                            <p class="mb-1"><strong>Frequency:</strong> <span th:text="${prescription.frequency}">Frequency</span></p>
-                                            <p class="mb-0"><strong>Duration:</strong> <span th:text="${prescription.duration}">Duration</span></p>
+                                            <p class="mb-0"><strong>Frequency:</strong> <span th:text="${prescription.frequency}">Frequency</span></p>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -358,16 +357,16 @@
                                             <h6 class="text-success mb-2">
                                                 <i class="fas fa-calendar me-2"></i>Prescription Details
                                             </h6>
-                                            <p class="mb-1"><strong>Prescribed:</strong> <span th:text="${prescription.prescribedDate}">Date</span></p>
+                                            <p class="mb-1" th:if="${prescription.prescribedDate}"><strong>Prescribed:</strong> <span th:text="${prescription.prescribedDate}">Date</span></p>
                                             <p class="mb-1" th:if="${prescription.startDate}"><strong>Start Date:</strong> <span th:text="${prescription.startDate}">Date</span></p>
                                             <p class="mb-0" th:if="${prescription.endDate}"><strong>End Date:</strong> <span th:text="${prescription.endDate}">Date</span></p>
                                         </div>
                                     </div>
                                 </div>
 
-                                <div th:if="${prescription.instructions}" class="mt-3">
+                                <div class="mt-3">
                                     <h6 class="text-warning mb-2">
-                                        <i class="fas fa-info-circle me-2"></i>Special Instructions
+                                        <i class="fas fa-info-circle me-2"></i>Instructions
                                     </h6>
                                     <div class="alert alert-light">
                                         <p class="mb-0" th:text="${prescription.instructions}">Instructions</p>
@@ -378,7 +377,7 @@
                                     <div>
                                         <small class="text-muted">
                                             <i class="fas fa-hospital me-1"></i>
-                                            <span th:text="${prescription.pharmacy != null ? prescription.pharmacy : 'Any Pharmacy'}">Pharmacy</span>
+                                            <span th:text="${prescription.pharmacy != null and prescription.pharmacy != '' ? prescription.pharmacy : 'Any Pharmacy'}">Pharmacy</span>
                                         </small>
                                     </div>
                                     <div>

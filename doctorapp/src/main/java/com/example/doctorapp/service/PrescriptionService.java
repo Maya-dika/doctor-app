@@ -19,11 +19,13 @@ public class PrescriptionService {
      public Prescription save(Prescription prescription) {
         return prescriptionRepository.save(prescription);
     }
-     
-     public List<Prescription> getPrescriptionsByPatientId(Long patientId) {
-        return prescriptionRepository.findByPatient_Id(patientId);
-    }
+    
 
+     // In PrescriptionService
+public List<Prescription> getPrescriptionsByPatientId(Long patientId) {
+    // This should return prescriptions with doctor information populated
+    return prescriptionRepository.findByPatientIdOrderByPrescribedDateDesc(patientId);
+}
    
     public List<Prescription> getPrescriptionsByDoctorId(Long doctorId) {
         return prescriptionRepository.findByDoctor_Id(doctorId);
@@ -38,6 +40,8 @@ public class PrescriptionService {
     public List<Prescription> getPrescriptionsByPrescribedDate(LocalDate prescribedDate) {
         return prescriptionRepository.findByPrescribedDate(prescribedDate);
     }
+    
+    
     
     
 }

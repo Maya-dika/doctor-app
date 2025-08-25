@@ -20,7 +20,9 @@ public class PatientService {
     public List<Patient> getFemalePatients() {
         return patientRepository.findByGender("female");
     }
-    
+    public Optional<Patient> findPatientById(Long id) {
+        return patientRepository.findById(id);
+    }
     public Optional<Patient> getDoctorByEmail(String email) {
         return patientRepository.findByEmail(email);
     }

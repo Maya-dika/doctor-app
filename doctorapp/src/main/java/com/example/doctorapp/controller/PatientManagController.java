@@ -1,5 +1,6 @@
 package com.example.doctorapp.controller;
 
+import com.example.doctorapp.model.Doctor;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.model.PatientManagement;
 import com.example.doctorapp.service.PatientManagementService;
@@ -21,9 +22,11 @@ public class PatientManagController {
   
    @GetMapping
 public String viewPatientManagement(Model model, HttpSession session) {
+    Doctor loggedInDoctor = (Doctor) session.getAttribute("loggedInDoctor");
     
     PatientManagement loggedInPatient = (PatientManagement) session.getAttribute("loggedInPatient");
     model.addAttribute("patient", loggedInPatient);
+     model.addAttribute("doctor", loggedInDoctor);
     return "patient-management"; 
 }
 

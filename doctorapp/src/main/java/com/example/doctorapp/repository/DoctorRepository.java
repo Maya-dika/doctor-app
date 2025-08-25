@@ -49,4 +49,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     
     // Check if license number exists (for validation)
     boolean existsByLicenseNumber(String licenseNumber);
+    
+    
 }

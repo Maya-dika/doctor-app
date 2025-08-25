@@ -6,7 +6,6 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -18,23 +17,21 @@ public class AnalyticsController {
         this.analyticsService = analyticsService;
     }
     
-    @GetMapping("/analytics")
-    public String analytics(HttpSession session, Model model) {
-        Doctor doctor = (Doctor) session.getAttribute("doctor");
+   @GetMapping("/analytics")
+public String analytics(HttpSession session, Model model) {
+    Doctor doctor = (Doctor) session.getAttribute("loggedInDoctor");
 
-        // Temporary fix for testing
-        if (doctor == null) {
-            doctor = new Doctor();
-            doctor.setId(1L); // Mock ID
-            doctor.setFirstName("Test");
-            doctor.setLastName("Doctor");
-        }
-
-        Long doctorId = doctor.getId();
-        List<Analytics> analyticsList = analyticsService.getAnalyticssByDoctorId(doctorId);
-
-        model.addAttribute("doctor", doctor);
-        model.addAttribute("analyticsList", analyticsList != null ? analyticsList : new ArrayList<>());
-        return "analytics";
+    if (doctor == null) {
+        // Optional: redirect to login or handle missing doctor
+        return "redirect:/login";
     }
+
+    Long doctorId = doctor.getId();
+    List<Analytics> analyticsList = analyticsService.getAnalyticssByDoctorId(doctorId);
+
+    model.addAttribute("doctor", doctor);
+    model.addAttribute("analyticsList", analyticsList != null ? analyticsList : new ArrayList<>());
+    return "analytics";
+}
+
 }
