@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Management - Healthcare Portal</title>
+    <title th:text="#{patient.management.title}">Patient Management - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -124,23 +124,26 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-user-md me-2"></i>
-                Healthcare Portal - Doctor
+                <span th:text="#{main.title} + ' - ' + #{doctor.title}">Healthcare Portal - Doctor</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -154,22 +157,22 @@
             <div class="col-md-3 col-lg-2 p-0">
                 <div class="sidebar">
                     <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
-                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
-                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                        <i class="fas fa-calendar-alt me-3"></i><span th:text="#{dashboard.appointments}">Appointments</span>
                     </div>
                     <div class="sidebar-item active" onclick="window.location.href='/patient-management'">
-                        <i class="fas fa-users me-3"></i>Patient Management
+                        <i class="fas fa-users me-3"></i><span th:text="#{patient.management.title}">Patient Management</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/medical-records'">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                        <i class="fas fa-file-medical me-3"></i><span th:text="#{medical.records.title}">Medical Records</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-prescriptions'">
-                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                        <i class="fas fa-prescription-bottle me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/analytics'">
-                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                        <i class="fas fa-chart-bar me-3"></i><span th:text="#{analytics.title}">Analytics</span>
                     </div>
                 </div>
             </div>
@@ -181,9 +184,9 @@
                     <div class="col-12">
                         <h2 class="mb-0">
                             <i class="fas fa-users text-primary me-2"></i>
-                            Patient Management
+                            <span th:text="#{patient.management.title}">Patient Management</span>
                         </h2>
-                        <p class="text-muted mb-0">Manage your patient information and records</p>
+                        <p class="text-muted mb-0" th:text="#{patient.management.description}">Manage your patient information and records</p>
                     </div>
                 </div>
 
@@ -196,7 +199,7 @@
                                     <i class="fas fa-search text-muted"></i>
                                 </span>
                                 <input type="text" class="form-control search-input border-start-0" 
-                                       placeholder="Search patients by name, ID, or phone number..." 
+                                       th:placeholder="#{patient.management.search.placeholder}" 
                                        id="patientSearch">
                             </div>
                         </div>
@@ -206,13 +209,13 @@
                 <!-- Filter Tabs -->
                 <div class="filter-tabs">
                     <button class="filter-tab active" onclick="filterPatients('all')">
-                        All Patients
+                        <span th:text="#{patient.management.filter.all}">All Patients</span>
                     </button>
                     <button class="filter-tab" onclick="filterPatients('active')">
-                        Active
+                        <span th:text="#{patient.management.filter.active}">Active</span>
                     </button>
                     <button class="filter-tab" onclick="filterPatients('recent')">
-                        Recent Visits
+                        <span th:text="#{patient.management.filter.recent}">Recent Visits</span>
                     </button>
                 </div>
 
@@ -238,7 +241,7 @@
                                             <h5 class="mb-1" th:text="${patient.firstName != null ? (patient.firstName + ' ' + patient.lastName) : 'Patient Name'}">Patient Name</h5>
                                             <p class="text-muted mb-0">
                                                 <i class="fas fa-id-card me-1"></i>
-                                                Patient ID: <span th:text="${patient.id != null ? patient.id : 'N/A'}">#N/A</span>
+                                                <span th:text="#{patient.management.patient.id} + ': '">Patient ID: </span><span th:text="${patient.id != null ? patient.id : 'N/A'}">#N/A</span>
                                             </p>
                                             <p class="text-muted mb-0" th:if="${patient.email != null}">
                                                 <i class="fas fa-envelope me-1"></i>
@@ -260,21 +263,21 @@
 
                                         <!-- Last Visit -->
                                         <div class="col-md-2">
-                                            <p class="text-muted small mb-0">Last Visit:</p>
+                                            <p class="text-muted small mb-0" th:text="#{patient.management.last.visit} + ':'">Last Visit:</p>
                                             <span class="text-primary fw-bold" th:text="${patient.lastVisit != null ? patient.lastVisit : 'No visits'}">Date</span>
                                         </div>
 
                                         <!-- Actions -->
                                         <div class="col-md-2 text-end">
                                             <div class="btn-group-vertical btn-group-sm">
-                                                <button class="btn btn-primary btn-sm mb-1" title="View Patient Details">
-                                                    <i class="fas fa-eye me-1"></i>View
+                                                <button class="btn btn-primary btn-sm mb-1" th:title="#{patient.management.view.details}">
+                                                    <i class="fas fa-eye me-1"></i><span th:text="#{common.view}">View</span>
                                                 </button>
-                                                <button class="btn btn-outline-primary btn-sm mb-1" title="Edit Patient">
-                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                <button class="btn btn-outline-primary btn-sm mb-1" th:title="#{patient.management.edit.patient}">
+                                                    <i class="fas fa-edit me-1"></i><span th:text="#{common.edit}">Edit</span>
                                                 </button>
-                                                <button class="btn btn-success btn-sm" title="Schedule Appointment">
-                                                    <i class="fas fa-calendar-plus me-1"></i>Schedule
+                                                <button class="btn btn-success btn-sm" th:title="#{patient.management.schedule.appointment}">
+                                                    <i class="fas fa-calendar-plus me-1"></i><span th:text="#{patient.management.schedule}">Schedule</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -288,8 +291,8 @@
                             <div class="card" style="border: none; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                                 <div class="card-body py-5">
                                     <i class="fas fa-user-friends text-muted" style="font-size: 4rem;"></i>
-                                    <h4 class="text-muted mt-3">No Patients Found</h4>
-                                    <p class="text-muted">You don't have any patients registered yet.</p>
+                                    <h4 class="text-muted mt-3" th:text="#{patient.management.no.patients.found}">No Patients Found</h4>
+                                    <p class="text-muted" th:text="#{patient.management.no.patients.description}">You don't have any patients registered yet.</p>
                                 </div>
                             </div>
                         </div>

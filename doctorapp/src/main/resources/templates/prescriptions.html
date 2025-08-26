@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Prescriptions - Healthcare Portal</title>
+    <title th:text="#{prescriptions.title}">Medical Prescriptions - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -38,6 +38,7 @@
             border-bottom: 1px solid #e9ecef;
             cursor: pointer;
             transition: all 0.3s ease;
+            -webkit-user-select: none;
             user-select: none;
             display: flex;
             align-items: center;
@@ -212,22 +213,25 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${session.loggedInPatient?.firstName + ' ' + session.loggedInPatient?.lastName}">Patient Name</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i><span th:text="#{dashboard.title}">Dashboard</span></a></li>
                             
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -241,25 +245,25 @@
           <div class="col-md-3 col-lg-2 p-0">
     <div class="sidebar">
         <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
-            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
-            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+            <i class="fas fa-calendar-alt me-3"></i><span th:text="#{appointment.my.appointments}">My Appointments</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
-            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+            <i class="fas fa-calendar-plus me-3"></i><span th:text="#{appointment.book}">Book Appointment</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
-            <i class="fas fa-pills me-3"></i>Prescriptions
+            <i class="fas fa-pills me-3"></i><span th:text="#{prescriptions.title}">Prescriptions</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-            <i class="fas fa-chart-line me-3"></i>Health Metrics
+            <i class="fas fa-chart-line me-3"></i><span th:text="#{health.metrics.title}">Health Metrics</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
-            <i class="fas fa-comments me-3"></i>Messages
+            <i class="fas fa-comments me-3"></i><span th:text="#{messaging.title}">Messages</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
-            <i class="fas fa-credit-card me-3"></i>Billing
+            <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>
         </div>
     </div>
 </div>
@@ -272,12 +276,12 @@
                         <div>
                             <h2 class="mb-2">
                                 <i class="fas fa-pills text-primary me-3"></i>
-                                My Prescriptions
+                                <span th:text="#{prescriptions.my.prescriptions}">My Prescriptions</span>
                             </h2>
-                            <p class="text-muted mb-0">View your medical prescriptions and medication details</p>
+                            <p class="text-muted mb-0" th:text="#{prescriptions.view.description}">View your medical prescriptions and medication details</p>
                         </div>
                         <a href="/patient-dashboard" class="btn btn-outline-primary">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            <i class="fas fa-arrow-left me-2"></i><span th:text="#{prescriptions.back.dashboard}">Back to Dashboard</span>
                         </a>
                     </div>
                 </div>
@@ -286,32 +290,32 @@
                 <div class="row mb-4">
                     <div class="col-md-8 mx-auto">
                         <div class="input-group">
-                            <input type="text" class="form-control search-box" id="searchInput" 
-                                   placeholder="Search prescriptions by medication name...">
-                            <button class="btn btn-primary" type="button">
-                                <i class="fas fa-search"></i>
-                            </button>
+                                                            <input type="text" class="form-control search-box" id="searchInput" 
+                                       th:placeholder="#{prescriptions.search.placeholder}">
+                                <button class="btn btn-primary" type="button" th:title="#{common.search}">
+                                    <i class="fas fa-search"></i>
+                                </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Filter Tabs -->
                 <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="all">All Prescriptions</button>
-                    <button class="filter-tab" data-filter="active">Active</button>
-                    <button class="filter-tab" data-filter="completed">Completed</button>
-                    <button class="filter-tab" data-filter="expired">Expired</button>
+                    <button class="filter-tab active" data-filter="all" th:text="#{prescriptions.filter.all}">All Prescriptions</button>
+                    <button class="filter-tab" data-filter="active" th:text="#{prescriptions.filter.active}">Active</button>
+                    <button class="filter-tab" data-filter="completed" th:text="#{prescriptions.filter.completed}">Completed</button>
+                    <button class="filter-tab" data-filter="expired" th:text="#{prescriptions.filter.expired}">Expired</button>
                 </div>
 
                 <!-- Success/Error Messages -->
                 <div th:if="${success}" class="alert alert-success alert-custom" role="alert">
                     <i class="fas fa-check-circle me-2"></i>
-                    <span th:text="${success}">Success message</span>
+                    <span th:text="${success != null ? success : #{common.success}}">Success message</span>
                 </div>
 
                 <div th:if="${error}" class="alert alert-danger alert-custom" role="alert">
                     <i class="fas fa-exclamation-circle me-2"></i>
-                    <span th:text="${error}">Error message</span>
+                    <span th:text="${error != null ? error : #{common.error}}">Error message</span>
                 </div>
 
                 <!-- Prescriptions List -->
@@ -328,7 +332,7 @@
                                         <div>
                                             <h5 class="mb-1" th:text="${prescription.medicationName}">Medication Name</h5>
                                             <p class="mb-0 opacity-75">
-                                                Prescribed by <span th:text="${prescription.doctor.firstName + ' ' + prescription.doctor.lastName}">Doctor Name</span>
+                                                <span th:text="#{prescriptions.prescribed.by}">Prescribed by</span> <span th:text="${prescription.doctor.firstName + ' ' + prescription.doctor.lastName}">Doctor Name</span>
                                             </p>
                                         </div>
                                     </div>
@@ -346,27 +350,27 @@
                                     <div class="col-md-6">
                                         <div class="dosage-info">
                                             <h6 class="text-primary mb-2">
-                                                <i class="fas fa-prescription-bottle me-2"></i>Dosage Information
+                                                <i class="fas fa-prescription-bottle me-2"></i><span th:text="#{prescriptions.dosage.information}">Dosage Information</span>
                                             </h6>
-                                            <p class="mb-1"><strong>Dosage:</strong> <span th:text="${prescription.dosage}">Dosage</span></p>
-                                            <p class="mb-0"><strong>Frequency:</strong> <span th:text="${prescription.frequency}">Frequency</span></p>
+                                            <p class="mb-1"><strong th:text="#{prescriptions.dosage} + ':'">Dosage:</strong> <span th:text="${prescription.dosage}">Dosage</span></p>
+                                            <p class="mb-0"><strong th:text="#{prescriptions.frequency} + ':'">Frequency:</strong> <span th:text="${prescription.frequency}">Frequency</span></p>
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="dosage-info">
                                             <h6 class="text-success mb-2">
-                                                <i class="fas fa-calendar me-2"></i>Prescription Details
+                                                <i class="fas fa-calendar me-2"></i><span th:text="#{prescriptions.prescription.details}">Prescription Details</span>
                                             </h6>
-                                            <p class="mb-1" th:if="${prescription.prescribedDate}"><strong>Prescribed:</strong> <span th:text="${prescription.prescribedDate}">Date</span></p>
-                                            <p class="mb-1" th:if="${prescription.startDate}"><strong>Start Date:</strong> <span th:text="${prescription.startDate}">Date</span></p>
-                                            <p class="mb-0" th:if="${prescription.endDate}"><strong>End Date:</strong> <span th:text="${prescription.endDate}">Date</span></p>
+                                            <p class="mb-1" th:if="${prescription.prescribedDate}"><strong th:text="#{prescriptions.prescribed} + ':'">Prescribed:</strong> <span th:text="${prescription.prescribedDate}">Date</span></p>
+                                            <p class="mb-1" th:if="${prescription.startDate}"><strong th:text="#{prescriptions.start.date} + ':'">Start Date:</strong> <span th:text="${prescription.startDate}">Date</span></p>
+                                            <p class="mb-0" th:if="${prescription.endDate}"><strong th:text="#{prescriptions.end.date} + ':'">End Date:</strong> <span th:text="${prescription.endDate}">Date</span></p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="mt-3">
                                     <h6 class="text-warning mb-2">
-                                        <i class="fas fa-info-circle me-2"></i>Instructions
+                                        <i class="fas fa-info-circle me-2"></i><span th:text="#{prescriptions.instructions}">Instructions</span>
                                     </h6>
                                     <div class="alert alert-light">
                                         <p class="mb-0" th:text="${prescription.instructions}">Instructions</p>
@@ -377,15 +381,15 @@
                                     <div>
                                         <small class="text-muted">
                                             <i class="fas fa-hospital me-1"></i>
-                                            <span th:text="${prescription.pharmacy != null and prescription.pharmacy != '' ? prescription.pharmacy : 'Any Pharmacy'}">Pharmacy</span>
+                                            <span th:text="${prescription.pharmacy != null and prescription.pharmacy != '' ? prescription.pharmacy : #{prescriptions.any.pharmacy}}">Pharmacy</span>
                                         </small>
                                     </div>
                                     <div>
                                         <button class="btn btn-outline-info btn-sm">
-                                            <i class="fas fa-download me-1"></i>Download
+                                            <i class="fas fa-download me-1"></i><span th:text="#{prescriptions.download}">Download</span>
                                         </button>
                                         <button class="btn btn-outline-primary btn-sm ms-2">
-                                            <i class="fas fa-print me-1"></i>Print
+                                            <i class="fas fa-print me-1"></i><span th:text="#{prescriptions.print}">Print</span>
                                         </button>
                                     </div>
                                 </div>
@@ -397,8 +401,8 @@
                 <!-- Empty State -->
                 <div th:if="${prescriptions == null or prescriptions.empty}" class="empty-state">
                     <i class="fas fa-pills"></i>
-                    <h4>No Prescriptions Found</h4>
-                    <p>You don't have any prescriptions yet. Visit a doctor to get your first prescription.</p>
+                    <h4 th:text="#{prescriptions.no.prescriptions.found}">No Prescriptions Found</h4>
+                    <p th:text="#{prescriptions.no.prescriptions.description}">You don't have any prescriptions yet. Visit a doctor to get your first prescription.</p>
                   
                 </div>
             </div>

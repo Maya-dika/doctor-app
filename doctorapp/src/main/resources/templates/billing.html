@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Billing - Healthcare Portal</title>
+    <title th:text="#{billing.title}">Billing - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -84,6 +84,7 @@
 
         .payment-modal {
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         .payment-option {
@@ -112,15 +113,18 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
-            <div class="ms-auto">
+            <div class="ms-auto d-flex align-items-center">
+                <div class="me-3">
+                    <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                </div>
                 <span class="navbar-text me-3">
                     <i class="fas fa-user-circle me-1"></i>
                     <span th:text="${patientName}">John Doe</span>
                 </span>
                 <a href="/logout" class="btn btn-outline-light btn-sm">
-                    <i class="fas fa-sign-out-alt me-1"></i>Logout
+                    <i class="fas fa-sign-out-alt me-1"></i><span th:text="#{dashboard.logout}">Logout</span>
                 </a>
             </div>
         </div>
@@ -161,22 +165,22 @@
                 <div class="d-flex align-items-center mb-4">
                     <i class="fas fa-credit-card text-primary me-3" style="font-size: 2rem;"></i>
                     <div>
-                        <h2 class="mb-0">Billing & Payments</h2>
-                        <p class="text-muted mb-0">View and pay your medical bills</p>
+                        <h2 class="mb-0" th:text="#{billing.payments}">Billing & Payments</h2>
+                        <p class="text-muted mb-0" th:text="#{billing.view.pay.description}">View and pay your medical bills</p>
                     </div>
                 </div>
 
                 <!-- Success/Error Messages -->
                 <div th:if="${success}" class="alert alert-success alert-dismissible fade show" role="alert">
                     <i class="fas fa-check-circle me-2"></i>
-                    <span th:text="${success}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <span th:text="${success != null ? success : #{common.success}}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" th:title="#{common.close}"></button>
                 </div>
 
                 <div th:if="${error}" class="alert alert-danger alert-dismissible fade show" role="alert">
                     <i class="fas fa-exclamation-circle me-2"></i>
-                    <span th:text="${error}"></span>
-                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    <span th:text="${error != null ? error : #{common.error}}"></span>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" th:title="#{common.close}"></button>
                 </div>
 
                 <!-- Appointments Ready for Payment -->
@@ -185,9 +189,9 @@
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h5 class="mb-0">
                                 <i class="fas fa-stethoscope text-warning me-2"></i>
-                                Appointments Ready for Payment
+                                <span th:text="#{billing.appointments.ready.payment}">Appointments Ready for Payment</span>
                             </h5>
-                            <span class="badge bg-warning" th:text="${#lists.size(checkedInAppointments)} + ' Pending'">0 Pending</span>
+                            <span class="badge bg-warning" th:text="${#lists.size(checkedInAppointments)} + ' ' + #{billing.pending}">0 Pending</span>
                         </div>
                         <div class="card-body">
                             <div th:each="appointment : ${checkedInAppointments}" 
@@ -196,16 +200,16 @@
                                 <div class="d-flex justify-content-between align-items-start">
                                     <div>
                                         <h6 class="mb-1">
-                                            Consultation with Dr. 
+                                            <span th:text="#{billing.consultation.with} + ' Dr. '">Consultation with Dr. </span>
                                             <span th:text="${appointment.doctor.firstName + ' ' + appointment.doctor.lastName}">Doctor Name</span>
                                         </h6>
                                         <p class="text-muted mb-1 small">
-                                            Date: <span th:text="${appointment.appointmentDate}">Date</span>
+                                            <span th:text="#{appointment.date} + ': '">Date: </span><span th:text="${appointment.appointmentDate}">Date</span>
                                         </p>
                                         <p class="text-muted mb-1 small">
-                                            Time: <span th:text="${appointment.appointmentTime}">Time</span>
+                                            <span th:text="#{appointment.time} + ': '">Time: </span><span th:text="${appointment.appointmentTime}">Time</span>
                                         </p>
-                                        <span class="badge bg-info">Payment Required</span>
+                                        <span class="badge bg-info" th:text="#{billing.payment.required}">Payment Required</span>
                                     </div>
                                     <div class="text-end">
                                         <h5 class="mb-2" th:text="'$' + ${appointment.doctor.consultationFee}">$0.00</h5>
@@ -215,7 +219,7 @@
                                                 th:data-doctor-name="${appointment.doctor.firstName + ' ' + appointment.doctor.lastName}"
                                                 onclick="openPaymentModal(this)"
                                                 data-bs-toggle="modal" data-bs-target="#paymentModal">
-                                            <i class="fas fa-credit-card me-1"></i>Pay Now
+                                            <i class="fas fa-credit-card me-1"></i><span th:text="#{billing.pay.now}">Pay Now</span>
                                         </button>
                                     </div>
                                 </div>
@@ -230,10 +234,10 @@
                         <div class="no-billing-icon">
                             <i class="fas fa-file-invoice-dollar"></i>
                         </div>
-                        <h4 class="text-muted mb-3">No Billing Information Available</h4>
-                        <p class="text-muted mb-4">You currently have no pending bills or payments due.</p>
+                        <h4 class="text-muted mb-3" th:text="#{billing.no.information.available}">No Billing Information Available</h4>
+                        <p class="text-muted mb-4" th:text="#{billing.no.pending.bills}">You currently have no pending bills or payments due.</p>
                         <a href="/appointment" class="btn btn-primary">
-                            <i class="fas fa-calendar-plus me-2"></i>Book an Appointment
+                            <i class="fas fa-calendar-plus me-2"></i><span th:text="#{appointment.book}">Book an Appointment</span>
                         </a>
                     </div>
                 </div>
@@ -248,25 +252,25 @@
                 <div class="modal-header">
                     <h5 class="modal-title">
                         <i class="fas fa-credit-card me-2 text-success"></i>
-                        Process Payment
+                        <span th:text="#{billing.process.payment}">Process Payment</span>
                     </h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" th:title="#{common.close}"></button>
                 </div>
                 <div class="modal-body">
                     <div class="alert alert-info mb-4">
                         <i class="fas fa-info-circle me-2"></i>
-                        <span id="paymentInfo">Select a payment method to continue</span>
+                        <span id="paymentInfo" th:text="#{billing.select.payment.method}">Select a payment method to continue</span>
                     </div>
 
                     <form id="paymentForm" method="post" action="/proceed-payment">
                         <input type="hidden" id="appointmentId" name="appointmentId" value="">
                         
                         <div class="mb-3">
-                            <label class="form-label">Payment Method:</label>
+                            <label class="form-label" th:text="#{billing.payment.method} + ':'">Payment Method:</label>
                             <div class="payment-option" onclick="selectPayment('credit-card')">
                                 <i class="fas fa-credit-card text-primary me-2"></i>
-                                <strong>Credit Card</strong>
-                                <p class="mb-0 small text-muted">Secure payment with Visa, Mastercard, or American Express</p>
+                                <strong th:text="#{billing.credit.card}">Credit Card</strong>
+                                <p class="mb-0 small text-muted" th:text="#{billing.credit.card.description}">Secure payment with Visa, Mastercard, or American Express</p>
                             </div>
                         </div>
                         
@@ -274,9 +278,9 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" th:text="#{common.cancel}">Cancel</button>
                     <button type="button" class="btn btn-success" id="processPaymentBtn" onclick="processPayment()" disabled>
-                        <i class="fas fa-lock me-1"></i>Process Payment
+                        <i class="fas fa-lock me-1"></i><span th:text="#{billing.process.payment}">Process Payment</span>
                     </button>
                 </div>
             </div>

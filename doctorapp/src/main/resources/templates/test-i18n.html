@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{main.title}">Test I18n</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .test-section h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+        }
+        
+        .message-key {
+            font-weight: bold;
+            color: #2e7d32;
+        }
+        
+        .message-value {
+            margin-left: 10px;
+            color: #4a5568;
+        }
+        
+        .language-info {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background: #2e7d32;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s ease;
+        }
+        
+        .back-link:hover {
+            background: #1b5e20;
+        }
+    </style>
+</head>
+<body>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+    </div>
+    
+    <div class="header">
+        <h1 th:text="#{main.title}">Test I18n</h1>
+    </div>
+    
+    <div class="language-info">
+        <h3>Current Language Information</h3>
+        <p><strong>Language:</strong> <span th:text="${#locale.language}">en</span></p>
+        <p><strong>Country:</strong> <span th:text="${#locale.country}">US</span></p>
+        <p><strong>Display Name:</strong> <span th:text="${#locale.displayName}">English (United States)</span></p>
+        <p><strong>Direction:</strong> <span th:text="${#locale.language == 'ar'} ? 'RTL' : 'LTR'">LTR</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Header Messages</h2>
+        <p><span class="message-key">header.logo.text:</span> <span class="message-value" th:text="#{header.logo.text}">HealthCare Portal</span></p>
+        <p><span class="message-key">header.login.text:</span> <span class="message-value" th:text="#{header.login.text}">Already have an account? Login</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Main Page Messages</h2>
+        <p><span class="message-key">main.title:</span> <span class="message-value" th:text="#{main.title}">Choose Your Healthcare Journey</span></p>
+        <p><span class="message-key">main.subtitle:</span> <span class="message-value" th:text="#{main.subtitle}">Experience seamless healthcare management...</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>User Type Messages</h2>
+        <p><span class="message-key">user.doctor.title:</span> <span class="message-value" th:text="#{user.doctor.title}">Healthcare Provider</span></p>
+        <p><span class="message-key">user.doctor.description:</span> <span class="message-value" th:text="#{user.doctor.description}">Advanced medical tools...</span></p>
+        <p><span class="message-key">user.patient.title:</span> <span class="message-value" th:text="#{user.patient.title}">Patient</span></p>
+        <p><span class="message-key">user.patient.description:</span> <span class="message-value" th:text="#{user.patient.description}">Take control of your health...</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Login Messages</h2>
+        <p><span class="message-key">login.title:</span> <span class="message-value" th:text="#{login.title}">Healthcare Portal - Login</span></p>
+        <p><span class="message-key">login.welcome:</span> <span class="message-value" th:text="#{login.welcome}">Welcome Back</span></p>
+        <p><span class="message-key">login.email:</span> <span class="message-value" th:text="#{login.email}">Email Address</span></p>
+        <p><span class="message-key">login.password:</span> <span class="message-value" th:text="#{login.password}">Password</span></p>
+    </div>
+    
+    <div class="test-section">
+        <h2>Common Messages</h2>
+        <p><span class="message-key">common.save:</span> <span class="message-value" th:text="#{common.save}">Save</span></p>
+        <p><span class="message-key">common.cancel:</span> <span class="message-value" th:text="#{common.cancel}">Cancel</span></p>
+        <p><span class="message-key">common.edit:</span> <span class="message-value" th:text="#{common.edit}">Edit</span></p>
+        <p><span class="message-key">common.delete:</span> <span class="message-value" th:text="#{common.delete}">Delete</span></p>
+    </div>
+    
+    <a href="/" class="back-link" th:text="#{common.back}">Back to Home</a>
+</body>
+</html>

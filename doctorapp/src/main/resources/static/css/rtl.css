@@ -1,0 +1,186 @@
+/* RTL (Right-to-Left) Support for Arabic Language */
+
+[dir="rtl"] {
+    direction: rtl;
+    text-align: right;
+}
+
+/* Header adjustments for RTL */
+[dir="rtl"] .header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .logo-section {
+    flex-direction: row-reverse;
+}
+
+/* Navigation and menu items */
+[dir="rtl"] .nav-menu {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .nav-item {
+    margin-left: 0;
+    margin-right: 20px;
+}
+
+/* Form elements */
+[dir="rtl"] .form-group label {
+    text-align: right;
+}
+
+[dir="rtl"] .form-control {
+    text-align: right;
+}
+
+[dir="rtl"] .form-control::placeholder {
+    text-align: right;
+}
+
+/* Buttons and interactive elements */
+[dir="rtl"] .btn-group {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .dropdown-menu {
+    right: auto;
+    left: 0;
+    text-align: right;
+}
+
+/* Cards and content containers */
+[dir="rtl"] .card-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .card-body {
+    text-align: right;
+}
+
+/* Lists */
+[dir="rtl"] ul, [dir="rtl"] ol {
+    padding-right: 20px;
+    padding-left: 0;
+}
+
+[dir="rtl"] .list-group-item {
+    text-align: right;
+}
+
+/* Tables */
+[dir="rtl"] .table th,
+[dir="rtl"] .table td {
+    text-align: right;
+}
+
+/* Icons and symbols */
+[dir="rtl"] .icon-left {
+    margin-right: 0;
+    margin-left: 8px;
+}
+
+[dir="rtl"] .icon-right {
+    margin-left: 0;
+    margin-right: 8px;
+}
+
+/* Modal dialogs */
+[dir="rtl"] .modal-header {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .modal-footer {
+    flex-direction: row-reverse;
+}
+
+/* Alerts and notifications */
+[dir="rtl"] .alert {
+    text-align: right;
+}
+
+/* Breadcrumbs */
+[dir="rtl"] .breadcrumb {
+    flex-direction: row-reverse;
+}
+
+[dir="rtl"] .breadcrumb-item + .breadcrumb-item::before {
+    content: "\\";
+    margin-left: 0;
+    margin-right: 0.5rem;
+}
+
+/* Pagination */
+[dir="rtl"] .pagination {
+    flex-direction: row-reverse;
+}
+
+/* Progress bars */
+[dir="rtl"] .progress-bar {
+    float: right;
+}
+
+/* Tooltips and popovers */
+[dir="rtl"] .tooltip {
+    text-align: right;
+}
+
+[dir="rtl"] .popover {
+    text-align: right;
+}
+
+/* Custom components */
+[dir="rtl"] .feature-pill {
+    text-align: right;
+}
+
+[dir="rtl"] .card-features li {
+    padding-left: 0;
+    padding-right: 30px;
+}
+
+[dir="rtl"] .card-features li::before {
+    left: auto;
+    right: 0;
+}
+
+/* Language selector specific RTL adjustments */
+[dir="rtl"] .language-options {
+    right: auto;
+    left: 0;
+}
+
+[dir="rtl"] .language-option {
+    text-align: right;
+}
+
+/* Responsive adjustments for RTL */
+@media (max-width: 768px) {
+    [dir="rtl"] .header {
+        flex-direction: column;
+    }
+    
+    [dir="rtl"] .logo-section {
+        flex-direction: row;
+    }
+    
+    [dir="rtl"] .nav-menu {
+        flex-direction: column;
+    }
+}
+
+/* Font adjustments for Arabic */
+[dir="rtl"] {
+    font-family: 'Segoe UI', 'Tahoma', 'Arial', sans-serif;
+}
+
+/* Number formatting for Arabic */
+[dir="rtl"] .number {
+    font-family: 'Arial', sans-serif;
+}
+
+/* Date and time formatting */
+[dir="rtl"] .date-time {
+    direction: ltr;
+    text-align: left;
+    display: inline-block;
+}

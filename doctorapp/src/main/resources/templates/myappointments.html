@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Appointments - Healthcare Portal</title>
+    <title th:text="#{appointment.title}">My Appointments - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -227,30 +227,33 @@
         }
     </style>
 </head>
-<body>
+<body th:attr="data-rescheduled-text=#{appointment.rescheduled.successfully}, data-confirm-cancel-text=#{appointment.confirm.cancel}">
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${session.loggedInPatient?.firstName + ' ' + session.loggedInPatient?.lastName}">Patient Name</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i><span th:text="#{dashboard.title}">Dashboard</span></a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -264,25 +267,25 @@
            <div class="col-md-3 col-lg-2 p-0">
     <div class="sidebar">
         <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
-            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
-            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+            <i class="fas fa-calendar-alt me-3"></i><span th:text="#{appointment.my.appointments}">My Appointments</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
-            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+            <i class="fas fa-calendar-plus me-3"></i><span th:text="#{appointment.book}">Book Appointment</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
-            <i class="fas fa-pills me-3"></i>Prescriptions
+            <i class="fas fa-pills me-3"></i><span th:text="#{prescriptions.title}">Prescriptions</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-            <i class="fas fa-chart-line me-3"></i>Health Metrics
+            <i class="fas fa-chart-line me-3"></i><span th:text="#{health.metrics.title}">Health Metrics</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
-            <i class="fas fa-comments me-3"></i>Messages
+            <i class="fas fa-comments me-3"></i><span th:text="#{messaging.title}">Messages</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
-            <i class="fas fa-credit-card me-3"></i>Billing
+            <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>
         </div>
     </div>
 </div>
@@ -295,16 +298,16 @@
                         <div>
                             <h2 class="mb-2">
                                 <i class="fas fa-calendar-check text-primary me-3"></i>
-                                My Appointments
+                                <span th:text="#{appointment.my.appointments}">My Appointments</span>
                             </h2>
-                            <p class="text-muted mb-0">View and manage your scheduled appointments</p>
+                            <p class="text-muted mb-0" th:text="#{appointment.view.manage}">View and manage your scheduled appointments</p>
                         </div>
                         <div class="d-flex gap-2 flex-wrap">
                             <a href="/appointment" class="btn btn-primary">
-                                <i class="fas fa-plus me-2"></i>Book New Appointment
+                                <i class="fas fa-plus me-2"></i><span th:text="#{appointment.book.new}">Book New Appointment</span>
                             </a>
                             <a href="/patient-dashboard" class="btn btn-outline-primary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                                <i class="fas fa-arrow-left me-2"></i><span th:text="#{appointment.back.dashboard}">Back to Dashboard</span>
                             </a>
                         </div>
                     </div>
@@ -315,8 +318,8 @@
                     <div class="col-md-8">
                         <div class="input-group">
                             <input type="text" class="form-control search-box" id="searchInput" 
-                                   placeholder="Search appointments by doctor name or specialty...">
-                            <button class="btn btn-primary" type="button">
+                                   th:placeholder="#{appointment.search.placeholder}">
+                            <button class="btn btn-primary" type="button" th:title="#{common.search}">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -326,13 +329,13 @@
                 <!-- Filter Tabs -->
                 <div class="filter-tabs d-flex flex-wrap">
                     <div class="filter-tab active" data-filter="all">
-                        <i class="fas fa-list me-2"></i>All Appointments
+                        <i class="fas fa-list me-2"></i><span th:text="#{appointment.filter.all}">All Appointments</span>
                     </div>
                     <div class="filter-tab" data-filter="upcoming">
-                        <i class="fas fa-clock me-2"></i>Upcoming
+                        <i class="fas fa-clock me-2"></i><span th:text="#{appointment.filter.upcoming}">Upcoming</span>
                     </div>
                     <div class="filter-tab" data-filter="cancelled">
-                        <i class="fas fa-times-circle me-2"></i>Cancelled
+                        <i class="fas fa-times-circle me-2"></i><span th:text="#{appointment.filter.cancelled}">Cancelled</span>
                     </div>
                 </div>
 
@@ -381,7 +384,7 @@
                                             <div class="col-md-3">
                                                 <small class="text-muted d-block">
                                                     <i class="fas fa-stethoscope me-1"></i>
-                                                    <span>General Consultation</span>
+                                                    <span th:text="#{appointment.general.consultation}">General Consultation</span>
                                                 </small>
                                             </div>
                                             <div class="col-md-3">
@@ -395,7 +398,7 @@
                                         <!-- Notes Section -->
                                         <div class="mb-3" th:if="${appointment.notes != null and !#strings.isEmpty(appointment.notes)}">
                                             <small class="text-muted d-block mb-1">
-                                                <i class="fas fa-sticky-note me-1"></i>Notes:
+                                                <i class="fas fa-sticky-note me-1"></i><span th:text="#{appointment.notes} + ':'">Notes:</span>
                                             </small>
                                             <p class="text-muted mb-0" th:text="${appointment.notes}">Additional notes</p>
                                         </div>
@@ -406,13 +409,13 @@
                                                     th:if="${appointment.status == 'BOOKED' or appointment.status == 'CONFIRMED'}"
                                                     onclick="rescheduleAppointment(this)" 
                                                     th:data-appointment-id="${appointment.id}">
-                                                <i class="fas fa-edit me-1"></i>Reschedule
+                                                <i class="fas fa-edit me-1"></i><span th:text="#{appointment.reschedule}">Reschedule</span>
                                             </button>
                                             <button class="btn btn-sm btn-outline-danger" 
                                                     th:if="${appointment.status == 'BOOKED' or appointment.status == 'CONFIRMED'}"
                                                     onclick="cancelAppointment(this)" 
                                                     th:data-appointment-id="${appointment.id}">
-                                                <i class="fas fa-times me-1"></i>Cancel
+                                                <i class="fas fa-times me-1"></i><span th:text="#{appointment.cancel}">Cancel</span>
                                             </button>
                                         </div>
                                     </div>
@@ -425,18 +428,18 @@
                 <!-- No Appointments Message -->
                 <div class="empty-state" th:if="${appointments == null or appointments.empty}" id="noAppointments">
                     <i class="fas fa-calendar-times"></i>
-                    <h4>No appointments found</h4>
-                    <p>You haven't booked any appointments yet.</p>
+                    <h4 th:text="#{appointment.no.appointments.found}">No appointments found</h4>
+                    <p th:text="#{appointment.no.appointments.description}">You haven't booked any appointments yet.</p>
                     <a href="/appointment" class="btn btn-primary mt-3">
-                        <i class="fas fa-plus me-2"></i>Book Your First Appointment
+                        <i class="fas fa-plus me-2"></i><span th:text="#{appointment.book.first}">Book Your First Appointment</span>
                     </a>
                 </div>
 
                 <!-- No Results Message (initially hidden) -->
                 <div class="empty-state" id="noResults" style="display: none;">
                     <i class="fas fa-search"></i>
-                    <h4>No appointments match your search</h4>
-                    <p>Try adjusting your search criteria or browse all appointments.</p>
+                    <h4 th:text="#{appointment.no.search.results}">No appointments match your search</h4>
+                    <p th:text="#{appointment.adjust.search}">Try adjusting your search criteria or browse all appointments.</p>
                 </div>
             </div>
         </div>
@@ -678,7 +681,8 @@
             bootstrap.Modal.getInstance(document.getElementById('rescheduleModal')).hide();
             
             // Show success message
-            alert(`Appointment successfully rescheduled to ${formattedDate} at ${formattedTime}`);
+            const rescheduledText = document.body.getAttribute('data-rescheduled-text') || 'Appointment successfully rescheduled to';
+            alert(`${rescheduledText} ${formattedDate} at ${formattedTime}`);
             
             // In a real implementation, you would make an API call like this:
             // fetch('/api/appointments/' + appointmentId + '/reschedule', {
@@ -696,7 +700,8 @@
             // .then(data => {
             //     if (data.success) {
             //         // Update the UI as above
-            //         alert('Appointment rescheduled successfully!');
+            //         const successText = document.body.getAttribute('data-success-text') || 'Appointment rescheduled successfully!';
+            //         alert(successText);
             //     } else {
             //         alert('Error rescheduling appointment: ' + data.message);
             //     }
@@ -708,7 +713,8 @@
 
         function cancelAppointment(button) {
     const appointmentId = button.getAttribute('data-appointment-id');
-    if (confirm('Are you sure you want to cancel this appointment?')) {
+            const confirmText = document.body.getAttribute('data-confirm-cancel-text') || 'Are you sure you want to cancel this appointment?';
+        if (confirm(confirmText)) {
         // Create a simple form and submit it
         const form = document.createElement('form');
         form.method = 'POST';

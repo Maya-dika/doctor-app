@@ -18,4 +18,7 @@ public interface PatientRepository extends JpaRepository<Patient, Long> {
     List<Patient> findByLastNameIgnoreCase(String lastName);
     
     Optional<Patient> findByEmail(String email);
+    
+    // Find patients by first name or last name containing the search term (case insensitive)
+    List<Patient> findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(String firstName, String lastName);
 }

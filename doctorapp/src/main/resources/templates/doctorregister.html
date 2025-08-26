@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Doctor Registration - Healthcare Portal</title>
+    <title th:text="#{register.doctor.title}">Doctor Registration - Healthcare Portal</title>
     <style>
         * {
             margin: 0;
@@ -23,6 +23,7 @@
 
         .container {
             background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 20px;
@@ -316,14 +317,18 @@
     </style>
 </head>
 <body>
-    <a href="/" class="back-btn">← Back to Home</a>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+    </div>
+    
+    <a href="/" class="back-btn" th:text="#{common.back}">← Back to Home</a>
     <div class="container">
-        <h1>Doctor Registration</h1>
+        <h1 th:text="#{register.doctor.title}">Doctor Registration</h1>
         
         <div class="privacy-notice">
-            <strong>Privacy Notice:</strong> Your personal and professional information will be kept secure and used only for purposes related to your medical practice on this platform. 
+            <strong th:text="#{register.privacy.notice} + ':'">Privacy Notice:</strong> <span th:text="#{register.privacy.description}">Your personal and professional information will be kept secure and used only for purposes related to your medical practice on this platform. 
             This includes verifying your credentials, enabling patient communication, and complying with applicable healthcare regulations. 
-            We do not share your information with third parties without your consent.
+            We do not share your information with third parties without your consent.</span>
         </div>
 
         <div 
@@ -337,225 +342,225 @@
         <form action="/registerdoc" method="post" enctype="multipart/form-data" novalidate>
             
             <!-- Personal Information Section -->
-            <div class="section-title">Personal Information</div>
+            <div class="section-title" th:text="#{register.personal.information}">Personal Information</div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="firstName">First Name *</label>
+                    <label for="firstName" th:text="#{register.firstname}">First Name *</label>
                     <input type="text" id="firstName" name="firstName" required 
                            pattern="[A-Za-z\s]+" title="Please enter a valid first name" />
                     <span class="error-message">Please enter your first name</span>
                 </div>
                 
                 <div class="form-group">
-                    <label for="lastName">Last Name *</label>
+                    <label for="lastName" th:text="#{register.lastname}">Last Name *</label>
                     <input type="text" id="lastName" name="lastName" required 
                            pattern="[A-Za-z\s]+" title="Please enter a valid last name" />
                     <span class="error-message">Please enter your last name</span>
                 </div>
                 
                 <div class="form-group">
-                    <label for="email">Email Address *</label>
+                    <label for="email" th:text="#{register.email}">Email Address *</label>
                     <input type="email" id="email" name="email" required 
-                           placeholder="your.email@example.com" />
-                    <span class="error-message">Please enter a valid email address</span>
+                           th:placeholder="#{register.email.placeholder}" />
+                    <span class="error-message" th:text="#{register.email.error}">Please enter a valid email address</span>
                 </div>
                 
                 <div class="form-group">
-                    <label for="phoneNumber">Phone Number *</label>
+                    <label for="phoneNumber" th:text="#{register.phone}">Phone Number *</label>
                     <input type="tel" id="phoneNumber" name="phoneNumber" required 
-                           placeholder="+961 XX XXX XXX" />
-                    <span class="error-message">Please enter your phone number</span>
+                           th:placeholder="#{register.phone.placeholder}" />
+                    <span class="error-message" th:text="#{register.phone.error}">Please enter your phone number</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="password">Password *</label>
+                    <label for="password" th:text="#{register.password}">Password *</label>
                     <input type="password" id="password" name="password" required 
-                           minlength="8" placeholder="Minimum 8 characters" />
-                    <span class="error-message">Password must be at least 8 characters</span>
+                           minlength="8" th:placeholder="#{register.password.placeholder}" />
+                    <span class="error-message" th:text="#{register.password.error}">Password must be at least 8 characters</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password *</label>
+                    <label for="confirmPassword" th:text="#{register.confirm.password}">Confirm Password *</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" required 
-                           minlength="8" placeholder="Confirm your password" />
-                    <span class="error-message">Passwords do not match</span>
+                           minlength="8" th:placeholder="#{register.confirm.password.placeholder}" />
+                    <span class="error-message" th:text="#{register.confirm.password.error}">Passwords do not match</span>
                 </div>
             </div>
 
             <!-- Address Information Section -->
-            <div class="section-title">Address Information</div>
+            <div class="section-title" th:text="#{register.address.information}">Address Information</div>
             <div class="form-grid">
                 <div class="form-group full-width">
-                    <label for="streetAddress">Street Address *</label>
+                    <label for="streetAddress" th:text="#{register.street.address}">Street Address *</label>
                     <input type="text" id="streetAddress" name="streetAddress" required 
-                           placeholder="123 Main Street" />
-                    <span class="error-message">Please enter your street address</span>
+                           th:placeholder="#{register.street.address.placeholder}" />
+                    <span class="error-message" th:text="#{register.street.address.error}">Please enter your street address</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="city">City *</label>
+                    <label for="city" th:text="#{register.city}">City *</label>
                     <input type="text" id="city" name="city" required 
-                           placeholder="Beirut" />
-                    <span class="error-message">Please enter your city</span>
+                           th:placeholder="#{register.city.placeholder}" />
+                    <span class="error-message" th:text="#{register.city.error}">Please enter your city</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="postalCode">Postal Code</label>
+                    <label for="postalCode" th:text="#{register.postal.code}">Postal Code</label>
                     <input type="text" id="postalCode" name="postalCode" 
-                           placeholder="1234" />
+                           th:placeholder="#{register.postal.code.placeholder}" />
                 </div>
 
                 <div class="form-group">
-                    <label for="country">Country *</label>
+                    <label for="country" th:text="#{register.country}">Country *</label>
                     <select id="country" name="country" required>
-                        <option value="">Select Country</option>
-                        <option value="Lebanon">Lebanon</option>
-                        <option value="Syria">Syria</option>
-                        <option value="Jordan">Jordan</option>
-                        <option value="Other">Other</option>
+                        <option value="" th:text="#{register.select.country}">Select Country</option>
+                        <option value="Lebanon" th:text="#{register.lebanon}">Lebanon</option>
+                        <option value="Syria" th:text="#{register.syria}">Syria</option>
+                        <option value="Jordan" th:text="#{register.jordan}">Jordan</option>
+                        <option value="Other" th:text="#{register.other}">Other</option>
                     </select>
-                    <span class="error-message">Please select your country</span>
+                    <span class="error-message" th:text="#{register.country.error}">Please select your country</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="location">Practice Location *</label>
+                    <label for="location" th:text="#{register.practice.location}">Practice Location *</label>
                     <input type="text" id="location" name="location" required  
-                           placeholder="Hamra, Beirut..." />
-                    <span class="error-message">Please enter your practice location</span>
+                           th:placeholder="#{register.practice.location.placeholder}" />
+                    <span class="error-message" th:text="#{register.practice.location.error}">Please enter your practice location</span>
                 </div>
             </div>
 
             <!-- Professional Information Section -->
-            <div class="section-title">Professional Information</div>
+            <div class="section-title" th:text="#{register.professional.information}">Professional Information</div>
             <div class="form-grid">
               <div class="form-group">
-            <label for="specialty">Specialty *</label>
+            <label for="specialty" th:text="#{register.specialty}">Specialty *</label>
             <select name="specialty.id" id="specialty" required>
-                <option value="">-- Select Specialty --</option>
+                <option value="" th:text="#{register.select.specialty}">-- Select Specialty --</option>
                 <!-- Replace hard-coded options with dynamic ones -->
                 <option th:each="specialty : ${specialties}" 
                         th:value="${specialty.id}" 
                         th:text="${specialty.name}">
                 </option>
             </select>
-                <span class="error-message">Please select your specialty</span>
+                <span class="error-message" th:text="#{register.specialty.error}">Please select your specialty</span>
              </div>
                 <div class="form-group">
-                    <label for="experience">Experience (Years) *</label>
+                    <label for="experience" th:text="#{register.experience}">Experience (Years) *</label>
                     <input type="number" id="experience" name="experience" required 
                            min="0" max="50" title="Please enter your experience" />
-                    <span class="error-message">Please enter your experience</span>
+                    <span class="error-message" th:text="#{register.experience.error}">Please enter your experience</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="medicalSchool">Medical School *</label>
+                    <label for="medicalSchool" th:text="#{register.medical.school}">Medical School *</label>
                     <input type="text" id="medicalSchool" name="medicalSchool" required 
-                           placeholder="American University of Beirut" />
-                    <span class="error-message">Please enter your medical school</span>
+                           th:placeholder="#{register.medical.school.placeholder}" />
+                    <span class="error-message" th:text="#{register.medical.school.error}">Please enter your medical school</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="graduationYear">Graduation Year *</label>
+                    <label for="graduationYear" th:text="#{register.graduation.year}">Graduation Year *</label>
                     <input type="number" id="graduationYear" name="graduationYear" required 
-                           min="1950" max="2024" placeholder="2010" />
-                    <span class="error-message">Please enter your graduation year</span>
+                           min="1950" max="2024" th:placeholder="#{register.graduation.year.placeholder}" />
+                    <span class="error-message" th:text="#{register.graduation.year.error}">Please enter your graduation year</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="licenseNumber">Medical License Number *</label>
+                    <label for="licenseNumber" th:text="#{register.license.number}">Medical License Number *</label>
                     <input type="text" id="licenseNumber" name="licenseNumber" required 
-                           placeholder="LB123456" />
-                    <span class="error-message">Please enter your license number</span>
+                           th:placeholder="#{register.license.number.placeholder}" />
+                    <span class="error-message" th:text="#{register.license.number.error}">Please enter your license number</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="licenseExpiryDate">License Expiry Date *</label>
+                    <label for="licenseExpiryDate" th:text="#{register.license.expiry.date}">License Expiry Date *</label>
                     <input type="date" id="licenseExpiryDate" name="licenseExpiryDate" required />
-                    <span class="error-message">Please enter your license expiry date</span>
+                    <span class="error-message" th:text="#{register.license.expiry.date.error}">Please enter your license expiry date</span>
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="hospitalAffiliations">Hospital Affiliations</label>
+                    <label for="hospitalAffiliations" th:text="#{register.hospital.affiliations}">Hospital Affiliations</label>
                     <input type="text" id="hospitalAffiliations" name="hospitalAffiliations" 
-                           placeholder="American University of Beirut Medical Center, Hotel Dieu de France" />
+                           th:placeholder="#{register.hospital.affiliations.placeholder}" />
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="boardCertifications">Board Certifications</label>
+                    <label for="boardCertifications" th:text="#{register.board.certifications}">Board Certifications</label>
                     <input type="text" id="boardCertifications" name="boardCertifications" 
-                           placeholder="American Board of Internal Medicine" />
+                           th:placeholder="#{register.board.certifications.placeholder}" />
                 </div>
             </div>
 
             <!-- Practice Information Section -->
-            <div class="section-title">Practice Information</div>
+            <div class="section-title" th:text="#{register.practice.information}">Practice Information</div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="consultationFee">Consultation Fee (USD) *</label>
+                    <label for="consultationFee" th:text="#{register.consultation.fee}">Consultation Fee (USD) *</label>
                     <input type="number" id="consultationFee" name="consultationFee" required 
-                           min="0" step="0.01" placeholder="50.00" />
-                    <span class="error-message">Please enter your consultation fee</span>
+                           min="0" step="0.01" th:placeholder="#{register.consultation.fee.placeholder}" />
+                    <span class="error-message" th:text="#{register.consultation.fee.error}">Please enter your consultation fee</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="workingDays">Working Days *</label>
+                    <label for="workingDays" th:text="#{register.working.days}">Working Days *</label>
                     <select id="workingDays" name="workingDays" required>
-                        <option value="">Select Working Days</option>
-                        <option value="Monday to Friday">Monday to Friday</option>
-                        <option value="Monday to Saturday">Monday to Saturday</option>
-                        <option value="Sunday to Thursday">Sunday to Thursday</option>
-                        <option value="Custom Schedule">Custom Schedule</option>
+                        <option value="" th:text="#{register.select.working.days}">Select Working Days</option>
+                        <option value="Monday to Friday" th:text="#{register.monday.to.friday}">Monday to Friday</option>
+                        <option value="Monday to Saturday" th:text="#{register.monday.to.saturday}">Monday to Saturday</option>
+                        <option value="Sunday to Thursday" th:text="#{register.sunday.to.thursday}">Sunday to Thursday</option>
+                        <option value="Custom Schedule" th:text="#{register.custom.schedule}">Custom Schedule</option>
                     </select>
-                    <span class="error-message">Please select your working days</span>
+                    <span class="error-message" th:text="#{register.working.days.error}">Please select your working days</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="startTime">Start Time *</label>
+                    <label for="startTime" th:text="#{register.start.time}">Start Time *</label>
                     <input type="time" id="startTime" name="startTime" required />
-                    <span class="error-message">Please enter your start time</span>
+                    <span class="error-message" th:text="#{register.start.time.error}">Please enter your start time</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="endTime">End Time *</label>
+                    <label for="endTime" th:text="#{register.end.time}">End Time *</label>
                     <input type="time" id="endTime" name="endTime" required />
-                    <span class="error-message">Please enter your end time</span>
+                    <span class="error-message" th:text="#{register.end.time.error}">Please enter your end time</span>
                 </div>
 
                 <div class="form-group full-width">
-                    <label for="biography">Professional Biography</label>
+                    <label for="biography" th:text="#{register.professional.biography}">Professional Biography</label>
                     <textarea id="biography" name="biography" 
-                              placeholder="Tell patients about your background, approach to medicine, and expertise..."></textarea>
+                              th:placeholder="#{register.professional.biography.placeholder}"></textarea>
                 </div>
             </div>
 
             <!-- Document Upload Section -->
-            <div class="section-title">Document Upload</div>
+            <div class="section-title" th:text="#{register.document.upload}">Document Upload</div>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="profilePhoto">Profile Photo</label>
+                    <label for="profilePhoto" th:text="#{register.profile.photo}">Profile Photo</label>
                     <div class="file-upload">
                         <input type="file" id="profilePhoto" name="profilePhoto" accept="image/*" />
                         <div class="file-upload-btn" id="profilePhotoBtn">
-                            <div>📷 Upload Profile Photo</div>
-                            <div class="file-info">JPG, PNG max 5MB</div>
+                            <div th:text="#{register.upload.profile.photo}">📷 Upload Profile Photo</div>
+                            <div class="file-info" th:text="#{register.profile.photo.info}">JPG, PNG max 5MB</div>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label for="licenseDocument">Medical License Document *</label>
+                    <label for="licenseDocument" th:text="#{register.license.document}">Medical License Document *</label>
                     <div class="file-upload">
                         <input type="file" id="licenseDocument" name="licenseDocument" accept=".pdf,.jpg,.jpeg,.png" required />
                         <div class="file-upload-btn" id="licenseDocumentBtn">
-                            <div>📄 Upload License Document</div>
-                            <div class="file-info">PDF, JPG, PNG max 10MB</div>
+                            <div th:text="#{register.upload.license.document}">📄 Upload License Document</div>
+                            <div class="file-info" th:text="#{register.license.document.info}">PDF, JPG, PNG max 10MB</div>
                         </div>
                     </div>
-                    <span class="error-message">Please upload your medical license</span>
+                    <span class="error-message" th:text="#{register.license.document.error}">Please upload your medical license</span>
                 </div>
             </div>
             
-            <button type="submit" class="submit-btn">
+            <button type="submit" class="submit-btn" th:text="#{register.submit}">
                 Register Doctor
             </button>
         </form>

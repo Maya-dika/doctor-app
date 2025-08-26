@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Profile - Healthcare Portal</title>
+    <title th:text="#{patient.profile.title}">Patient Profile - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -225,17 +225,20 @@
         }
     </style>
 </head>
-<body>
+<body th:attr="data-required-fields-text=#{common.fill.required.fields}">
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="/patient/dashboard">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
             <div class="navbar-nav ms-auto">
+                <div class="nav-item me-3">
+                    <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                </div>
                 <a class="nav-link" href="/patient-dashboard">
-                    <i class="fas fa-arrow-left me-1"></i> Back to Dashboard
+                    <i class="fas fa-arrow-left me-1"></i><span th:text="#{patient.profile.back.dashboard}"> Back to Dashboard</span>
                 </a>
             </div>
         </div>
@@ -246,19 +249,19 @@
         <div class="progress-indicator">
             <div class="progress-step active">
                 <div class="step-circle">1</div>
-                <small>Health Profile</small>
+                <small th:text="#{patient.profile.health.profile}">Health Profile</small>
             </div>
             <div class="progress-step">
                 <div class="step-circle">2</div>
-                <small>Medical History</small>
+                <small th:text="#{patient.profile.medical.history}">Medical History</small>
             </div>
             <div class="progress-step">
                 <div class="step-circle">3</div>
-                <small>Emergency Contact</small>
+                <small th:text="#{patient.profile.emergency.contact}">Emergency Contact</small>
             </div>
             <div class="progress-step">
                 <div class="step-circle">4</div>
-                <small>Preferences</small>
+                <small th:text="#{patient.profile.preferences}">Preferences</small>
             </div>
         </div>
 
@@ -266,21 +269,21 @@
             <!-- Profile Header -->
             <div class="profile-header">
                 <h3 th:text="${patient?.firstName + ' ' + patient?.lastName ?: 'Complete Your Profile'}">Complete Your Profile</h3>
-                <p class="text-muted">Please fill in your information to help us provide better healthcare services</p>
+                <p class="text-muted" th:text="#{patient.profile.fill.info}">Please fill in your information to help us provide better healthcare services</p>
             </div>
 
             <!-- Health Profile & Baseline Metrics -->
             <div class="form-section">
-                <h4 class="section-title"><i class="fas fa-heartbeat me-2"></i>Health Profile & Baseline Metrics</h4>
+                <h4 class="section-title"><i class="fas fa-heartbeat me-2"></i><span th:text="#{patient.profile.health.profile.baseline}">Health Profile & Baseline Metrics</span></h4>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    This information will be used to track your health metrics and set personalized normal ranges.
+                    <span th:text="#{patient.profile.baseline.info}">This information will be used to track your health metrics and set personalized normal ranges.</span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label for="height" class="form-label">Height *</label>
+                        <label for="height" class="form-label" th:text="#{patient.profile.height} + ' *'">Height *</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="heightFeet" name="heightFeet" 
                                    th:field="*{heightFeet}" placeholder="5" min="3" max="8" required>
@@ -289,31 +292,31 @@
                                    th:field="*{heightInches}" placeholder="8" min="0" max="11" required>
                             <span class="input-group-text">in</span>
                         </div>
-                        <small class="form-text text-muted">Used to calculate BMI</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.bmi.calculation}">Used to calculate BMI</small>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="currentWeight" class="form-label">Current Weight *</label>
+                        <label for="currentWeight" class="form-label" th:text="#{patient.profile.current.weight} + ' *'">Current Weight *</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="currentWeight" name="currentWeight" 
                                    th:field="*{currentWeight}" placeholder="150" min="50" max="500" step="0.1" required>
                             <span class="input-group-text">lbs</span>
                         </div>
-                        <small class="form-text text-muted">Your most recent weight</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.recent.weight}">Your most recent weight</small>
                     </div>
                     <div class="col-md-4 mb-3">
-                        <label for="targetWeight" class="form-label">Target Weight</label>
+                        <label for="targetWeight" class="form-label" th:text="#{patient.profile.target.weight}">Target Weight</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="targetWeight" name="targetWeight" 
                                    th:field="*{targetWeight}" placeholder="145" min="50" max="500" step="0.1">
                             <span class="input-group-text">lbs</span>
                         </div>
-                        <small class="form-text text-muted">Your weight goal</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.weight.goal}">Your weight goal</small>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="bloodType" class="form-label">Blood Type</label>
+                        <label for="bloodType" class="form-label" th:text="#{patient.profile.blood.type}">Blood Type</label>
                         <select class="form-select" id="bloodType" name="bloodType" th:field="*{bloodType}">
                             <option value="">Select Blood Type</option>
                             <option value="A_POSITIVE">A+</option>
@@ -327,7 +330,7 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="activityLevel" class="form-label">Activity Level</label>
+                        <label for="activityLevel" class="form-label" th:text="#{patient.profile.activity.level}">Activity Level</label>
                         <select class="form-select" id="activityLevel" name="activityLevel" th:field="*{activityLevel}">
                             <option value="">Select Activity Level</option>
                             <option value="SEDENTARY">Sedentary (little/no exercise)</option>
@@ -336,14 +339,14 @@
                             <option value="VERY_ACTIVE">Very Active (hard exercise 6-7 days/week)</option>
                             <option value="EXTREMELY_ACTIVE">Extremely Active (very hard exercise, physical job)</option>
                         </select>
-                        <small class="form-text text-muted">Affects target heart rate and calorie needs</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.activity.affects}">Affects target heart rate and calorie needs</small>
                     </div>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-primary">Baseline Vital Signs (if known)</h6>
+                <h6 class="mt-4 mb-3 text-primary" th:text="#{patient.profile.baseline.vital.signs}">Baseline Vital Signs (if known)</h6>
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="restingHeartRate" class="form-label">Resting Heart Rate</label>
+                        <label for="restingHeartRate" class="form-label" th:text="#{patient.profile.resting.heart.rate}">Resting Heart Rate</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="restingHeartRate" name="restingHeartRate" 
                                    th:field="*{restingHeartRate}" placeholder="70" min="40" max="120">
@@ -351,7 +354,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="baselineSystolic" class="form-label">Systolic BP</label>
+                        <label for="baselineSystolic" class="form-label" th:text="#{patient.profile.systolic.bp}">Systolic BP</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="baselineSystolic" name="baselineSystolic" 
                                    th:field="*{baselineSystolic}" placeholder="120" min="80" max="200">
@@ -359,7 +362,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="baselineDiastolic" class="form-label">Diastolic BP</label>
+                        <label for="baselineDiastolic" class="form-label" th:text="#{patient.profile.diastolic.bp}">Diastolic BP</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="baselineDiastolic" name="baselineDiastolic" 
                                    th:field="*{baselineDiastolic}" placeholder="80" min="50" max="120">
@@ -367,7 +370,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="normalBodyTemp" class="form-label">Normal Body Temp</label>
+                        <label for="normalBodyTemp" class="form-label" th:text="#{patient.profile.normal.body.temp}">Normal Body Temp</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="normalBodyTemp" name="normalBodyTemp" 
                                    th:field="*{normalBodyTemp}" placeholder="98.6" min="95" max="102" step="0.1">
@@ -376,38 +379,38 @@
                     </div>
                 </div>
 
-                <small class="text-muted">*Baseline values help us detect significant changes in your health metrics</small>
+                <small class="text-muted" th:text="#{patient.profile.baseline.values.help}">*Baseline values help us detect significant changes in your health metrics</small>
             </div>
 
             <!-- Medical History & Risk Factors -->
             <div class="form-section">
-                <h4 class="section-title"><i class="fas fa-file-medical me-2"></i>Medical History & Risk Factors</h4>
+                <h4 class="section-title"><i class="fas fa-file-medical me-2"></i><span th:text="#{patient.profile.medical.history.risk.factors}">Medical History & Risk Factors</span></h4>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    This information helps establish personalized health monitoring and alert thresholds.
+                    <span th:text="#{patient.profile.medical.info}">This information helps establish personalized health monitoring and alert thresholds.</span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Smoking Status</label>
+                        <label class="form-label" th:text="#{patient.profile.smoking.status}">Smoking Status</label>
                         <div class="d-flex gap-3">
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="smokingStatus" id="never" value="NEVER" th:field="*{smokingStatus}">
-                                <label class="form-check-label" for="never">Never</label>
+                                <label class="form-check-label" for="never" th:text="#{patient.profile.never}">Never</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="smokingStatus" id="former" value="FORMER" th:field="*{smokingStatus}">
-                                <label class="form-check-label" for="former">Former</label>
+                                <label class="form-check-label" for="former" th:text="#{patient.profile.former}">Former</label>
                             </div>
                             <div class="form-check">
                                 <input class="form-check-input" type="radio" name="smokingStatus" id="current" value="CURRENT" th:field="*{smokingStatus}">
-                                <label class="form-check-label" for="current">Current</label>
+                                <label class="form-check-label" for="current" th:text="#{patient.profile.current}">Current</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="alcoholConsumption" class="form-label">Alcohol Consumption</label>
+                        <label for="alcoholConsumption" class="form-label" th:text="#{patient.profile.alcohol.consumption}">Alcohol Consumption</label>
                         <select class="form-select" id="alcoholConsumption" name="alcoholConsumption" th:field="*{alcoholConsumption}">
                             <option value="">Select</option>
                             <option value="NEVER">Never</option>
@@ -419,29 +422,29 @@
                     </div>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-primary">Chronic Conditions & Risk Factors</h6>
+                <h6 class="mt-4 mb-3 text-primary" th:text="#{patient.profile.chronic.conditions.risk.factors}">Chronic Conditions & Risk Factors</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-check-group">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="DIABETES" id="diabetes" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="diabetes">Diabetes (Type 1 or 2)</label>
+                                <label class="form-check-label" for="diabetes" th:text="#{patient.profile.diabetes.type}">Diabetes (Type 1 or 2)</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="HYPERTENSION" id="hypertension" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="hypertension">High Blood Pressure</label>
+                                <label class="form-check-label" for="hypertension" th:text="#{patient.profile.high.blood.pressure}">High Blood Pressure</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="HIGH_CHOLESTEROL" id="cholesterol" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="cholesterol">High Cholesterol</label>
+                                <label class="form-check-label" for="cholesterol" th:text="#{patient.profile.high.cholesterol}">High Cholesterol</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="HEART_DISEASE" id="heart" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="heart">Heart Disease</label>
+                                <label class="form-check-label" for="heart" th:text="#{patient.profile.heart.disease}">Heart Disease</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="ASTHMA" id="asthma" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="asthma">Asthma/Respiratory Issues</label>
+                                <label class="form-check-label" for="asthma" th:text="#{patient.profile.asthma.respiratory}">Asthma/Respiratory Issues</label>
                             </div>
                         </div>
                     </div>
@@ -449,71 +452,71 @@
                         <div class="form-check-group">
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="THYROID" id="thyroid" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="thyroid">Thyroid Disorder</label>
+                                <label class="form-check-label" for="thyroid" th:text="#{patient.profile.thyroid.disorder}">Thyroid Disorder</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="KIDNEY_DISEASE" id="kidney" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="kidney">Kidney Disease</label>
+                                <label class="form-check-label" for="kidney" th:text="#{patient.profile.kidney.disease}">Kidney Disease</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="ARTHRITIS" id="arthritis" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="arthritis">Arthritis</label>
+                                <label class="form-check-label" for="arthritis" th:text="#{patient.profile.arthritis}">Arthritis</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="MENTAL_HEALTH" id="mentalHealth" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="mentalHealth">Mental Health Condition</label>
+                                <label class="form-check-label" for="mentalHealth" th:text="#{patient.profile.mental.health.condition}">Mental Health Condition</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="chronicConditions" value="OTHER" id="otherCondition" th:field="*{chronicConditions}">
-                                <label class="form-check-label" for="otherCondition">Other (specify below)</label>
+                                <label class="form-check-label" for="otherCondition" th:text="#{patient.profile.other.specify}">Other (specify below)</label>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="mb-3">
-                    <label for="otherConditionsDetails" class="form-label">Other Medical Conditions (if any)</label>
+                                            <label for="otherConditionsDetails" class="form-label" th:text="#{patient.profile.other.medical.conditions}">Other Medical Conditions (if any)</label>
                     <textarea class="form-control" id="otherConditionsDetails" name="otherConditionsDetails" rows="2" 
                               th:field="*{otherConditionsDetails}" 
                               placeholder="Specify any other medical conditions not listed above"></textarea>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-primary">Medications & Allergies</h6>
+                <h6 class="mt-4 mb-3 text-primary" th:text="#{patient.profile.medications.allergies}">Medications & Allergies</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="currentMedications" class="form-label">Current Medications</label>
+                        <label for="currentMedications" class="form-label" th:text="#{patient.profile.current.medications}">Current Medications</label>
                         <textarea class="form-control" id="currentMedications" name="currentMedications" rows="4" 
                                   th:field="*{currentMedications}" 
                                   placeholder="List all medications, supplements, and vitamins you're currently taking (include dosages if known)"></textarea>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="allergies" class="form-label">Allergies & Reactions</label>
+                        <label for="allergies" class="form-label" th:text="#{patient.profile.allergies.reactions}">Allergies & Reactions</label>
                         <textarea class="form-control" id="allergiesText" name="allergiesText" rows="4" 
                                   th:field="*{allergiesText}" 
                                   placeholder="List any drug allergies, food allergies, or other allergic reactions"></textarea>
                     </div>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-primary">Family Medical History</h6>
+                <h6 class="mt-4 mb-3 text-primary" th:text="#{patient.profile.family.medical.history}">Family Medical History</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-check-group">
-                            <label class="form-label">Family History of:</label>
+                            <label class="form-label" th:text="#{patient.profile.family.history.of}">Family History of:</label>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="DIABETES" id="familyDiabetes" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyDiabetes">Diabetes</label>
+                                <label class="form-check-label" for="familyDiabetes" th:text="#{patient.profile.diabetes}">Diabetes</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="HEART_DISEASE" id="familyHeart" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyHeart">Heart Disease</label>
+                                <label class="form-check-label" for="familyHeart" th:text="#{patient.profile.heart.disease}">Heart Disease</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="HYPERTENSION" id="familyBP" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyBP">High Blood Pressure</label>
+                                <label class="form-check-label" for="familyBP" th:text="#{patient.profile.high.blood.pressure}">High Blood Pressure</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="STROKE" id="familyStroke" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyStroke">Stroke</label>
+                                <label class="form-check-label" for="familyStroke" th:text="#{patient.profile.stroke}">Stroke</label>
                             </div>
                         </div>
                     </div>
@@ -522,19 +525,19 @@
                             <label class="form-label">&nbsp;</label>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="CANCER" id="familyCancer" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyCancer">Cancer</label>
+                                <label class="form-check-label" for="familyCancer" th:text="#{patient.profile.cancer}">Cancer</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="HIGH_CHOLESTEROL" id="familyCholesterol" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyCholesterol">High Cholesterol</label>
+                                <label class="form-check-label" for="familyCholesterol" th:text="#{patient.profile.high.cholesterol}">High Cholesterol</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="MENTAL_HEALTH" id="familyMental" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="familyMental">Mental Health Issues</label>
+                                <label class="form-check-label" for="familyMental" th:text="#{patient.profile.mental.health.issues}">Mental Health Issues</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="familyHistory" value="NONE" id="noFamilyHistory" th:field="*{familyHistory}">
-                                <label class="form-check-label" for="noFamilyHistory">No significant family history</label>
+                                <label class="form-check-label" for="noFamilyHistory" th:text="#{patient.profile.no.significant.family.history}">No significant family history</label>
                             </div>
                         </div>
                     </div>
@@ -543,21 +546,21 @@
 
             <!-- Emergency Contact -->
             <div class="form-section">
-                <h4 class="section-title"><i class="fas fa-phone-alt me-2"></i>Emergency Contact</h4>
+                <h4 class="section-title"><i class="fas fa-phone-alt me-2"></i><span th:text="#{patient.profile.emergency.contact}">Emergency Contact</span></h4>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    This person will be contacted in case of medical emergency.
+                    <span th:text="#{patient.profile.emergency.info}">This person will be contacted in case of medical emergency.</span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="emergencyContactName" class="form-label">Full Name *</label>
+                        <label for="emergencyContactName" class="form-label" th:text="#{patient.profile.full.name} + ' *'">Full Name *</label>
                         <input type="text" class="form-control" id="emergencyContactName" name="emergencyContactName" 
                                th:field="*{emergencyContactName}" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="emergencyContactRelation" class="form-label">Relationship *</label>
+                        <label for="emergencyContactRelation" class="form-label" th:text="#{patient.profile.relationship} + ' *'">Relationship *</label>
                         <select class="form-select" id="emergencyContactRelation" name="emergencyContactRelation" 
                                 th:field="*{emergencyContactRelation}" required>
                             <option value="">Select Relationship</option>
@@ -573,12 +576,12 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="emergencyContactPhone" class="form-label">Phone Number *</label>
+                        <label for="emergencyContactPhone" class="form-label" th:text="#{patient.profile.phone.number} + ' *'">Phone Number *</label>
                         <input type="tel" class="form-control" id="emergencyContactPhone" name="emergencyContactPhone" 
                                th:field="*{emergencyContactPhone}" required>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="emergencyContactEmail" class="form-label">Email Address</label>
+                        <label for="emergencyContactEmail" class="form-label" th:text="#{patient.profile.email.address}">Email Address</label>
                         <input type="email" class="form-control" id="emergencyContactEmail" name="emergencyContactEmail" 
                                th:field="*{emergencyContactEmail}">
                     </div>
@@ -587,21 +590,21 @@
 
             <!-- Insurance Information -->
             <div class="form-section">
-                <h4 class="section-title"><i class="fas fa-id-card me-2"></i>Insurance Information</h4>
+                <h4 class="section-title"><i class="fas fa-id-card me-2"></i><span th:text="#{patient.profile.insurance.information}">Insurance Information</span></h4>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Insurance information helps us process your claims faster.
+                    <span th:text="#{patient.profile.insurance.info}">Insurance information helps us process your claims faster.</span>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="insuranceProvider" class="form-label">Insurance Provider</label>
+                        <label for="insuranceProvider" class="form-label" th:text="#{patient.profile.insurance.provider}">Insurance Provider</label>
                         <input type="text" class="form-control" id="insuranceProvider" name="insuranceProvider" 
                                th:field="*{insuranceProvider}" placeholder="e.g., Blue Cross Blue Shield">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="policyNumber" class="form-label">Policy Number</label>
+                        <label for="policyNumber" class="form-label" th:text="#{patient.profile.policy.number}">Policy Number</label>
                         <input type="text" class="form-control" id="policyNumber" name="policyNumber" 
                                th:field="*{policyNumber}">
                     </div>
@@ -609,12 +612,12 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="groupNumber" class="form-label">Group Number</label>
+                        <label for="groupNumber" class="form-label" th:text="#{patient.profile.group.number}">Group Number</label>
                         <input type="text" class="form-control" id="groupNumber" name="groupNumber" 
                                th:field="*{groupNumber}">
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="insurancePhone" class="form-label">Insurance Phone</label>
+                        <label for="insurancePhone" class="form-label" th:text="#{patient.profile.insurance.phone}">Insurance Phone</label>
                         <input type="tel" class="form-control" id="insurancePhone" name="insurancePhone" 
                                th:field="*{insurancePhone}">
                     </div>
@@ -623,63 +626,63 @@
 
             <!-- Health Preferences & Monitoring Settings -->
             <div class="form-section">
-                <h4 class="section-title"><i class="fas fa-cog me-2"></i>Health Monitoring Preferences</h4>
+                <h4 class="section-title"><i class="fas fa-cog me-2"></i><span th:text="#{patient.profile.health.monitoring.preferences}">Health Monitoring Preferences</span></h4>
                 
                 <div class="alert alert-info">
                     <i class="fas fa-info-circle me-2"></i>
-                    Set your preferences for health monitoring, alerts, and goal tracking.
+                    <span th:text="#{patient.profile.health.preferences.info}">Set your preferences for health monitoring, alerts, and goal tracking.</span>
                 </div>
 
-                <h6 class="mb-3 text-primary">Alert Preferences</h6>
+                <h6 class="mb-3 text-primary" th:text="#{patient.profile.alert.preferences}">Alert Preferences</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <div class="form-check-group">
-                            <label class="form-label">Send alerts when:</label>
+                            <label class="form-label" th:text="#{patient.profile.send.alerts.when}">Send alerts when:</label>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="BLOOD_PRESSURE_HIGH" id="alertBP" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertBP">Blood pressure is above normal</label>
+                                <label class="form-check-label" for="alertBP" th:text="#{patient.profile.blood.pressure.above.normal}">Blood pressure is above normal</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="HEART_RATE_ABNORMAL" id="alertHR" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertHR">Heart rate is abnormal</label>
+                                <label class="form-check-label" for="alertHR" th:text="#{patient.profile.heart.rate.abnormal}">Heart rate is abnormal</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="WEIGHT_SIGNIFICANT_CHANGE" id="alertWeight" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertWeight">Weight changes significantly</label>
+                                <label class="form-check-label" for="alertWeight" th:text="#{patient.profile.weight.changes.significantly}">Weight changes significantly</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="BLOOD_SUGAR_ABNORMAL" id="alertBS" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertBS">Blood sugar is out of range</label>
+                                <label class="form-check-label" for="alertBS" th:text="#{patient.profile.blood.sugar.out.of.range}">Blood sugar is out of range</label>
                             </div>
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
                         <div class="form-check-group">
-                            <label class="form-label">Additional alerts:</label>
+                            <label class="form-label" th:text="#{patient.profile.additional.alerts}">Additional alerts:</label>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="TEMPERATURE_FEVER" id="alertTemp" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertTemp">Temperature indicates fever</label>
+                                <label class="form-check-label" for="alertTemp" th:text="#{patient.profile.temperature.indicates.fever}">Temperature indicates fever</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="OXYGEN_LOW" id="alertO2" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertO2">Oxygen saturation is low</label>
+                                <label class="form-check-label" for="alertO2" th:text="#{patient.profile.oxygen.saturation.low}">Oxygen saturation is low</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="MISSED_READINGS" id="alertMissed" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertMissed">No readings for extended period</label>
+                                <label class="form-check-label" for="alertMissed" th:text="#{patient.profile.no.readings.extended.period}">No readings for extended period</label>
                             </div>
                             <div class="form-check mb-2">
                                 <input class="form-check-input" type="checkbox" name="alertPreferences" value="APPOINTMENT_REMINDERS" id="alertAppt" th:field="*{alertPreferences}">
-                                <label class="form-check-label" for="alertAppt">Upcoming appointments</label>
+                                <label class="form-check-label" for="alertAppt" th:text="#{patient.profile.upcoming.appointments}">Upcoming appointments</label>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-primary">Health Goals</h6>
+                <h6 class="mt-4 mb-3 text-primary" th:text="#{patient.profile.health.goals}">Health Goals</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="bloodPressureGoal" class="form-label">Blood Pressure Goal</label>
+                        <label for="bloodPressureGoal" class="form-label" th:text="#{patient.profile.blood.pressure.goal}">Blood Pressure Goal</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="systolicGoal" name="systolicGoal" 
                                    th:field="*{systolicGoal}" placeholder="120" min="90" max="140">
@@ -688,10 +691,10 @@
                                    th:field="*{diastolicGoal}" placeholder="80" min="60" max="90">
                             <span class="input-group-text">mmHg</span>
                         </div>
-                        <small class="form-text text-muted">Target blood pressure range</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.target.blood.pressure.range}">Target blood pressure range</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="targetHeartRateRange" class="form-label">Target Heart Rate Range</label>
+                        <label for="targetHeartRateRange" class="form-label" th:text="#{patient.profile.target.heart.rate.range}">Target Heart Rate Range</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="minTargetHR" name="minTargetHR" 
                                    th:field="*{minTargetHR}" placeholder="60" min="40" max="100">
@@ -700,35 +703,35 @@
                                    th:field="*{maxTargetHR}" placeholder="100" min="80" max="150">
                             <span class="input-group-text">bpm</span>
                         </div>
-                        <small class="form-text text-muted">Resting heart rate goals</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.resting.heart.rate.goals}">Resting heart rate goals</small>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="bloodSugarTarget" class="form-label">Blood Sugar Target (if diabetic)</label>
+                        <label for="bloodSugarTarget" class="form-label" th:text="#{patient.profile.blood.sugar.target}">Blood Sugar Target (if diabetic)</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="fastingGlucoseTarget" name="fastingGlucoseTarget" 
                                    th:field="*{fastingGlucoseTarget}" placeholder="100" min="70" max="130">
                             <span class="input-group-text">mg/dL</span>
                         </div>
-                        <small class="form-text text-muted">Fasting glucose target</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.fasting.glucose.target}">Fasting glucose target</small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="cholesterolTarget" class="form-label">Cholesterol Target</label>
+                        <label for="cholesterolTarget" class="form-label" th:text="#{patient.profile.cholesterol.target}">Cholesterol Target</label>
                         <div class="input-group">
                             <input type="number" class="form-control" id="totalCholesterolTarget" name="totalCholesterolTarget" 
                                    th:field="*{totalCholesterolTarget}" placeholder="200" min="150" max="240">
                             <span class="input-group-text">mg/dL</span>
                         </div>
-                        <small class="form-text text-muted">Total cholesterol goal</small>
+                        <small class="form-text text-muted" th:text="#{patient.profile.total.cholesterol.goal}">Total cholesterol goal</small>
                     </div>
                 </div>
 
-                <h6 class="mt-4 mb-3 text-primary">Monitoring Frequency Preferences</h6>
+                <h6 class="mt-4 mb-3 text-primary" th:text="#{patient.profile.monitoring.frequency.preferences}">Monitoring Frequency Preferences</h6>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="weightMonitoringFreq" class="form-label">Weight Monitoring</label>
+                        <label for="weightMonitoringFreq" class="form-label" th:text="#{patient.profile.weight.monitoring}">Weight Monitoring</label>
                         <select class="form-select" id="weightMonitoringFreq" name="weightMonitoringFreq" th:field="*{weightMonitoringFreq}">
                             <option value="">Select frequency</option>
                             <option value="DAILY">Daily</option>
@@ -738,7 +741,7 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="bpMonitoringFreq" class="form-label">Blood Pressure Monitoring</label>
+                        <label for="bpMonitoringFreq" class="form-label" th:text="#{patient.profile.blood.pressure.monitoring}">Blood Pressure Monitoring</label>
                         <select class="form-select" id="bpMonitoringFreq" name="bpMonitoringFreq" th:field="*{bpMonitoringFreq}">
                             <option value="">Select frequency</option>
                             <option value="DAILY">Daily</option>
@@ -751,7 +754,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="glucoseMonitoringFreq" class="form-label">Blood Sugar Monitoring</label>
+                        <label for="glucoseMonitoringFreq" class="form-label" th:text="#{patient.profile.blood.sugar.monitoring}">Blood Sugar Monitoring</label>
                         <select class="form-select" id="glucoseMonitoringFreq" name="glucoseMonitoringFreq" th:field="*{glucoseMonitoringFreq}">
                             <option value="">Select frequency</option>
                             <option value="MULTIPLE_DAILY">Multiple times daily</option>
@@ -762,7 +765,7 @@
                         </select>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="reminderPreference" class="form-label">Monitoring Reminders</label>
+                        <label for="reminderPreference" class="form-label" th:text="#{patient.profile.monitoring.reminders}">Monitoring Reminders</label>
                         <select class="form-select" id="reminderPreference" name="reminderPreference" th:field="*{reminderPreference}">
                             <option value="">Select preference</option>
                             <option value="EMAIL">Email reminders</option>
@@ -774,7 +777,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="healthGoalsNotes" class="form-label">Additional Health Goals & Notes</label>
+                                            <label for="healthGoalsNotes" class="form-label" th:text="#{patient.profile.additional.health.goals.notes}">Additional Health Goals & Notes</label>
                     <textarea class="form-control" id="healthGoalsNotes" name="healthGoalsNotes" rows="3" 
                               th:field="*{healthGoalsNotes}" 
                               placeholder="Any specific health goals, concerns, or notes you'd like your healthcare team to know about"></textarea>
@@ -784,10 +787,10 @@
             <!-- Form Actions -->
             <div class="text-center mb-4">
                 <button type="submit" class="btn btn-primary me-3">
-                    <i class="fas fa-save me-2"></i>Save Profile
+                    <i class="fas fa-save me-2"></i><span th:text="#{patient.profile.save.profile}">Save Profile</span>
                 </button>
                 <a href="/patient-dashboard" class="btn btn-outline-secondary">
-                    <i class="fas fa-times me-2"></i>Cancel
+                    <i class="fas fa-times me-2"></i><span th:text="#{common.cancel}">Cancel</span>
                 </a>
             </div>
         </form>
@@ -852,7 +855,8 @@
             
             if (!isValid) {
                 e.preventDefault();
-                alert('Please fill in all required fields.');
+                const requiredFieldsText = document.body.getAttribute('data-required-fields-text') || 'Please fill in all required fields.';
+                alert(requiredFieldsText);
                 // Scroll to first error
                 const firstError = this.querySelector('.is-invalid');
                 if (firstError) {

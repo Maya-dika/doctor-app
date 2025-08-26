@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healthcare Portal - Login</title>
+    <title th:text="#{login.title}">Healthcare Portal - Login</title>
     <style>
         * {
             margin: 0;
@@ -68,6 +68,7 @@
         .container {
             text-align: center;
             background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 40px 50px;
             border-radius: 25px;
@@ -330,12 +331,16 @@
     </style>
 </head>
 <body>
-    <a href="/" class="back-btn">← Back to Home</a>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+    </div>
+    
+    <a href="/" class="back-btn" th:text="#{login.back}">← Back to Home</a>
     
     <div class="container">
         <div class="logo">H+</div>
-        <h1>Login</h1>
-        <p class="subtitle">Access your healthcare portal account</p>
+        <h1 th:text="#{login.welcome}">Login</h1>
+        <p class="subtitle" th:text="#{login.subtitle}">Access your healthcare portal account</p>
         
         <!-- Error message display -->
         <div th:if="${error}" class="error-message" th:text="${error}"></div>
@@ -349,14 +354,14 @@
                         <input type="radio" id="doctor" name="userType" value="doctor" required>
                         <label for="doctor" class="radio-label">
                             <div class="radio-icon">👨‍⚕️</div>
-                            <span class="radio-text">Doctor</span>
+                            <span class="radio-text" th:text="#{user.doctor.title}">Doctor</span>
                         </label>
                     </div>
                     <div class="radio-option">
                         <input type="radio" id="patient" name="userType" value="patient" required>
                         <label for="patient" class="radio-label">
                             <div class="radio-icon">👤</div>
-                            <span class="radio-text">Patient</span>
+                            <span class="radio-text" th:text="#{user.patient.title}">Patient</span>
                         </label>
                     </div>
                 </div>
@@ -364,29 +369,29 @@
 
             <!-- Email Input -->
             <div class="form-group">
-                <label for="email">Email Address</label>
+                <label for="email" th:text="#{login.email}">Email Address</label>
                 <input type="email" id="email" name="email" class="form-control" 
-                       placeholder="Enter your email address" required>
+                       th:placeholder="#{login.email}" required>
             </div>
 
             <!-- Password Input -->
             <div class="form-group">
-                <label for="password">Password</label>
+                <label for="password" th:text="#{login.password}">Password</label>
                 <input type="password" id="password" name="password" class="form-control" 
-                       placeholder="Enter your password" required>
+                       th:placeholder="#{login.password}" required>
             </div>
 
             <!-- Login Button -->
-            <button type="submit" class="login-btn">Login to Account</button>
+            <button type="submit" class="login-btn" th:text="#{login.signin}">Login to Account</button>
 
             <!-- Forgot Password Link -->
             <div class="forgot-password">
-                <a href="/forgot-password">Forgot your password?</a>
+                <a href="/forgot-password" th:text="#{login.forgot}">Forgot your password?</a>
             </div>
 
             <!-- Register Link -->
             <div class="register-link">
-                Don't have an account? <a href="/">Create one here</a>
+                <span th:text="#{login.noaccount}">Don't have an account?</span> <a href="/" th:text="#{login.register}">Create one here</a>
             </div>
         </form>
     </div>

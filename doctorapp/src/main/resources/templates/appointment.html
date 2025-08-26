@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Book Appointment - Healthcare Portal</title>
+    <title th:text="#{appointment.book}">Book Appointment - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -184,24 +184,27 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button title="#{common.menu}" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${session.loggedInPatient?.firstName + ' ' + session.loggedInPatient?.lastName}">Patient Name</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i><span th:text="#{dashboard.title}">Dashboard</span></a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -215,25 +218,25 @@
             <div class="col-md-3 col-lg-2 p-0">
     <div class="sidebar">
         <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
-            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
-            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+            <i class="fas fa-calendar-alt me-3"></i><span th:text="#{appointment.my.appointments}">My Appointments</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
-            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+            <i class="fas fa-calendar-plus me-3"></i><span th:text="#{appointment.book}">Book Appointment</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
-            <i class="fas fa-pills me-3"></i>Prescriptions
+            <i class="fas fa-pills me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-            <i class="fas fa-chart-line me-3"></i>Health Metrics
+            <i class="fas fa-chart-line me-3"></i><span th:text="#{health.metrics.title}">Health Metrics</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
-            <i class="fas fa-comments me-3"></i>Messages
+            <i class="fas fa-comments me-3"></i><span th:text="#{messaging.title}">Messages</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
-            <i class="fas fa-credit-card me-3"></i>Billing
+            <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>
         </div>
     </div>
 </div>
@@ -248,12 +251,12 @@
                         <div>
                             <h2 class="mb-2">
                                 <i class="fas fa-calendar-plus text-primary me-3"></i>
-                                Book an Appointment
+                                <span th:text="#{appointment.book}">Book an Appointment</span>
                             </h2>
-                            <p class="text-muted mb-0">Choose from our available doctors and schedule your visit</p>
+                            <p class="text-muted mb-0" th:text="#{appointment.book.description}">Choose from our available doctors and schedule your visit</p>
                         </div>
                         <a href="/patient-dashboard" class="btn btn-outline-primary">
-                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                            <i class="fas fa-arrow-left me-2"></i><span th:text="#{common.back} + ' ' + #{common.to} + ' ' + #{dashboard.title}">Back to Dashboard</span>
                         </a>
                     </div>
                 </div>
@@ -262,9 +265,9 @@
                 <div class="row mb-4">
                     <div class="col-md-8 mx-auto">
                         <div class="input-group">
-                            <input type="text" class="form-control search-box" id="searchInput" 
-                                   placeholder="Search doctors by name or specialty...">
-                            <button class="btn btn-primary" type="button">
+                            <input title="#{appointment.search.doctors}" type="text" class="form-control search-box" id="searchInput" 
+                                   th:placeholder="#{appointment.search.doctors}">
+                            <button title="#{common.search}" class="btn btn-primary" type="button" th:title="#{common.search}">
                                 <i class="fas fa-search"></i>
                             </button>
                         </div>
@@ -274,7 +277,7 @@
                 <!-- Error Alert -->
                 <div th:if="${error}" class="alert alert-danger alert-custom" role="alert">
                     <i class="fas fa-exclamation-circle me-2"></i>
-                    <span th:text="${error}">Error message</span>
+                    <span th:text="${error != null ? error : #{common.error}}">Error message</span>
                 </div>
 
                 <!-- Doctors List -->
@@ -299,7 +302,7 @@
                                             <i class="fas fa-star"></i>
                                             <i class="fas fa-star"></i>
                                             <i class="fas fa-star"></i>
-                                            <span class="text-muted ms-2">(4.9/5)</span>
+                                            <span class="text-muted ms-2" th:text="'(4.9/5)'">(4.9/5)</span>
                                         </div>
                                     </div>
                                 </div>
@@ -326,13 +329,13 @@
                                     <div class="col-sm-6" th:if="${doctor.experience != null}">
                                         <small class="text-muted d-block">
                                             <i class="fas fa-medal me-1"></i>
-                                            <span th:text="${doctor.experience} + ' years experience'">Experience</span>
+                                            <span th:text="${doctor.experience} + ' ' + #{appointment.years.experience}">Experience</span>
                                         </small>
                                     </div>
                                     <div class="col-sm-6" th:if="${doctor.consultationFee != null}">
                                         <small class="text-muted d-block">
                                             <i class="fas fa-dollar-sign me-1"></i>
-                                            $<span th:text="${doctor.consultationFee}">Fee</span> consultation
+                                            $<span th:text="${doctor.consultationFee}">Fee</span> <span th:text="#{appointment.consultation}">consultation</span>
                                         </small>
                                     </div>
                                 </div>
@@ -343,7 +346,7 @@
                                             th:data-doctor-name="${doctor.firstName + ' ' + doctor.lastName}"
                                             th:data-doctor-specialty="${doctor.specialty.name}">
                                         <i class="fas fa-calendar-plus me-2"></i>
-                                        Book Appointment
+                                        <span th:text="#{appointment.book}">Book Appointment</span>
                                     </button>
                                 </div>
                             </div>
@@ -354,8 +357,8 @@
                 <!-- No Doctors Message -->
                 <div th:if="${doctors == null or doctors.empty}" class="text-center py-5">
                     <i class="fas fa-user-md text-muted" style="font-size: 4rem;"></i>
-                    <h4 class="text-muted mt-3">No doctors available at the moment</h4>
-                    <p class="text-muted">Please check back later or contact our support team.</p>
+                    <h4 class="text-muted mt-3" th:text="#{appointment.no.doctors}">No doctors available at the moment</h4>
+                    <p class="text-muted" th:text="#{appointment.no.doctors.message}">Please check back later or contact our support team.</p>
                 </div>
 
                 <!-- Booking Form Modal -->
@@ -364,7 +367,7 @@
                         <div class="card-header bg-primary text-white">
                             <h5 class="mb-0">
                                 <i class="fas fa-calendar-check me-2"></i>
-                                Book Appointment with <span id="selectedDoctorName">Doctor Name</span>
+                                <span th:text="#{appointment.book} + ' ' + #{common.with} + ' '"></span><span id="selectedDoctorName">Doctor Name</span>
                             </h5>
                         </div>
                         <div class="card-body p-4">
@@ -373,7 +376,7 @@
                                 
                                 <div class="mb-3">
                                     <label for="appointmentDate" class="form-label">
-                                        <i class="fas fa-calendar me-2"></i>Appointment Date
+                                        <i class="fas fa-calendar me-2"></i><span th:text="#{appointment.date}">Appointment Date</span>
                                     </label>
                                     <input type="date" class="form-control" id="appointmentDate" 
                                            name="appointmentDate" required>
@@ -381,7 +384,7 @@
                                 
                                 <div class="mb-3">
                                     <label for="appointmentTime" class="form-label">
-                                        <i class="fas fa-clock me-2"></i>Preferred Time
+                                        <i class="fas fa-clock me-2"></i><span th:text="#{appointment.preferred.time}">Preferred Time</span>
                                     </label>
                                     <input type="time" class="form-control" id="appointmentTime" 
                                            name="appointmentTime" required>
@@ -389,33 +392,33 @@
                                 
                                 <div class="mb-3">
                                     <label for="appointmentReason" class="form-label">
-                                        <i class="fas fa-clipboard-list me-2"></i>Reason for Visit
+                                        <i class="fas fa-clipboard-list me-2"></i><span th:text="#{appointment.reason.visit}">Reason for Visit</span>
                                     </label>
                                     <select class="form-select" id="appointmentReason" name="reason" required>
-                                        <option value="">Select Reason</option>
-                                        <option value="Regular Checkup">Regular Checkup</option>
-                                        <option value="Follow-up">Follow-up Visit</option>
-                                        <option value="Consultation">Consultation</option>
-                                        <option value="Urgent Care">Urgent Care</option>
-                                        <option value="Prescription Renewal">Prescription Renewal</option>
-                                        <option value="Other">Other</option>
+                                        <option value="" th:text="#{common.select} + ' ' + #{appointment.reason}">Select Reason</option>
+                                        <option value="Regular Checkup" th:text="#{appointment.reason.regular.checkup}">Regular Checkup</option>
+                                        <option value="Follow-up" th:text="#{appointment.reason.follow.up}">Follow-up Visit</option>
+                                        <option value="Consultation" th:text="#{appointment.reason.consultation}">Consultation</option>
+                                        <option value="Urgent Care" th:text="#{appointment.reason.urgent.care}">Urgent Care</option>
+                                        <option value="Prescription Renewal" th:text="#{appointment.reason.prescription.renewal}">Prescription Renewal</option>
+                                        <option value="Other" th:text="#{appointment.reason.other}">Other</option>
                                     </select>
                                 </div>
                                 
                                 <div class="mb-4">
                                     <label for="notes" class="form-label">
-                                        <i class="fas fa-sticky-note me-2"></i>Additional Notes for Doctor
+                                        <i class="fas fa-sticky-note me-2"></i><span th:text="#{appointment.additional.notes}">Additional Notes for Doctor</span>
                                     </label>
                                     <textarea class="form-control" id="notes" name="notes" rows="4" 
-                                              placeholder="Please describe your symptoms, concerns, or any additional information you'd like the doctor to know..."></textarea>
+                                              th:placeholder="#{appointment.notes.placeholder}"></textarea>
                                 </div>
                                 
                                 <div class="d-flex justify-content-end gap-3">
                                     <button type="button" class="btn btn-outline-secondary" id="cancelBooking">
-                                        <i class="fas fa-times me-2"></i>Cancel
+                                        <i class="fas fa-times me-2"></i><span th:text="#{common.cancel}">Cancel</span>
                                     </button>
                                     <button type="submit" class="btn btn-primary">
-                                        <i class="fas fa-check me-2"></i>Book Appointment
+                                        <i class="fas fa-check me-2"></i><span th:text="#{appointment.book}">Book Appointment</span>
                                     </button>
                                 </div>
                             </form>

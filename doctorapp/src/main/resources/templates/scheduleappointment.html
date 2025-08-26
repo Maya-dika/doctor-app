@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Schedule Appointment - Healthcare Portal</title>
+    <title th:text="#{appointment.schedule}">Schedule Appointment - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -213,29 +213,32 @@
         }
     </style>
 </head>
-<body>
+<body th:attr="data-success-text=#{common.success}, data-scheduled-text=#{appointment.scheduled.successfully}">
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-user-md me-2"></i>
-                Healthcare Portal - Doctor
+                <span th:text="#{main.title} + ' - ' + #{doctor.title}">Healthcare Portal - Doctor</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button title="#{common.menu}" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Sarah Johnson</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -249,25 +252,25 @@
             <div class="col-md-3 col-lg-2 p-0">
                 <div class="sidebar">
                     <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
-                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
                     </div>
                     <div class="sidebar-item active" onclick="window.location.href='/doctor-appointments'">
-                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                        <i class="fas fa-calendar-alt me-3"></i><span th:text="#{dashboard.appointments}">Appointments</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/patient-management'">
-                        <i class="fas fa-users me-3"></i>Patient Management
+                        <i class="fas fa-users me-3"></i><span th:text="#{patient.management.title}">Patient Management</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/medical-records'">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                        <i class="fas fa-file-medical me-3"></i><span th:text="#{medical.records.title}">Medical Records</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-prescriptions'">
-                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                        <i class="fas fa-prescription-bottle me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-billing'">
-                        <i class="fas fa-credit-card me-3"></i>Billing
+                        <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/analytics'">
-                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                        <i class="fas fa-chart-bar me-3"></i><span th:text="#{analytics.title}">Analytics</span>
                     </div>
                 </div>
             </div>
@@ -281,12 +284,12 @@
                             <div>
                                 <h2 class="mb-0">
                                     <i class="fas fa-calendar-plus text-primary me-2"></i>
-                                    Schedule New Appointment
+                                    <span th:text="#{appointment.schedule.new}">Schedule New Appointment</span>
                                 </h2>
-                                <p class="text-muted mb-0">Create a new appointment for your patient</p>
+                                <p class="text-muted mb-0" th:text="#{appointment.create.new.description}">Create a new appointment for your patient</p>
                             </div>
                             <a href="/doctor-appointments" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left me-2"></i>Back to Appointments
+                                <i class="fas fa-arrow-left me-2"></i><span th:text="#{appointment.back.to.appointments}">Back to Appointments</span>
                             </a>
                         </div>
                     </div>
@@ -296,19 +299,19 @@
                 <div class="step-indicator">
                     <div class="step active" id="step1">
                         <div class="step-circle">1</div>
-                        <small>Patient Selection</small>
+                        <small th:text="#{appointment.patient.selection}">Patient Selection</small>
                     </div>
                     <div class="step" id="step2">
                         <div class="step-circle">2</div>
-                        <small>Date & Time</small>
+                        <small th:text="#{appointment.date.time}">Date & Time</small>
                     </div>
                     <div class="step" id="step3">
                         <div class="step-circle">3</div>
-                        <small>Details</small>
+                        <small th:text="#{appointment.details}">Details</small>
                     </div>
                     <div class="step" id="step4">
                         <div class="step-circle">4</div>
-                        <small>Confirmation</small>
+                        <small th:text="#{appointment.confirmation}">Confirmation</small>
                     </div>
                 </div>
 
@@ -319,25 +322,25 @@
                             <!-- Step 1: Patient Selection -->
                             <div id="patientStep" class="form-step">
                                 <h4 class="section-header">
-                                    <i class="fas fa-user-plus me-2"></i>Select Patient
+                                    <i class="fas fa-user-plus me-2"></i><span th:text="#{appointment.select.patient}">Select Patient</span>
                                 </h4>
                                 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="patientSearch" class="form-label">Search for Patient</label>
+                                        <label for="patientSearch" class="form-label" th:text="#{appointment.search.for.patient}">Search for Patient</label>
                                         <div class="input-group">
                                             <span class="input-group-text">
                                                 <i class="fas fa-search"></i>
                                             </span>
                                             <input type="text" class="form-control" id="patientSearch" 
-                                                   placeholder="Enter patient name, ID, or phone number" 
+                                                   th:placeholder="#{appointment.patient.search.placeholder}" 
                                                    oninput="searchPatients(this.value)">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label class="form-label">Or</label>
+                                        <label class="form-label" th:text="#{appointment.or}">Or</label>
                                         <button type="button" class="btn btn-outline-primary w-100" onclick="showNewPatientForm()">
-                                            <i class="fas fa-user-plus me-2"></i>Add New Patient
+                                            <i class="fas fa-user-plus me-2"></i><span th:text="#{appointment.add.new.patient}">Add New Patient</span>
                                         </button>
                                     </div>
                                 </div>
@@ -370,7 +373,7 @@
 
                                 <div class="d-flex justify-content-end mt-4">
                                     <button type="button" class="btn btn-primary" onclick="nextStep(2)" id="nextToStep2" disabled>
-                                        Next: Date & Time <i class="fas fa-arrow-right ms-2"></i>
+                                        <span th:text="#{appointment.next.date.time}">Next: Date & Time</span> <i class="fas fa-arrow-right ms-2"></i>
                                     </button>
                                 </div>
                             </div>
@@ -378,17 +381,17 @@
                             <!-- Step 2: Date & Time Selection -->
                             <div id="datetimeStep" class="form-step" style="display: none;">
                                 <h4 class="section-header">
-                                    <i class="fas fa-calendar-alt me-2"></i>Select Date & Time
+                                    <i class="fas fa-calendar-alt me-2"></i><span th:text="#{appointment.select.date.time}">Select Date & Time</span>
                                 </h4>
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="appointmentDate" class="form-label">Appointment Date</label>
+                                        <label for="appointmentDate" class="form-label" th:text="#{appointment.appointment.date}">Appointment Date</label>
                                         <input type="date" class="form-control" id="appointmentDate" 
                                                onchange="loadAvailableSlots()" required>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="duration" class="form-label">Duration</label>
+                                        <label for="duration" class="form-label" th:text="#{appointment.duration}">Duration</label>
                                         <select class="form-select" id="duration" onchange="loadAvailableSlots()">
                                             <option value="30">30 minutes</option>
                                             <option value="45">45 minutes</option>
@@ -400,22 +403,22 @@
 
                                 <!-- Available Time Slots -->
                                 <div class="mt-4">
-                                    <label class="form-label">Available Time Slots</label>
+                                    <label class="form-label" th:text="#{appointment.available.time.slots}">Available Time Slots</label>
                                     <div id="timeSlots" class="row">
                                         <!-- Time slots will be populated by JavaScript -->
                                         <div class="col-12 text-center text-muted py-4">
                                             <i class="fas fa-clock fa-2x mb-2"></i>
-                                            <p>Please select a date to view available time slots</p>
+                                            <p th:text="#{appointment.select.date.view.slots}">Please select a date to view available time slots</p>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="d-flex justify-content-between mt-4">
                                     <button type="button" class="btn btn-outline-secondary" onclick="previousStep(1)">
-                                        <i class="fas fa-arrow-left me-2"></i>Back
+                                        <i class="fas fa-arrow-left me-2"></i><span th:text="#{common.back}">Back</span>
                                     </button>
                                     <button type="button" class="btn btn-primary" onclick="nextStep(3)" id="nextToStep3" disabled>
-                                        Next: Details <i class="fas fa-arrow-right ms-2"></i>
+                                        <span th:text="#{appointment.next.details}">Next: Details</span> <i class="fas fa-arrow-right ms-2"></i>
                                     </button>
                                 </div>
                             </div>
@@ -423,12 +426,12 @@
                             <!-- Step 3: Appointment Details -->
                             <div id="detailsStep" class="form-step" style="display: none;">
                                 <h4 class="section-header">
-                                    <i class="fas fa-clipboard-list me-2"></i>Appointment Details
+                                    <i class="fas fa-clipboard-list me-2"></i><span th:text="#{appointment.appointment.details}">Appointment Details</span>
                                 </h4>
 
                                 <div class="row">
                                     <div class="col-md-6">
-                                        <label for="appointmentType" class="form-label">Appointment Type</label>
+                                        <label for="appointmentType" class="form-label" th:text="#{appointment.appointment.type}">Appointment Type</label>
                                         <select class="form-select" id="appointmentType" required>
                                             <option value="">Select type...</option>
                                             <option value="General Consultation">General Consultation</option>
@@ -441,7 +444,7 @@
                                         </select>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="priority" class="form-label">Priority Level</label>
+                                        <label for="priority" class="form-label" th:text="#{appointment.priority.level}">Priority Level</label>
                                         <select class="form-select" id="priority">
                                             <option value="Normal">Normal</option>
                                             <option value="High">High</option>
@@ -452,7 +455,7 @@
 
                                 <div class="row mt-3">
                                     <div class="col-12">
-                                        <label for="notes" class="form-label">Notes</label>
+                                        <label for="notes" class="form-label" th:text="#{appointment.notes}">Notes</label>
                                         <textarea class="form-control" id="notes" rows="4" 
                                                   placeholder="Enter any additional notes or special instructions for this appointment..."></textarea>
                                     </div>
@@ -462,7 +465,7 @@
                                     <div class="col-md-6">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="sendReminder" checked>
-                                            <label class="form-check-label" for="sendReminder">
+                                            <label class="form-check-label" for="sendReminder" th:text="#{appointment.send.reminder.notification}">
                                                 Send reminder notification to patient
                                             </label>
                                         </div>
@@ -470,7 +473,7 @@
                                     <div class="col-md-6">
                                         <div class="form-check">
                                             <input class="form-check-input" type="checkbox" id="requirePrep">
-                                            <label class="form-check-label" for="requirePrep">
+                                            <label class="form-check-label" for="requirePrep" th:text="#{appointment.patient.preparation.required}">
                                                 Patient preparation required
                                             </label>
                                         </div>
@@ -479,10 +482,10 @@
 
                                 <div class="d-flex justify-content-between mt-4">
                                     <button type="button" class="btn btn-outline-secondary" onclick="previousStep(2)">
-                                        <i class="fas fa-arrow-left me-2"></i>Back
+                                        <i class="fas fa-arrow-left me-2"></i><span th:text="#{common.back}">Back</span>
                                     </button>
                                     <button type="button" class="btn btn-primary" onclick="nextStep(4)">
-                                        Next: Review <i class="fas fa-arrow-right ms-2"></i>
+                                        <span th:text="#{appointment.next.review}">Next: Review</span> <i class="fas fa-arrow-right ms-2"></i>
                                     </button>
                                 </div>
                             </div>
@@ -490,24 +493,24 @@
                             <!-- Step 4: Confirmation -->
                             <div id="confirmationStep" class="form-step" style="display: none;">
                                 <h4 class="section-header">
-                                    <i class="fas fa-check-circle me-2"></i>Confirm Appointment
+                                    <i class="fas fa-check-circle me-2"></i><span th:text="#{appointment.confirm.appointment}">Confirm Appointment</span>
                                 </h4>
 
                                 <div class="card" style="border: 2px solid var(--success-color); border-radius: 15px;">
                                     <div class="card-body">
                                         <h5 class="text-success mb-3">
-                                            <i class="fas fa-calendar-check me-2"></i>Appointment Summary
+                                            <i class="fas fa-calendar-check me-2"></i><span th:text="#{appointment.appointment.summary}">Appointment Summary</span>
                                         </h5>
                                         
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <h6>Patient Information</h6>
+                                                <h6 th:text="#{appointment.patient.information}">Patient Information</h6>
                                                 <p class="mb-1"><strong>Name:</strong> <span id="confirmPatientName">-</span></p>
                                                 <p class="mb-1"><strong>ID:</strong> <span id="confirmPatientId">-</span></p>
                                                 <p class="mb-3"><strong>Phone:</strong> <span id="confirmPatientPhone">-</span></p>
                                             </div>
                                             <div class="col-md-6">
-                                                <h6>Appointment Details</h6>
+                                                <h6 th:text="#{appointment.appointment.details}">Appointment Details</h6>
                                                 <p class="mb-1"><strong>Date:</strong> <span id="confirmDate">-</span></p>
                                                 <p class="mb-1"><strong>Time:</strong> <span id="confirmTime">-</span></p>
                                                 <p class="mb-1"><strong>Duration:</strong> <span id="confirmDuration">-</span> minutes</p>
@@ -516,7 +519,7 @@
                                         </div>
                                         
                                         <div id="confirmNotesSection" style="display: none;">
-                                            <h6>Notes</h6>
+                                                                                            <h6 th:text="#{appointment.notes}">Notes</h6>
                                             <p class="text-muted" id="confirmNotes">-</p>
                                         </div>
                                     </div>
@@ -524,10 +527,10 @@
 
                                 <div class="d-flex justify-content-between mt-4">
                                     <button type="button" class="btn btn-outline-secondary" onclick="previousStep(3)">
-                                        <i class="fas fa-arrow-left me-2"></i>Back
+                                        <i class="fas fa-arrow-left me-2"></i><span th:text="#{common.back}">Back</span>
                                     </button>
                                     <button type="submit" class="btn btn-success" onclick="scheduleAppointment()">
-                                        <i class="fas fa-calendar-check me-2"></i>Schedule Appointment
+                                        <i class="fas fa-calendar-check me-2"></i><span th:text="#{appointment.schedule.appointment}">Schedule Appointment</span>
                                     </button>
                                 </div>
                             </div>
@@ -801,9 +804,11 @@
             // Show success message
             const successAlert = document.createElement('div');
             successAlert.className = 'alert alert-success alert-dismissible fade show';
+            const successText = document.body.getAttribute('data-success-text') || 'Success!';
+            const scheduledText = document.body.getAttribute('data-scheduled-text') || 'Appointment has been scheduled successfully.';
             successAlert.innerHTML = `
                 <i class="fas fa-check-circle me-2"></i>
-                <strong>Success!</strong> Appointment has been scheduled successfully.
+                <strong>${successText}</strong> ${scheduledText}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             `;
 

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Health Metrics - Healthcare Portal</title>
+    <title th:text="#{health.metrics.title}">Health Metrics - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -343,24 +343,27 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${session.loggedInPatient?.firstName + ' ' + session.loggedInPatient?.lastName}">Patient Name</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
-                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/patient-dashboard"><i class="fas fa-tachometer-alt me-2"></i><span th:text="#{dashboard.title}">Dashboard</span></a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -372,25 +375,25 @@
     <div class="col-md-3 col-lg-2 p-0">
     <div class="sidebar">
         <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
-            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
-            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+            <i class="fas fa-calendar-alt me-3"></i><span th:text="#{appointment.my.appointments}">My Appointments</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
-            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+            <i class="fas fa-calendar-plus me-3"></i><span th:text="#{appointment.book}">Book Appointment</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
-            <i class="fas fa-pills me-3"></i>Prescriptions
+            <i class="fas fa-pills me-3"></i><span th:text="#{prescriptions.title}">Prescriptions</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-            <i class="fas fa-chart-line me-3"></i>Health Metrics
+            <i class="fas fa-chart-line me-3"></i><span th:text="#{health.metrics.title}">Health Metrics</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
-            <i class="fas fa-comments me-3"></i>Messages
+            <i class="fas fa-comments me-3"></i><span th:text="#{messaging.title}">Messages</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
-            <i class="fas fa-credit-card me-3"></i>Billing
+            <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>
         </div>
     </div>
 </div>
@@ -404,9 +407,9 @@
                 <div class="metric-card">
                     <h2 class="mb-0" style="color: var(--primary-color);">
                         <i class="fas fa-chart-line me-3"></i>
-                        Health Metrics Dashboard
+                        <span th:text="#{health.metrics.dashboard}">Health Metrics Dashboard</span>
                     </h2>
-                    <p class="text-muted mt-2 mb-0">Monitor your vital signs, track progress, and manage your health goals</p>
+                    <p class="text-muted mt-2 mb-0" th:text="#{health.metrics.description}">Monitor your vital signs, track progress, and manage your health goals</p>
                 </div>
             </div>
         </div>
@@ -416,13 +419,13 @@
             <div class="col-12">
                 <div class="metric-card">
                     <h5 class="card-title">
-                        <i class="fas fa-heartbeat"></i>Current Vitals
+                        <i class="fas fa-heartbeat"></i><span th:text="#{health.metrics.current.vitals}">Current Vitals</span>
                     </h5>
                     <div class="row g-4">
                         <div class="col-xl-3 col-lg-6">
                             <div class="vital-box">
                                 <div class="vital-value" th:text="${additionalPatientInfo?.currentWeight != null ? additionalPatientInfo.currentWeight : '--'}">--</div>
-                                <div class="vital-label">Weight (lbs)</div>
+                                <div class="vital-label" th:text="#{health.metrics.weight.lbs}">Weight (lbs)</div>
                             </div>
                         </div>
                         <div class="col-xl-3 col-lg-6">
@@ -432,19 +435,19 @@
                                           th:text="${additionalPatientInfo.heightFeet + '''''' + additionalPatientInfo.heightInches + ''''''}">--</span>
                                     <span th:unless="${additionalPatientInfo?.heightFeet != null and additionalPatientInfo?.heightInches != null}">--</span>
                                 </div>
-                                <div class="vital-label">Height</div>
+                                <div class="vital-label" th:text="#{health.metrics.height}">Height</div>
                             </div>
                         </div>
                         <div class="col-xl-3 col-lg-6">
                             <div class="vital-box">
                                 <div class="vital-value" th:text="${additionalPatientInfo?.restingHeartRate != null ? additionalPatientInfo.restingHeartRate : '--'}">--</div>
-                                <div class="vital-label">Heart Rate (bpm)</div>
+                                <div class="vital-label" th:text="#{health.metrics.heart.rate.bpm}">Heart Rate (bpm)</div>
                             </div>
                         </div>
                         <div class="col-xl-3 col-lg-6">
                             <div class="vital-box">
                                 <div class="vital-value" th:text="${additionalPatientInfo?.normalBodyTemp != null ? additionalPatientInfo.normalBodyTemp : '--'}">--</div>
-                                <div class="vital-label">Body Temp (°F)</div>
+                                <div class="vital-label" th:text="#{health.metrics.body.temp.f}">Body Temp (°F)</div>
                             </div>
                         </div>
                     </div>

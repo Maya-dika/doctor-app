@@ -50,6 +50,13 @@
             <artifactId>mssql-jdbc</artifactId>
         </dependency>
 
+        <!-- H2 Database (for development) -->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
         <!-- DevTools (for hot reload) -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -99,6 +106,19 @@
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
+
+        <!-- Apache POI for Excel export -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi</artifactId>
+            <version>5.2.4</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>5.2.4</version>
         </dependency>
     </dependencies>
 

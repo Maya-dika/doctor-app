@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Patient Dashboard - Healthcare Portal</title>
+    <title th:text="#{patient.dashboard.title}">Patient Dashboard - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -138,23 +138,26 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-heartbeat me-2"></i>
-                Healthcare Portal
+                <span th:text="#{main.title}">Healthcare Portal</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${patient != null ? (patient.firstName + ' ' + patient.lastName) : 'Guest User'}">John Doe</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/patient-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -168,25 +171,25 @@
              <div class="col-md-3 col-lg-2 p-0">
     <div class="sidebar">
         <div class="sidebar-item active" th:onclick="|window.location.href='@{/patient-dashboard}'|">
-            <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+            <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
-            <i class="fas fa-calendar-alt me-3"></i>My Appointments
+            <i class="fas fa-calendar-alt me-3"></i><span th:text="#{appointment.my.appointments}">My Appointments</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/appointment}'|">
-            <i class="fas fa-calendar-plus me-3"></i>Book Appointment
+            <i class="fas fa-calendar-plus me-3"></i><span th:text="#{appointment.book}">Book Appointment</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/prescriptions}'|">
-            <i class="fas fa-pills me-3"></i>Prescriptions
+            <i class="fas fa-pills me-3"></i><span th:text="#{prescriptions.title}">Prescriptions</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/health-metrics}'|">
-            <i class="fas fa-chart-line me-3"></i>Health Metrics
+            <i class="fas fa-chart-line me-3"></i><span th:text="#{health.metrics.title}">Health Metrics</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
-            <i class="fas fa-comments me-3"></i>Messages
+            <i class="fas fa-comments me-3"></i><span th:text="#{messaging.title}">Messages</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
-            <i class="fas fa-credit-card me-3"></i>Billing
+            <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>
         </div>
     </div>
 </div>
@@ -203,12 +206,12 @@
                                     <span th:text="${patient != null and patient.firstName != null ? patient.firstName.substring(0,1) : 'U'}">J</span>
                                 </div>
                                 <div>
-                                    <h2 class="mb-0">Welcome, <span th:text="${patient != null ? patient.firstName : 'Guest'}">John</span>!</h2>
-                                    <p class="text-muted mb-0">Here's your health overview for today</p>
+                                    <h2 class="mb-0" th:text="#{patient.dashboard.welcome}">Welcome, <span th:text="${patient != null ? patient.firstName : 'Guest'}">John</span>!</h2>
+                                    <p class="text-muted mb-0" th:text="#{patient.dashboard.overview}">Here's your health overview for today</p>
                                 </div>
                             </div>
                             <a th:href="@{/appointment}">
-                            <button class="btn btn-primary">
+                            <button class="btn btn-primary" th:text="#{patient.dashboard.book.appointment}">
                                 <i class="fas fa-calendar-plus me-2"></i>Book Appointment
                             </button>
                             </a>
@@ -222,25 +225,25 @@
                     <div class="col-md-3">
                         <div class="stat-card text-center">
                             <div class="stat-number" th:text="${upcomingAppointments != null ? upcomingAppointments : '0'}">0</div>
-                            <div>Upcoming Appointments</div>
+                            <div th:text="#{patient.dashboard.upcoming.appointments}">Upcoming Appointments</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card text-center">
                             <div class="stat-number" th:text="${totalVisits != null ? totalVisits : '0'}">0</div>
-                            <div>Total Visits</div>
+                            <div th:text="#{patient.dashboard.total.visits}">Total Visits</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card text-center">
                             <div class="stat-number" th:text="${activePrescriptions != null ? activePrescriptions : '0'}">0</div>
-                            <div>Active Prescriptions</div>
+                            <div th:text="#{patient.dashboard.active.prescriptions}">Active Prescriptions</div>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="stat-card text-center">
                             <div class="stat-number" th:text="${unreadMessages != null ? unreadMessages : '0'}">0</div>
-                            <div>Unread Messages</div>
+                            <div th:text="#{patient.dashboard.unread.messages}">Unread Messages</div>
                         </div>
                     </div>
                 </div>
@@ -250,7 +253,7 @@
                     <div class="col-12">
                         <div class="alert alert-warning alert-custom" role="alert" th:each="notification : ${notifications}">
                             <i class="fas fa-exclamation-triangle me-2"></i>
-                            <strong>Reminder:</strong> <span th:text="${notification}">No notifications</span>
+                            <strong th:text="#{patient.dashboard.reminder} + ':'">Reminder:</strong> <span th:text="${notification}">No notifications</span>
                         </div>
                     </div>
                 </div>
@@ -262,7 +265,7 @@
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="fas fa-calendar-alt text-primary me-2"></i>
-                                    Upcoming Appointments
+                                    <span th:text="#{patient.dashboard.upcoming.appointments}">Upcoming Appointments</span>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -281,10 +284,10 @@
                                 </div>
                                 <div th:if="${appointments == null or appointments.empty}" class="text-center py-4">
                                     <i class="fas fa-calendar-times text-muted" style="font-size: 3rem;"></i>
-                                    <p class="text-muted mt-3">No upcoming appointments scheduled</p>
+                                    <p class="text-muted mt-3" th:text="#{patient.dashboard.no.upcoming.appointments}">No upcoming appointments scheduled</p>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a href="/myappointments" class="btn btn-outline-primary btn-sm">View All Appointments</a>
+                                    <a href="/myappointments" class="btn btn-outline-primary btn-sm" th:text="#{patient.dashboard.view.all.appointments}">View All Appointments</a>
                                 </div>
                             </div>
                         </div>
@@ -296,7 +299,7 @@
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="fas fa-chart-line text-success me-2"></i>
-                                    Recent Health Metrics
+                                    <span th:text="#{patient.dashboard.recent.health.metrics}">Recent Health Metrics</span>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -308,10 +311,10 @@
                                 </div>
                                 <div th:if="${healthMetrics == null or healthMetrics.empty}" class="text-center py-4">
                                     <i class="fas fa-chart-line text-muted" style="font-size: 3rem;"></i>
-                                    <p class="text-muted mt-3">check your health metrics </p>
+                                    <p class="text-muted mt-3" th:text="#{patient.dashboard.check.health.metrics}">check your health metrics </p>
                                 </div>
                                 <div class="text-center mt-3">
-                                    <a href="/health-metrics" class="btn btn-outline-success btn-sm">View Detailed Reports</a>
+                                    <a href="/health-metrics" class="btn btn-outline-success btn-sm" th:text="#{patient.dashboard.view.detailed.reports}">View Detailed Reports</a>
                                 </div>
                             </div>
                         </div>
@@ -323,7 +326,7 @@
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="fas fa-pills text-info me-2"></i>
-                                    Current Prescriptions
+                                    <span th:text="#{patient.dashboard.current.prescriptions}">Current Prescriptions</span>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -338,10 +341,10 @@
                                 </div>
                                 <div th:if="${prescriptions == null or prescriptions.empty}" class="text-center py-4">
                                     <i class="fas fa-pills text-muted" style="font-size: 3rem;"></i>
-                                    <p class="text-muted mt-3">No active prescriptions</p>
+                                    <p class="text-muted mt-3" th:text="#{patient.dashboard.no.active.prescriptions}">No active prescriptions</p>
                                 </div>
                                 <div class="text-center">
-                                    <a href="#" class="btn btn-outline-info btn-sm">Manage Prescriptions</a>
+                                    <a href="#" class="btn btn-outline-info btn-sm" th:text="#{patient.dashboard.manage.prescriptions}">Manage Prescriptions</a>
                                 </div>
                             </div>
                         </div>
@@ -353,7 +356,7 @@
                             <div class="card-header bg-white">
                                 <h5 class="mb-0">
                                     <i class="fas fa-envelope text-warning me-2"></i>
-                                    Recent Messages
+                                    <span th:text="#{patient.dashboard.recent.messages}">Recent Messages</span>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -374,10 +377,10 @@
                                 </div>
                                 <div th:if="${messages == null or messages.empty}" class="text-center py-4">
                                     <i class="fas fa-inbox text-muted" style="font-size: 3rem;"></i>
-                                    <p class="text-muted mt-3">No messages yet</p>
+                                    <p class="text-muted mt-3" th:text="#{patient.dashboard.no.messages}">No messages yet</p>
                                 </div>
                                 <div class="text-center">
-                                    <a href="/messaging" class="btn btn-outline-warning btn-sm">View All Messages</a>
+                                    <a href="/messaging" class="btn btn-outline-warning btn-sm" th:text="#{patient.dashboard.view.all.messages}">View All Messages</a>
                                 </div>
                             </div>
                         </div>

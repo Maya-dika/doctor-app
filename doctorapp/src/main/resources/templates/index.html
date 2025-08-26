@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Healthcare Portal - User Selection</title>
+    <title th:text="#{main.title}">Healthcare Portal - User Selection</title>
     <style>
         * {
             margin: 0;
@@ -172,6 +172,7 @@
 
         .feature-pill {
             background: rgba(255, 255, 255, 0.8);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 12px 24px;
             border-radius: 25px;
@@ -193,6 +194,7 @@
 
         .user-card {
             background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border-radius: 30px;
             padding: 60px 40px;
@@ -435,16 +437,19 @@
     <header class="header">
         <div class="logo-section">
             <div class="logo">H+</div>
-            <div class="logo-text">HealthCare Portal</div>
+            <div class="logo-text" th:text="#{header.logo.text}">HealthCare Portal</div>
         </div>
-        <a href="/login" class="login-btn">Already have an account? Login</a>
+        <div style="display: flex; align-items: center; gap: 20px;">
+            <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+            <a href="/login" class="login-btn" th:text="#{header.login.text}">Already have an account? Login</a>
+        </div>
     </header>
 
     <!-- Main Content -->
     <main class="main-content">
         <section class="hero-section">
-            <h1 class="main-title">Choose Your Healthcare Journey</h1>
-            <p class="subtitle">Experience seamless healthcare management with our comprehensive digital platform designed for modern medical practice</p>
+            <h1 class="main-title" th:text="#{main.title}">Choose Your Healthcare Journey</h1>
+            <p class="subtitle" th:text="#{main.subtitle}">Experience seamless healthcare management with our comprehensive digital platform designed for modern medical practice</p>
            
         </section>
 
@@ -453,17 +458,17 @@
                 <button type="submit" class="btn-submit">
                     <div class="user-card doctor-card">
                         <div class="card-icon doctor-icon">👨‍⚕️</div>
-                        <h2 class="card-title">Healthcare Provider</h2>
-                        <p class="card-description">Advanced medical tools and comprehensive patient management for healthcare professionals</p>
+                        <h2 class="card-title" th:text="#{user.doctor.title}">Healthcare Provider</h2>
+                        <p class="card-description" th:text="#{user.doctor.description}">Advanced medical tools and comprehensive patient management for healthcare professionals</p>
                         <ul class="card-features">
-                            <li>Complete patient records management</li>
-                            <li>Advanced appointment scheduling</li>
-                            <li>Medical documentation & notes</li>
-                            <li>Prescription management system</li>
-                            <li>Clinical decision support</li>
-                            <li>Analytics and reporting tools</li>
+                            <li th:text="#{doctor.feature.records}">Complete patient records management</li>
+                            <li th:text="#{doctor.feature.appointments}">Advanced appointment scheduling</li>
+                            <li th:text="#{doctor.feature.documentation}">Medical documentation & notes</li>
+                            <li th:text="#{doctor.feature.prescriptions}">Prescription management system</li>
+                            <li th:text="#{doctor.feature.support}">Clinical decision support</li>
+                            <li th:text="#{doctor.feature.analytics}">Analytics and reporting tools</li>
                         </ul>
-                        <div class="cta-button doctor-cta">Register as Healthcare Provider</div>
+                        <div class="cta-button doctor-cta" th:text="#{user.doctor.register}">Register as Healthcare Provider</div>
                     </div>
                 </button>
             </form>
@@ -472,17 +477,17 @@
                 <button type="submit" class="btn-submit">
                     <div class="user-card patient-card">
                         <div class="card-icon patient-icon">👤</div>
-                        <h2 class="card-title">Patient</h2>
-                        <p class="card-description">Take control of your health with easy access to medical information and appointment management</p>
+                        <h2 class="card-title" th:text="#{user.patient.title}">Patient</h2>
+                        <p class="card-description" th:text="#{user.patient.description}">Take control of your health with easy access to medical information and appointment management</p>
                         <ul class="card-features">
-                            <li>Easy appointment booking</li>
-                            <li>Complete medical history access</li>
-                            <li>Real-time test results viewing</li>
-                            <li>Prescription tracking & refills</li>
-                            <li>Health reminders & notifications</li>
-                            <li>Secure messaging with providers</li>
+                            <li th:text="#{patient.feature.booking}">Easy appointment booking</li>
+                            <li th:text="#{patient.feature.history}">Complete medical history access</li>
+                            <li th:text="#{patient.feature.results}">Real-time test results viewing</li>
+                            <li th:text="#{patient.feature.tracking}">Prescription tracking & refills</li>
+                            <li th:text="#{patient.feature.reminders}">Health reminders & notifications</li>
+                            <li th:text="#{patient.feature.messaging}">Secure messaging with providers</li>
                         </ul>
-                        <div class="cta-button patient-cta">Register as Patient</div>
+                        <div class="cta-button patient-cta" th:text="#{user.patient.register}">Register as Patient</div>
                     </div>
                 </button>
             </form>

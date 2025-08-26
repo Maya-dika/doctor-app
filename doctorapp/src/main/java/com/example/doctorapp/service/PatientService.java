@@ -72,4 +72,40 @@ public class PatientService {
             throw new RuntimeException("Error hashing password", e);
         }
     }
+    
+    /**
+     * Get all patients
+     */
+    public List<Patient> getAllPatients() {
+        return patientRepository.findAll();
+    }
+    
+    /**
+     * Get patient by ID
+     */
+    public Patient getPatientById(Long id) {
+        return patientRepository.findById(id).orElse(null);
+    }
+    
+    /**
+     * Save patient
+     */
+    public Patient savePatient(Patient patient) {
+        return patientRepository.save(patient);
+    }
+    
+    /**
+     * Delete patient by ID
+     */
+    public void deletePatient(Long id) {
+        patientRepository.deleteById(id);
+    }
+    
+    /**
+     * Search patients by name (first name or last name)
+     */
+    public List<Patient> searchPatientsByName(String name) {
+        String searchTerm = "%" + name.toLowerCase() + "%";
+        return patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchTerm, searchTerm);
+    }
 }

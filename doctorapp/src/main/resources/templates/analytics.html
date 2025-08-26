@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analytics - Healthcare Portal</title>
+    <title th:text="#{analytics.title}">Analytics - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
@@ -166,23 +166,26 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-user-md me-2"></i>
-                Healthcare Portal - Doctor
+                <span th:text="#{main.title} + ' - ' + #{doctor.title}">Healthcare Portal - Doctor</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button title="#{common.menu}" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -196,22 +199,22 @@
             <div class="col-md-3 col-lg-2 p-0">
                 <div class="sidebar">
                     <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
-                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
-                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                        <i class="fas fa-calendar-alt me-3"></i><span th:text="#{dashboard.appointments}">Appointments</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/patient-management'">
-                        <i class="fas fa-users me-3"></i>Patient Management
+                        <i class="fas fa-users me-3"></i><span th:text="#{patient.management.title}">Patient Management</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/medical-records'">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                        <i class="fas fa-file-medical me-3"></i><span th:text="#{medical.records.title}">Medical Records</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-prescriptions'">
-                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                        <i class="fas fa-prescription-bottle me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
                     </div>
                     <div class="sidebar-item active" onclick="window.location.href='/analytics'">
-                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                        <i class="fas fa-chart-bar me-3"></i><span th:text="#{analytics.title}">Analytics</span>
                     </div>
                 </div>
             </div>
@@ -223,21 +226,21 @@
                     <div class="col-12">
                         <h2 class="mb-0">
                             <i class="fas fa-chart-bar text-primary me-2"></i>
-                            Statistics & Insights
+                            <span th:text="#{analytics.statistics.insights}">Statistics & Insights</span>
                         </h2>
-                        <p class="text-muted mb-0">Overview of your practice performance and patient statistics</p>
+                        <p class="text-muted mb-0" th:text="#{analytics.overview.description}">Overview of your practice performance and patient statistics</p>
                     </div>
                 </div>
 
                 <!-- Period Selector -->
                 <div class="period-selector">
-                    <button class="period-tab active" onclick="changePeriod('today')">
+                    <button class="period-tab active" onclick="changePeriod('today')" th:text="#{analytics.period.today}">
                         Today
                     </button>
-                    <button class="period-tab" onclick="changePeriod('week')">
+                    <button class="period-tab" onclick="changePeriod('week')" th:text="#{analytics.period.this.week}">
                         This Week
                     </button>
-                    <button class="period-tab" onclick="changePeriod('month')">
+                    <button class="period-tab" onclick="changePeriod('month')" th:text="#{analytics.period.this.month}">
                         This Month
                     </button>
                 </div>
@@ -272,8 +275,8 @@
                         <div class="stats-card card">
                             <div class="card-body text-center py-4">
                                 <i class="fas fa-chart-bar text-muted mb-3" style="font-size: 2rem;"></i>
-                                <h5 class="text-muted">No Analytics Data</h5>
-                                <p class="text-muted mb-0">No statistics available for your account yet.</p>
+                                <h5 class="text-muted" th:text="#{analytics.no.data}">No Analytics Data</h5>
+                                <p class="text-muted mb-0" th:text="#{analytics.no.statistics}">No statistics available for your account yet.</p>
                             </div>
                         </div>
                     </div>
@@ -286,7 +289,7 @@
                             <div class="card-header bg-transparent border-bottom-0">
                                 <h5 class="card-title mb-0">
                                     <i class="fas fa-stethoscope me-2 text-primary"></i>
-                                    Analytics Summary
+                                    <span th:text="#{analytics.summary}">Analytics Summary</span>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -298,8 +301,8 @@
                                 </div>
                                 <div th:if="${analyticsList == null or analyticsList.empty}" class="empty-state">
                                     <i class="fas fa-chart-pie"></i>
-                                    <h5>No Analytics Data</h5>
-                                    <p>No analytics data available for this period.</p>
+                                    <h5 th:text="#{analytics.no.data}">No Analytics Data</h5>
+                                    <p th:text="#{analytics.no.data.period}">No analytics data available for this period.</p>
                                 </div>
                             </div>
                         </div>
@@ -311,7 +314,7 @@
                             <div class="card-header bg-transparent border-bottom-0">
                                 <h5 class="card-title mb-0">
                                     <i class="fas fa-chart-line me-2 text-primary"></i>
-                                    Performance Overview
+                                    <span th:text="#{analytics.performance.overview}">Performance Overview</span>
                                 </h5>
                             </div>
                             <div class="card-body">
@@ -396,13 +399,13 @@
             const revenueLabel = document.getElementById('revenueLabel');
             switch(period) {
                 case 'today':
-                    revenueLabel.textContent = 'Revenue Today';
+                    revenueLabel.textContent = 'Revenue Today'; // This would need server-side translation
                     break;
                 case 'week':
-                    revenueLabel.textContent = 'Revenue This Week';
+                    revenueLabel.textContent = 'Revenue This Week'; // This would need server-side translation
                     break;
                 case 'month':
-                    revenueLabel.textContent = 'Revenue This Month';
+                    revenueLabel.textContent = 'Revenue This Month'; // This would need server-side translation
                     break;
             }
 

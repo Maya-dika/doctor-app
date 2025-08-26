@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+    <div th:fragment="language-selector" class="language-selector">
+        <div class="language-dropdown">
+            <button class="language-btn" onclick="toggleLanguageDropdown()">
+                <span class="current-lang" th:text="${#locale.language}">en</span>
+                <span class="dropdown-arrow">▼</span>
+            </button>
+            <div class="language-options" id="languageOptions">
+                <a href="/change-language?lang=en" class="language-option" th:class="${#locale.language == 'en'} ? 'language-option active' : 'language-option'">
+                    <span th:text="#{language.english}">English</span>
+                </a>
+                <a href="/change-language?lang=fr" class="language-option" th:class="${#locale.language == 'fr'} ? 'language-option active' : 'language-option'">
+                    <span th:text="#{language.french}">Français</span>
+                </a>
+                <a href="/change-language?lang=ar" class="language-option" th:class="${#locale.language == 'ar'} ? 'language-option active' : 'language-option'">
+                    <span th:text="#{language.arabic}">العربية</span>
+                </a>
+            </div>
+        </div>
+        
+        <style>
+            .language-selector {
+                position: relative;
+                z-index: 1000;
+            }
+            
+            .language-dropdown {
+                position: relative;
+                display: inline-block;
+            }
+            
+            .language-btn {
+                background: rgba(255, 255, 255, 0.9);
+                border: 1px solid rgba(0, 0, 0, 0.1);
+                border-radius: 20px;
+                padding: 8px 16px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 0.9rem;
+                font-weight: 500;
+                color: #4a5568;
+                transition: all 0.3s ease;
+                -webkit-backdrop-filter: blur(10px);
+                backdrop-filter: blur(10px);
+            }
+            
+            .language-btn:hover {
+                background: rgba(255, 255, 255, 1);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+            
+            .current-lang {
+                text-transform: uppercase;
+                font-weight: 600;
+            }
+            
+            .dropdown-arrow {
+                font-size: 0.8rem;
+                transition: transform 0.3s ease;
+            }
+            
+            .language-options {
+                position: absolute;
+                top: 100%;
+                right: 0;
+                background: white;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+                padding: 8px 0;
+                min-width: 120px;
+                opacity: 0;
+                visibility: hidden;
+                transform: translateY(-10px);
+                transition: all 0.3s ease;
+                border: 1px solid rgba(0, 0, 0, 0.1);
+            }
+            
+            .language-options.show {
+                opacity: 1;
+                visibility: visible;
+                transform: translateY(0);
+            }
+            
+            .language-option {
+                display: block;
+                padding: 10px 16px;
+                text-decoration: none;
+                color: #4a5568;
+                font-size: 0.9rem;
+                transition: all 0.2s ease;
+                border: none;
+                background: none;
+                width: 100%;
+                text-align: left;
+                cursor: pointer;
+            }
+            
+            .language-option:hover {
+                background: rgba(46, 125, 50, 0.1);
+                color: #2e7d32;
+            }
+            
+            .language-option.active {
+                background: rgba(46, 125, 50, 0.15);
+                color: #2e7d32;
+                font-weight: 600;
+            }
+            
+            /* RTL Support for Arabic */
+            [dir="rtl"] .language-options {
+                right: auto;
+                left: 0;
+            }
+            
+            [dir="rtl"] .language-option {
+                text-align: right;
+            }
+            
+            /* Mobile responsive */
+            @media (max-width: 768px) {
+                .language-btn {
+                    padding: 6px 12px;
+                    font-size: 0.8rem;
+                }
+                
+                .language-options {
+                    min-width: 100px;
+                }
+            }
+        </style>
+        
+        <script>
+            function toggleLanguageDropdown() {
+                const options = document.getElementById('languageOptions');
+                options.classList.toggle('show');
+            }
+            
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const dropdown = document.querySelector('.language-dropdown');
+                if (!dropdown.contains(event.target)) {
+                    document.getElementById('languageOptions').classList.remove('show');
+                }
+            });
+            
+            // Set RTL direction for Arabic and load RTL CSS
+            document.addEventListener('DOMContentLoaded', function() {
+                const currentLang = document.querySelector('.current-lang').textContent;
+                if (currentLang === 'ar') {
+                    document.documentElement.setAttribute('dir', 'rtl');
+                    document.documentElement.setAttribute('lang', 'ar');
+                    
+                    // Load RTL CSS if not already loaded
+                    if (!document.querySelector('link[href*="rtl.css"]')) {
+                        const rtlLink = document.createElement('link');
+                        rtlLink.rel = 'stylesheet';
+                        rtlLink.href = '/css/rtl.css';
+                        document.head.appendChild(rtlLink);
+                    }
+                } else {
+                    document.documentElement.setAttribute('dir', 'ltr');
+                    document.documentElement.setAttribute('lang', currentLang);
+                    
+                    // Remove RTL CSS if present
+                    const rtlLink = document.querySelector('link[href*="rtl.css"]');
+                    if (rtlLink) {
+                        rtlLink.remove();
+                    }
+                }
+            });
+        </script>
+    </div>
+</body>
+</html>

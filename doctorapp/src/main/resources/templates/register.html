@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Patient Registration - Healthcare Portal</title>
+    <title th:text="#{register.patient.title}">Patient Registration - Healthcare Portal</title>
     <style>
         * {
             margin: 0;
@@ -23,6 +23,7 @@
 
         .container {
             background: rgba(255, 255, 255, 0.95);
+            -webkit-backdrop-filter: blur(10px);
             backdrop-filter: blur(10px);
             padding: 40px;
             border-radius: 20px;
@@ -218,7 +219,7 @@
             color: #2e7d32;
             border-left: 4px solid #4caf50;
         }
-          .back-btn {
+          .back-btn {   
             position: absolute;
             top: 20px;
             left: 20px;
@@ -242,9 +243,13 @@
     </style>
 </head>
 <body>
-    <a href="/" class="back-btn">← Back to Home</a>
+    <div style="position: absolute; top: 20px; right: 20px; z-index: 1000;">
+        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+    </div>
+    
+    <a href="/" class="back-btn" th:text="#{common.back}">← Back to Home</a>
     <div class="container">
-        <h1>Patient Registration</h1>
+        <h1 th:text="#{register.patient.title}">Patient Registration</h1>
         
         <div class="privacy-notice">
             <strong>Privacy Notice:</strong> Your personal health information is protected and will only be used for medical care purposes in accordance with HIPAA regulations.
@@ -256,21 +261,21 @@
         <form th:action="@{/register-patient}" th:object="${patient}" method="post" novalidate>
             <div class="form-grid">
                 <div class="form-group">
-                    <label for="firstName">First Name *</label>
+                    <label for="firstName" th:text="#{register.firstname}">First Name *</label>
                     <input type="text" id="firstName" th:field="*{firstName}" required 
                            pattern="[A-Za-z\s]+" title="Please enter a valid first name" />
                     <span class="error-message">Please enter your first name</span>
                 </div>
                 
                 <div class="form-group">
-                    <label for="lastName">Last Name *</label>
+                    <label for="lastName" th:text="#{register.lastname}">Last Name *</label>
                     <input type="text" id="lastName" th:field="*{lastName}" required 
                            pattern="[A-Za-z\s]+" title="Please enter a valid last name" />
                     <span class="error-message">Please enter your last name</span>
                 </div>
                 
                 <div class="form-group">
-                    <label for="phoneNumber">Phone Number *</label>
+                    <label for="phoneNumber" th:text="#{register.phone}">Phone Number *</label>
                     <input type="tel" id="phoneNumber" th:field="*{phoneNumber}" required 
                            pattern="[0-9\-\+\s\(\)]+" title="Please enter a valid phone number" 
                            placeholder="(555) 123-4567" />
@@ -297,7 +302,7 @@
                 </div>
                 
                 <div class="form-group">
-                    <label for="email">Email Address *</label>
+                    <label for="email" th:text="#{register.email}">Email Address *</label>
                     <input type="email" id="email" th:field="*{email}" required 
                            placeholder="your.email@example.com" />
                     <span class="error-message">Please enter a valid email address</span>
@@ -305,14 +310,14 @@
                 
                 <!-- Password fields - NOT bound to Patient model -->
                 <div class="form-group">
-                    <label for="password">Password *</label>
+                    <label for="password" th:text="#{register.password}">Password *</label>
                     <input type="password" id="password" name="password" required 
                            minlength="8" placeholder="Minimum 8 characters" />
                     <span class="error-message">Password must be at least 8 characters</span>
                 </div>
 
                 <div class="form-group">
-                    <label for="confirmPassword">Confirm Password *</label>
+                    <label for="confirmPassword" th:text="#{register.confirmpassword}">Confirm Password *</label>
                     <input type="password" id="confirmPassword" name="confirmPassword" required 
                            minlength="8" placeholder="Confirm your password" />
                     <span class="error-message">Passwords do not match</span>
@@ -333,7 +338,7 @@
                 </div>
             </div>
             
-            <button type="submit" class="submit-btn">
+            <button type="submit" class="submit-btn" th:text="#{register.submit}">
                 Register Patient
             </button>
         </form>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Medical Records - Healthcare Portal</title>
+    <title th:text="#{medical.records.title}">Medical Records - Healthcare Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -167,23 +167,26 @@
         <div class="container-fluid">
             <a class="navbar-brand" href="#">
                 <i class="fas fa-user-md me-2"></i>
-                Healthcare Portal - Doctor
+                <span th:text="#{main.title} + ' - ' + #{doctor.title}">Healthcare Portal - Doctor</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
                             <i class="fas fa-user-circle me-1"></i>
                             <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i>Profile</a></li>
-                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
                             <li><hr class="dropdown-divider"></li>
-                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
                         </ul>
                     </li>
                 </ul>
@@ -197,22 +200,22 @@
             <div class="col-md-3 col-lg-2 p-0">
                 <div class="sidebar">
                     <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
-                        <i class="fas fa-tachometer-alt me-3"></i>Dashboard
+                        <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
-                        <i class="fas fa-calendar-alt me-3"></i>Appointments
+                        <i class="fas fa-calendar-alt me-3"></i><span th:text="#{dashboard.appointments}">Appointments</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/patient-management'">
-                        <i class="fas fa-users me-3"></i>Patient Management
+                        <i class="fas fa-users me-3"></i><span th:text="#{patient.management.title}">Patient Management</span>
                     </div>
                     <div class="sidebar-item active" onclick="window.location.href='/medical-records'">
-                        <i class="fas fa-file-medical me-3"></i>Medical Records
+                        <i class="fas fa-file-medical me-3"></i><span th:text="#{medical.records.title}">Medical Records</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/doctor-prescriptions'">
-                        <i class="fas fa-prescription-bottle me-3"></i>Prescriptions
+                        <i class="fas fa-prescription-bottle me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
                     </div>
                     <div class="sidebar-item" onclick="window.location.href='/analytics'">
-                        <i class="fas fa-chart-bar me-3"></i>Analytics
+                        <i class="fas fa-chart-bar me-3"></i><span th:text="#{analytics.title}">Analytics</span>
                     </div>
                 </div>
             </div>
@@ -224,9 +227,9 @@
                     <div class="col-12">
                         <h2 class="mb-0">
                             <i class="fas fa-file-medical text-primary me-2"></i>
-                            Medical Records
+                            <span th:text="#{medical.records.title}">Medical Records</span>
                         </h2>
-                        <p class="text-muted mb-0">Manage patient medical records and history</p>
+                        <p class="text-muted mb-0" th:text="#{medical.records.description}">Manage patient medical records and history</p>
                     </div>
                 </div>
 
@@ -239,13 +242,13 @@
                                     <i class="fas fa-search text-muted"></i>
                                 </span>
                                 <input type="text" class="form-control search-input border-start-0" 
-                                       placeholder="Search records by patient name, diagnosis, or record ID..." 
+                                       th:placeholder="#{medical.records.search.placeholder}" 
                                        id="recordSearch">
                             </div>
                         </div>
                         <div class="col-md-4">
-                            <select class="form-select search-input" id="patientFilter">
-                                <option value="">Select Patient</option>
+                            <select class="form-select search-input" id="patientFilter" th:title="#{medical.records.select.patient}">
+                                <option value="" th:text="#{medical.records.select.patient}">Select Patient</option>
                                 <option th:each="patient : ${patients}" 
                                         th:value="${patient.id}" 
                                         th:text="${patient.firstName != null ? (patient.firstName + ' ' + patient.lastName) : 'Unknown Patient'}">
@@ -258,16 +261,16 @@
 
                 <!-- Filter Tabs -->
                 <div class="filter-tabs">
-                    <button class="filter-tab active" onclick="filterRecords('all')">
+                    <button class="filter-tab active" onclick="filterRecords('all')" th:text="#{medical.records.filter.all}">
                         All Records
                     </button>
-                    <button class="filter-tab" onclick="filterRecords('diagnosis')">
+                    <button class="filter-tab" onclick="filterRecords('diagnosis')" th:text="#{medical.records.filter.diagnoses}">
                         Diagnoses
                     </button>
-                    <button class="filter-tab" onclick="filterRecords('prescription')">
+                    <button class="filter-tab" onclick="filterRecords('prescription')" th:text="#{medical.records.filter.prescriptions}">
                         Prescriptions
                     </button>
-                    <button class="filter-tab" onclick="filterRecords('test')">
+                    <button class="filter-tab" onclick="filterRecords('test')" th:text="#{medical.records.filter.test.results}">
                         Test Results
                     </button>
                 </div>
@@ -299,7 +302,7 @@
                                             </div>
                                             <p class="text-muted mb-1">
                                                 <i class="fas fa-file-medical me-1"></i>
-                                                Record ID: <span th:text="${record.id != null ? record.id : 'N/A'}">#N/A</span>
+                                                <span th:text="#{medical.records.record.id} + ': '">Record ID: </span><span th:text="${record.id != null ? record.id : 'N/A'}">#N/A</span>
                                             </p>
                                             <p class="text-muted mb-0" th:if="${record.diagnosis != null}">
                                                 <i class="fas fa-stethoscope me-1"></i>
@@ -311,21 +314,21 @@
                                         <div class="col-md-3">
                                             <p class="mb-1" th:if="${record.symptoms != null}">
                                                 <i class="fas fa-notes-medical me-1 text-warning"></i>
-                                                <small class="text-muted">Symptoms:</small><br>
+                                                <small class="text-muted" th:text="#{medical.records.symptoms} + ':'">Symptoms:</small><br>
                                                 <span class="small" th:text="${record.symptoms}">Symptoms</span>
                                             </p>
                                             <p class="text-muted small mb-0" th:if="${record.treatment != null}">
                                                 <i class="fas fa-prescription me-1"></i>
-                                                Treatment: <span th:text="${record.treatment}">Treatment</span>
+                                                <span th:text="#{medical.records.treatment} + ': '">Treatment: </span><span th:text="${record.treatment}">Treatment</span>
                                             </p>
                                         </div>
 
                                         <!-- Date and Doctor -->
                                         <div class="col-md-2">
-                                            <p class="text-muted small mb-1">Record Date:</p>
+                                            <p class="text-muted small mb-1" th:text="#{medical.records.record.date} + ':'">Record Date:</p>
                                             <span class="text-primary fw-bold small" th:text="${record.recordDate != null ? record.recordDate : 'N/A'}">Date</span>
                                             <p class="text-muted small mb-0 mt-1" th:if="${record.doctor != null}">
-                                                by Dr. <span th:text="${record.doctor.firstName + ' ' + record.doctor.lastName}">Doctor</span>
+                                                <span th:text="#{medical.records.by.doctor} + ' '">by Dr. </span><span th:text="${record.doctor.firstName + ' ' + record.doctor.lastName}">Doctor</span>
                                             </p>
                                         </div>
 
@@ -333,19 +336,19 @@
                                         <div class="col-md-2 text-end">
                                             <div class="btn-group-vertical btn-group-sm">
                                                 <button class="btn btn-primary btn-sm mb-1" 
-                                                        title="View Full Record"
+                                                        th:title="#{medical.records.view.full.record}"
                                                         th:onclick="'viewRecord(' + ${record.id} + ')'">
-                                                    <i class="fas fa-eye me-1"></i>View
+                                                    <i class="fas fa-eye me-1"></i><span th:text="#{common.view}">View</span>
                                                 </button>
                                                 <button class="btn btn-outline-primary btn-sm mb-1" 
-                                                        title="Edit Record"
+                                                        th:title="#{medical.records.edit.record}"
                                                         th:onclick="'editRecord(' + ${record.id} + ')'">
-                                                    <i class="fas fa-edit me-1"></i>Edit
+                                                    <i class="fas fa-edit me-1"></i><span th:text="#{common.edit}">Edit</span>
                                                 </button>
                                                 <button class="btn btn-success btn-sm" 
-                                                        title="Print Record"
+                                                        th:title="#{medical.records.print.record}"
                                                         th:onclick="'printRecord(' + ${record.id} + ')'">
-                                                    <i class="fas fa-print me-1"></i>Print
+                                                    <i class="fas fa-print me-1"></i><span th:text="#{medical.records.print}">Print</span>
                                                 </button>
                                             </div>
                                         </div>
@@ -359,8 +362,8 @@
                             <div class="card" style="border: none; background: white; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
                                 <div class="card-body py-5">
                                     <i class="fas fa-file-medical text-muted" style="font-size: 4rem;"></i>
-                                    <h4 class="text-muted mt-3">No Medical Records Found</h4>
-                                    <p class="text-muted">No medical records are available for your patients yet.</p>
+                                    <h4 class="text-muted mt-3" th:text="#{medical.records.no.records.found}">No Medical Records Found</h4>
+                                    <p class="text-muted" th:text="#{medical.records.no.records.description}">No medical records are available for your patients yet.</p>
                                 </div>
                             </div>
                         </div>
@@ -371,7 +374,7 @@
     </div>
 
     <!-- Floating Add Button -->
-    <button class="new-record-btn" onclick="createNewRecord()" title="Add New Medical Record">
+    <button class="new-record-btn" onclick="createNewRecord()" th:title="#{medical.records.add.new.record}">
         <i class="fas fa-plus"></i>
     </button>
 
