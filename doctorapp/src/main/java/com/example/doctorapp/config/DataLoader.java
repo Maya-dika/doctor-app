@@ -41,12 +41,12 @@ public class DataLoader implements CommandLineRunner {
         
         // Load sample doctors if the doctors table is empty
         if (doctorRepository.count() == 0) {
-            //loadSampleDoctors();
+            loadSampleDoctors();
         }
         
         // Load sample appointments if the appointments table is empty
         if (appointmentRepository.count() == 0) {
-            //loadSampleAppointments();
+            loadSampleAppointments();
         }
     }
 

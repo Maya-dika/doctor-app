@@ -255,7 +255,7 @@
                                     <span th:text="${doctor != null and doctor.firstName != null ? doctor.firstName.substring(0,1) : 'D'}">D</span>
                                 </div>
                                 <div>
-                                    <h2 class="mb-0" th:text="#{doctor.dashboard.welcome}">Good Morning, <span th:text="${doctor != null ? ('Dr. ' + doctor.lastName) : 'Doctor'}">Doctor</span>!</h2>
+                                    <h2 class="mb-0">Good Morning, <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Doctor'}">Doctor</span>!</h2>
                                     <p class="text-muted mb-0">You have <span th:text="${todayAppointments != null ? todayAppointments : '0'}">0</span> appointments scheduled for today</p>
                                 </div>
                             </div>

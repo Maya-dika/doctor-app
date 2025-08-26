@@ -98,6 +98,13 @@ public class AppointmentService {
       public List<Appointment> findByDoctorId(Long doctorId) {
         return appointmentRepository.findByDoctor_Id(doctorId);
     }
+    
+    /**
+     * Search appointments by patient name, doctor name, date, or status
+     */
+    public List<Appointment> searchAppointments(String searchTerm) {
+        return appointmentRepository.searchAppointments(searchTerm);
+    }
 
     public List<Patient> getPatientsWithCompletedAppointments(Long doctorId) {
     List<Appointment> completedAppointments = appointmentRepository.findByDoctor_IdAndStatus(doctorId, "COMPLETED");

@@ -9,6 +9,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -21,6 +22,7 @@ import javafx.scene.paint.Stop;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Modality;
+import javafx.stage.Screen;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.util.Duration;
@@ -66,14 +68,26 @@ public class ReceptionistApp extends Application {
         // Initialize API service directly
         apiService = new ApiService();
         
-        primaryStage.setTitle("Medical Receptionist Dashboard");
-        primaryStage.setWidth(1400);
-        primaryStage.setHeight(900);
-        primaryStage.setMinWidth(1200);
-        primaryStage.setMinHeight(800);
+        // Get screen dimensions
+        Screen screen = Screen.getPrimary();
+        Rectangle2D bounds = screen.getVisualBounds();
         
-        // Remove default window decorations for modern look
-        primaryStage.initStyle(StageStyle.UNDECORATED);
+        // Calculate window size (80% of screen size, but not smaller than minimum)
+        double windowWidth = Math.max(1200, bounds.getWidth() * 0.8);
+        double windowHeight = Math.max(800, bounds.getHeight() * 0.8);
+        
+        // Center the window on screen
+        primaryStage.setX(bounds.getMinX() + (bounds.getWidth() - windowWidth) / 2);
+        primaryStage.setY(bounds.getMinY() + (bounds.getHeight() - windowHeight) / 2);
+        
+        primaryStage.setTitle("Medical Receptionist Dashboard");
+        primaryStage.setWidth(windowWidth);
+        primaryStage.setHeight(windowHeight);
+        primaryStage.setMinWidth(1000);
+        primaryStage.setMinHeight(700);
+        
+        // Enable window decorations for proper window management
+        primaryStage.initStyle(StageStyle.DECORATED);
         
         // Handle application close event
         primaryStage.setOnCloseRequest(e -> {
@@ -90,6 +104,16 @@ public class ReceptionistApp extends Application {
             // CSS file not found, continue without it
             System.out.println("CSS file not found, using default styling");
         }
+        
+        // Make the layout responsive to window resizing
+        scene.widthProperty().addListener((obs, oldVal, newVal) -> {
+            // Handle width changes if needed
+        });
+        
+        scene.heightProperty().addListener((obs, oldVal, newVal) -> {
+            // Handle height changes if needed
+        });
+        
         primaryStage.setScene(scene);
         primaryStage.show();
         
@@ -110,10 +134,6 @@ public class ReceptionistApp extends Application {
             new Stop(1, Color.web("#e2e8f0"))
         );
         root.setBackground(new Background(new BackgroundFill(gradient, null, null)));
-        
-        // Create professional title bar
-        HBox titleBar = createProfessionalTitleBar();
-        root.setTop(titleBar);
         
         // Create main content area
         HBox mainContent = createMainContentArea();
@@ -182,12 +202,26 @@ public class ReceptionistApp extends Application {
         // Left sidebar for navigation
         VBox sidebar = createSidebar();
         sidebar.setPrefWidth(250);
+        sidebar.setMinWidth(200);
+        sidebar.setMaxWidth(300);
         
         // Main content area
         VBox contentArea = createContentArea();
         HBox.setHgrow(contentArea, Priority.ALWAYS);
         
         mainContent.getChildren().addAll(sidebar, contentArea);
+        
+        // Make the layout responsive
+        mainContent.widthProperty().addListener((obs, oldVal, newVal) -> {
+            // Adjust sidebar width based on window size
+            double windowWidth = newVal.doubleValue();
+            if (windowWidth < 1200) {
+                sidebar.setPrefWidth(200);
+            } else {
+                sidebar.setPrefWidth(250);
+            }
+        });
+        
         return mainContent;
     }
     
@@ -346,10 +380,10 @@ public class ReceptionistApp extends Application {
         DropShadow cardShadow = new DropShadow(8, 0, 4, Color.rgb(0, 0, 0, 0.08));
         headerSection.setEffect(cardShadow);
         
-        // Header content
-        HBox headerContent = new HBox(20);
-        headerContent.setAlignment(Pos.CENTER_LEFT);
+        // Header content with title and search
+        VBox headerContent = new VBox(15);
         
+        // Title section
         VBox titleBox = new VBox(4);
         Label titleLabel = new Label("Today's Appointments");
         titleLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
@@ -360,6 +394,34 @@ public class ReceptionistApp extends Application {
         dateLabel.setTextFill(Color.web("#64748b"));
         
         titleBox.getChildren().addAll(titleLabel, dateLabel);
+        
+        // Search and action buttons row
+        HBox searchAndActionsRow = new HBox(20);
+        searchAndActionsRow.setAlignment(Pos.CENTER_LEFT);
+        
+        // Search section
+        HBox searchSection = new HBox(10);
+        searchSection.setAlignment(Pos.CENTER_LEFT);
+        
+        Label searchLabel = new Label("🔍 Search:");
+        searchLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+        searchLabel.setTextFill(Color.web(DARK_BG));
+        
+        TextField searchField = new TextField();
+        searchField.setPromptText("Search by patient name, doctor, date, or status...");
+        searchField.setPrefWidth(300);
+        searchField.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 6; -fx-padding: 8 12;");
+        
+        Button searchButton = createActionButton("Search", INFO_COLOR);
+        searchButton.setOnAction(e -> searchAppointments(searchField.getText()));
+        
+        Button clearSearchButton = createActionButton("Clear", WARNING_COLOR);
+        clearSearchButton.setOnAction(e -> {
+            searchField.clear();
+            refreshAppointments();
+        });
+        
+        searchSection.getChildren().addAll(searchLabel, searchField, searchButton, clearSearchButton);
         
         // Action buttons
         HBox actionButtons = new HBox(12);
@@ -380,7 +442,11 @@ public class ReceptionistApp extends Application {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
-        headerContent.getChildren().addAll(titleBox, spacer, actionButtons);
+        // Add search section and action buttons to the row
+        searchAndActionsRow.getChildren().addAll(searchSection, spacer, actionButtons);
+        
+        // Add title and search/actions row to header content
+        headerContent.getChildren().addAll(titleBox, searchAndActionsRow);
         headerSection.getChildren().add(headerContent);
         
         return headerSection;
@@ -464,10 +530,10 @@ public class ReceptionistApp extends Application {
         DropShadow cardShadow = new DropShadow(8, 0, 4, Color.rgb(0, 0, 0, 0.08));
         headerSection.setEffect(cardShadow);
         
-        // Header content
-        HBox headerContent = new HBox(20);
-        headerContent.setAlignment(Pos.CENTER_LEFT);
+        // Header content with title and search
+        VBox headerContent = new VBox(15);
         
+        // Title section
         VBox titleBox = new VBox(4);
         Label titleLabel = new Label("Patient Management");
         titleLabel.setFont(Font.font("System", FontWeight.BOLD, 20));
@@ -478,6 +544,34 @@ public class ReceptionistApp extends Application {
         subtitleLabel.setTextFill(Color.web("#64748b"));
         
         titleBox.getChildren().addAll(titleLabel, subtitleLabel);
+        
+        // Search and action buttons row
+        HBox searchAndActionsRow = new HBox(20);
+        searchAndActionsRow.setAlignment(Pos.CENTER_LEFT);
+        
+        // Search section
+        HBox searchSection = new HBox(10);
+        searchSection.setAlignment(Pos.CENTER_LEFT);
+        
+        Label searchLabel = new Label("🔍 Search:");
+        searchLabel.setFont(Font.font("System", FontWeight.BOLD, 14));
+        searchLabel.setTextFill(Color.web(DARK_BG));
+        
+        TextField searchField = new TextField();
+        searchField.setPromptText("Search by name, email, or phone...");
+        searchField.setPrefWidth(300);
+        searchField.setStyle("-fx-background-color: white; -fx-border-color: #d1d5db; -fx-border-radius: 6; -fx-padding: 8 12;");
+        
+        Button searchButton = createActionButton("Search", INFO_COLOR);
+        searchButton.setOnAction(e -> searchPatients(searchField.getText()));
+        
+        Button clearSearchButton = createActionButton("Clear", WARNING_COLOR);
+        clearSearchButton.setOnAction(e -> {
+            searchField.clear();
+            refreshPatients();
+        });
+        
+        searchSection.getChildren().addAll(searchLabel, searchField, searchButton, clearSearchButton);
         
         // Action buttons
         HBox actionButtons = new HBox(12);
@@ -501,7 +595,11 @@ public class ReceptionistApp extends Application {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
         
-        headerContent.getChildren().addAll(titleBox, spacer, actionButtons);
+        // Add search section and action buttons to the row
+        searchAndActionsRow.getChildren().addAll(searchSection, spacer, actionButtons);
+        
+        // Add title and search/actions row to header content
+        headerContent.getChildren().addAll(titleBox, searchAndActionsRow);
         headerSection.getChildren().add(headerContent);
         
         return headerSection;
@@ -1339,6 +1437,40 @@ public class ReceptionistApp extends Application {
         } catch (Exception e) {
             showProfessionalErrorAlert("Error loading patients", e.getMessage());
             statusLabel.setText("Failed to load patients");
+        }
+    }
+    
+    private void searchPatients(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            refreshPatients();
+            return;
+        }
+        
+        try {
+            List<PatientDto> patients = apiService.searchPatients(searchTerm.trim());
+            patientData.clear();
+            patientData.addAll(patients);
+            statusLabel.setText("Found " + patients.size() + " patients matching '" + searchTerm + "'");
+        } catch (Exception e) {
+            showProfessionalErrorAlert("Error searching patients", e.getMessage());
+            statusLabel.setText("Failed to search patients");
+        }
+    }
+    
+    private void searchAppointments(String searchTerm) {
+        if (searchTerm == null || searchTerm.trim().isEmpty()) {
+            refreshAppointments();
+            return;
+        }
+        
+        try {
+            List<AppointmentDto> appointments = apiService.searchAppointments(searchTerm.trim());
+            appointmentData.clear();
+            appointmentData.addAll(appointments);
+            statusLabel.setText("Found " + appointments.size() + " appointments matching '" + searchTerm + "'");
+        } catch (Exception e) {
+            showProfessionalErrorAlert("Error searching appointments", e.getMessage());
+            statusLabel.setText("Failed to search appointments");
         }
     }
     

@@ -88,6 +88,24 @@ public class AppointmentApiController {
     }
     
     /**
+     * Search appointments by patient name, doctor name, date, or status
+     */
+    @GetMapping("/search")
+    public ResponseEntity<List<AppointmentDto>> searchAppointments(@RequestParam String term) {
+        try {
+            List<Appointment> appointments = appointmentService.searchAppointments(term);
+            
+            List<AppointmentDto> appointmentDtos = appointments.stream()
+                    .map(AppointmentMapper::toDto)
+                    .collect(Collectors.toList());
+            
+            return ResponseEntity.ok(appointmentDtos);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().build();
+        }
+    }
+    
+    /**
      * Get all appointments for a specific date
      */
     @GetMapping("/date/{date}")

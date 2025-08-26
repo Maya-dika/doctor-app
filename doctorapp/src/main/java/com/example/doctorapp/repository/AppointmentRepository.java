@@ -56,5 +56,17 @@ public interface AppointmentRepository extends JpaRepository<Appointment, Long> 
     boolean hasCompletedAppointmentWithDoctor(@Param("patientId") Long patientId,
                                               @Param("doctorId") Long doctorId);
 
+    /**
+     * Search appointments by patient name, doctor name, date, or status
+     */
+    @Query("SELECT DISTINCT a FROM Appointment a " +
+           "LEFT JOIN a.patient p " +
+           "LEFT JOIN a.doctor d " +
+           "WHERE LOWER(CONCAT(p.firstName, ' ', p.lastName)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+           "OR LOWER(CONCAT(d.firstName, ' ', d.lastName)) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+           "OR LOWER(a.status) LIKE LOWER(CONCAT('%', :searchTerm, '%')) " +
+           "OR CAST(a.appointmentDate AS string) LIKE CONCAT('%', :searchTerm, '%') " +
+           "OR CAST(a.appointmentTime AS string) LIKE CONCAT('%', :searchTerm, '%')")
+    List<Appointment> searchAppointments(@Param("searchTerm") String searchTerm);
 
 }

@@ -188,6 +188,52 @@ public class ApiService {
     }
     
     /**
+     * Search patients by name, email, or phone
+     */
+    public List<PatientDto> searchPatients(String searchTerm) throws Exception {
+        String endpoint = baseUrl + "/api/patients/search?name=" + java.net.URLEncoder.encode(searchTerm, "UTF-8");
+        
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        if (response.statusCode() == 200) {
+            TypeReference<List<PatientDto>> typeRef = new TypeReference<List<PatientDto>>() {};
+            return objectMapper.readValue(response.body(), typeRef);
+        } else {
+            throw new RuntimeException("Failed to search patients. Status: " + response.statusCode() + 
+                                     ", Body: " + response.body());
+        }
+    }
+    
+    /**
+     * Search appointments by patient name, doctor name, date, or status
+     */
+    public List<AppointmentDto> searchAppointments(String searchTerm) throws Exception {
+        String endpoint = baseUrl + "/api/appointments/search?term=" + java.net.URLEncoder.encode(searchTerm, "UTF-8");
+        
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(endpoint))
+                .header("Content-Type", "application/json")
+                .GET()
+                .build();
+        
+        HttpResponse<String> response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+        
+        if (response.statusCode() == 200) {
+            TypeReference<List<AppointmentDto>> typeRef = new TypeReference<List<AppointmentDto>>() {};
+            return objectMapper.readValue(response.body(), typeRef);
+        } else {
+            throw new RuntimeException("Failed to search appointments. Status: " + response.statusCode() + 
+                                     ", Body: " + response.body());
+        }
+    }
+    
+    /**
      * Create new patient
      */
     public boolean createPatient(PatientDto patient) throws Exception {

@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.ArrayList;
 
 @Service
 public class PatientService {
@@ -102,10 +105,28 @@ public class PatientService {
     }
     
     /**
-     * Search patients by name (first name or last name)
+     * Search patients by name, email, or phone number
      */
-    public List<Patient> searchPatientsByName(String name) {
-        String searchTerm = "%" + name.toLowerCase() + "%";
-        return patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchTerm, searchTerm);
+    public List<Patient> searchPatientsByName(String searchTerm) {
+        // First try to find by name
+        List<Patient> nameResults = patientRepository.findByFirstNameContainingIgnoreCaseOrLastNameContainingIgnoreCase(searchTerm, searchTerm);
+        
+        // Then try to find by full name (first name + space + last name)
+        List<Patient> fullNameResults = patientRepository.findByFullNameContainingIgnoreCase(searchTerm);
+        
+        // Then try to find by email
+        List<Patient> emailResults = patientRepository.findByEmailContainingIgnoreCase(searchTerm);
+        
+        // Then try to find by phone number
+        List<Patient> phoneResults = patientRepository.findByPhoneNumberContaining(searchTerm);
+        
+        // Combine all results and remove duplicates
+        Set<Patient> allResults = new HashSet<>();
+        allResults.addAll(nameResults);
+        allResults.addAll(fullNameResults);
+        allResults.addAll(emailResults);
+        allResults.addAll(phoneResults);
+        
+        return new ArrayList<>(allResults);
     }
 }
