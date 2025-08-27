@@ -14,7 +14,6 @@ import java.util.Collections;
 import java.util.List;
 
 @Controller
-@RequestMapping("/medical-records")
 public class MedicalRecordsController {
     
     private final MedicalRecordsService medicalRecordsService;
@@ -26,7 +25,7 @@ public class MedicalRecordsController {
         this.patientService = patientService;
     }
     
-    @GetMapping
+    @GetMapping("/medical-records")
     public String viewMedicalRecords(Model model, HttpSession session) {
         Doctor loggedInDoctor = (Doctor) session.getAttribute("loggedInDoctor");
         

@@ -65,8 +65,8 @@
         }
 
         .patient-avatar {
-            width: 50px;
-            height: 50px;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
             display: flex;
@@ -74,7 +74,8 @@
             justify-content: center;
             color: white;
             font-weight: bold;
-            font-size: 18px;
+            font-size: 20px;
+            margin: 0 auto;
         }
 
         .filter-tabs {
@@ -115,6 +116,36 @@
         .search-input:focus {
             border-color: var(--primary-color);
             box-shadow: 0 0 0 0.2rem rgba(44, 90, 160, 0.25);
+        }
+
+        .badge-gender {
+            font-size: 0.75rem;
+        }
+
+        .patient-info-section {
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            padding: 10px;
+            margin: 5px 0;
+        }
+
+        .action-buttons .btn {
+            margin: 2px;
+        }
+
+        .stats-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: var(--primary-color);
         }
     </style>
 </head>
@@ -181,27 +212,41 @@
             <div class="col-md-9 col-lg-10 p-4">
                 <!-- Page Header -->
                 <div class="row mb-4">
-                    <div class="col-12">
+                    <div class="col-md-8">
                         <h2 class="mb-0">
                             <i class="fas fa-users text-primary me-2"></i>
                             <span th:text="#{patient.management.title}">Patient Management</span>
                         </h2>
                         <p class="text-muted mb-0" th:text="#{patient.management.description}">Manage your patient information and records</p>
                     </div>
+                    <div class="col-md-4">
+                        <div class="stats-card">
+                            <div class="stats-number" th:text="${patients != null ? patients.size() : 0}">0</div>
+                            <small class="text-muted">Total Patients</small>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Search Section -->
                 <div class="search-section">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-md-8">
                             <div class="input-group">
                                 <span class="input-group-text bg-light border-end-0">
                                     <i class="fas fa-search text-muted"></i>
                                 </span>
                                 <input type="text" class="form-control search-input border-start-0" 
                                        th:placeholder="#{patient.management.search.placeholder}" 
+                                       placeholder="Search by name, email, or phone..."
                                        id="patientSearch">
                             </div>
+                        </div>
+                        <div class="col-md-4">
+                            <select class="form-select search-input" id="genderFilter">
+                                <option value="">All Genders</option>
+                                <option value="Male">Male</option>
+                                <option value="Female">Female</option>
+                            </select>
                         </div>
                     </div>
                 </div>
@@ -211,11 +256,14 @@
                     <button class="filter-tab active" onclick="filterPatients('all')">
                         <span th:text="#{patient.management.filter.all}">All Patients</span>
                     </button>
-                    <button class="filter-tab" onclick="filterPatients('active')">
-                        <span th:text="#{patient.management.filter.active}">Active</span>
+                    <button class="filter-tab" onclick="filterPatients('male')">
+                        <span>Male Patients</span>
+                    </button>
+                    <button class="filter-tab" onclick="filterPatients('female')">
+                        <span>Female Patients</span>
                     </button>
                     <button class="filter-tab" onclick="filterPatients('recent')">
-                        <span th:text="#{patient.management.filter.recent}">Recent Visits</span>
+                        <span th:text="#{patient.management.filter.recent}">Recently Added</span>
                     </button>
                 </div>
 
@@ -226,60 +274,74 @@
                         <div th:if="${patients != null and !patients.empty}">
                             <div class="patient-card card" 
                                  th:each="patient : ${patients}"
-                                 th:attr="data-status=${patient.status}">
+                                 th:attr="data-gender=${patient.gender != null ? patient.gender.toLowerCase() : ''}"
+                                 th:classappend="${patient.gender != null and patient.gender.equalsIgnoreCase('female')} ? 'border-start border-warning border-4' : 'border-start border-info border-4'">
                                 <div class="card-body">
                                     <div class="row align-items-center">
                                         <!-- Patient Avatar -->
                                         <div class="col-md-1">
-                                            <div class="patient-avatar">
-                                                <span th:text="${patient.firstName != null ? patient.firstName.substring(0,1) : 'P'}">P</span>
+                                            <div class="patient-avatar" 
+                                                 th:style="${patient.gender != null and patient.gender.equalsIgnoreCase('female')} ? 'background: linear-gradient(135deg, #e91e63, #f06292)' : 'background: linear-gradient(135deg, #2c5aa0, #5bc0de)'">
+                                                <span th:text="${patient.firstName != null and !patient.firstName.isEmpty() ? patient.firstName.substring(0,1).toUpperCase() : 'P'}">P</span>
                                             </div>
                                         </div>
                                         
                                         <!-- Patient Info -->
                                         <div class="col-md-4">
-                                            <h5 class="mb-1" th:text="${patient.firstName != null ? (patient.firstName + ' ' + patient.lastName) : 'Patient Name'}">Patient Name</h5>
-                                            <p class="text-muted mb-0">
+                                            <div class="d-flex align-items-center mb-2">
+                                                <h5 class="mb-0 me-2" th:text="${patient.firstName != null and patient.lastName != null ? (patient.firstName + ' ' + patient.lastName) : 'Patient Name'}">Patient Name</h5>
+                                                <span class="badge badge-gender" 
+                                                      th:if="${patient.gender != null}"
+                                                      th:classappend="${patient.gender.equalsIgnoreCase('female')} ? 'bg-warning' : 'bg-info'"
+                                                      th:text="${patient.gender}">Gender</span>
+                                            </div>
+                                            <p class="text-muted mb-1">
                                                 <i class="fas fa-id-card me-1"></i>
-                                                <span th:text="#{patient.management.patient.id} + ': '">Patient ID: </span><span th:text="${patient.id != null ? patient.id : 'N/A'}">#N/A</span>
+                                                <span th:text="'ID: ' + ${patient.id != null ? patient.id : 'N/A'}">#N/A</span>
                                             </p>
-                                            <p class="text-muted mb-0" th:if="${patient.email != null}">
+                                            <p class="text-muted mb-0" th:if="${patient.email != null and !patient.email.isEmpty()}">
                                                 <i class="fas fa-envelope me-1"></i>
                                                 <span th:text="${patient.email}">Email</span>
                                             </p>
                                         </div>
 
-                                        <!-- Contact Info -->
+                                        <!-- Contact & Personal Info -->
                                         <div class="col-md-3">
-                                            <p class="mb-1" th:if="${patient.phone != null}">
-                                                <i class="fas fa-phone me-1 text-primary"></i>
-                                                <span th:text="${patient.phone}">Phone</span>
-                                            </p>
-                                            <p class="text-muted mb-0" th:if="${patient.dateOfBirth != null}">
-                                                <i class="fas fa-birthday-cake me-1"></i>
-                                                DOB: <span th:text="${patient.dateOfBirth}">Date of Birth</span>
-                                            </p>
+                                            <div class="patient-info-section">
+                                                <p class="mb-1" th:if="${patient.phoneNumber != null and !patient.phoneNumber.isEmpty()}">
+                                                    <i class="fas fa-phone me-1 text-primary"></i>
+                                                    <span th:text="${patient.phoneNumber}">Phone</span>
+                                                </p>
+                                                <p class="mb-1" th:if="${patient.age != null}">
+                                                    <i class="fas fa-birthday-cake me-1 text-warning"></i>
+                                                    <span th:text="'Age: ' + ${patient.age}">Age</span>
+                                                </p>
+                                                <p class="mb-0" th:if="${patient.address != null and !patient.address.isEmpty()}">
+                                                    <i class="fas fa-map-marker-alt me-1 text-danger"></i>
+                                                    <small th:text="${patient.address.length() > 30 ? patient.address.substring(0,30) + '...' : patient.address}">Address</small>
+                                                </p>
+                                            </div>
                                         </div>
 
-                                        <!-- Last Visit -->
+                                        <!-- Medical History -->
                                         <div class="col-md-2">
-                                            <p class="text-muted small mb-0" th:text="#{patient.management.last.visit} + ':'">Last Visit:</p>
-                                            <span class="text-primary fw-bold" th:text="${patient.lastVisit != null ? patient.lastVisit : 'No visits'}">Date</span>
+                                            <div th:if="${patient.medicalHistory != null and !patient.medicalHistory.isEmpty()}">
+                                                <p class="text-muted small mb-0">Medical History:</p>
+                                                <span class="badge bg-secondary" th:text="'Has Records'">Has Records</span>
+                                            </div>
+                                            <div th:if="${patient.medicalHistory == null or patient.medicalHistory.isEmpty()}">
+                                                <p class="text-muted small mb-0">Medical History:</p>
+                                                <span class="badge bg-light text-dark">No Records</span>
+                                            </div>
                                         </div>
 
                                         <!-- Actions -->
                                         <div class="col-md-2 text-end">
-                                            <div class="btn-group-vertical btn-group-sm">
-                                                <button class="btn btn-primary btn-sm mb-1" th:title="#{patient.management.view.details}">
-                                                    <i class="fas fa-eye me-1"></i><span th:text="#{common.view}">View</span>
-                                                </button>
-                                                <button class="btn btn-outline-primary btn-sm mb-1" th:title="#{patient.management.edit.patient}">
-                                                    <i class="fas fa-edit me-1"></i><span th:text="#{common.edit}">Edit</span>
-                                                </button>
-                                                <button class="btn btn-success btn-sm" th:title="#{patient.management.schedule.appointment}">
-                                                    <i class="fas fa-calendar-plus me-1"></i><span th:text="#{patient.management.schedule}">Schedule</span>
-                                                </button>
-                                            </div>
+                                            <button class="btn btn-primary btn-sm" 
+                                                    th:onclick="'viewPatientDetails(' + ${patient.id} + ')'"
+                                                    th:title="'View details for ' + ${patient.firstName}">
+                                                <i class="fas fa-eye me-1"></i>View Details
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -292,7 +354,7 @@
                                 <div class="card-body py-5">
                                     <i class="fas fa-user-friends text-muted" style="font-size: 4rem;"></i>
                                     <h4 class="text-muted mt-3" th:text="#{patient.management.no.patients.found}">No Patients Found</h4>
-                                    <p class="text-muted" th:text="#{patient.management.no.patients.description}">You don't have any patients registered yet.</p>
+                                    <p class="text-muted" th:text="#{patient.management.no.patients.description}">You don't have any patients registered yet or no appointments have been booked.</p>
                                 </div>
                             </div>
                         </div>
@@ -304,22 +366,24 @@
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Filter patients by status
-        function filterPatients(status) {
+        // Filter patients by gender or status
+        function filterPatients(filterType) {
             document.querySelectorAll('.filter-tab').forEach(tab => tab.classList.remove('active'));
             event.target.classList.add('active');
 
             const patients = document.querySelectorAll('.patient-card');
             patients.forEach(patient => {
-                if (status === 'all') {
+                const patientGender = patient.getAttribute('data-gender');
+                
+                if (filterType === 'all') {
                     patient.style.display = 'block';
-                } else {
-                    const patientStatus = patient.getAttribute('data-status');
-                    if (patientStatus && patientStatus.toLowerCase() === status.toLowerCase()) {
-                        patient.style.display = 'block';
-                    } else {
-                        patient.style.display = 'none';
-                    }
+                } else if (filterType === 'male') {
+                    patient.style.display = patientGender === 'male' ? 'block' : 'none';
+                } else if (filterType === 'female') {
+                    patient.style.display = patientGender === 'female' ? 'block' : 'none';
+                } else if (filterType === 'recent') {
+                    // For now, show all patients. You can implement date-based filtering later
+                    patient.style.display = 'block';
                 }
             });
         }
@@ -337,6 +401,34 @@
                     patient.style.display = 'none';
                 }
             });
+        });
+
+        // Gender filter dropdown
+        document.getElementById('genderFilter').addEventListener('change', function(e) {
+            const selectedGender = e.target.value.toLowerCase();
+            const patients = document.querySelectorAll('.patient-card');
+            
+            patients.forEach(patient => {
+                const patientGender = patient.getAttribute('data-gender');
+                
+                if (selectedGender === '' || patientGender === selectedGender) {
+                    patient.style.display = 'block';
+                } else {
+                    patient.style.display = 'none';
+                }
+            });
+        });
+
+        // Action function for viewing patient details
+        function viewPatientDetails(patientId) {
+            // Navigate to patient details page
+            window.location.href = '/patient-details/' + patientId;
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Patient Management page loaded');
+            // You can add any initialization code here
         });
     </script>
 </body>
