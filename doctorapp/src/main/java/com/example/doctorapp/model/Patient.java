@@ -36,7 +36,7 @@ public class Patient implements Serializable {
         this.medicalHistory = medicalHistory;
         this.password=password;
     }
-
+  
     // Getters and setters for all fields
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }

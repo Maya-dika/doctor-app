@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Details - Healthcare Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .patient-card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        .patient-header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 15px 15px 0 0;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .patient-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: var(--primary-color);
+            margin: 0 auto 15px;
+        }
+
+        .info-section {
+            padding: 25px;
+        }
+
+        .info-title {
+            color: var(--primary-color);
+            font-weight: 600;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 8px;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 500;
+            color: #6c757d;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .back-btn {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-bottom: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: #1a4480;
+            color: white;
+            text-decoration: none;
+        }
+
+        .status-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: rgba(92, 184, 92, 0.1);
+            color: var(--success-color);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-user-md me-2"></i>
+                <span th:text="#{main.title} + ' - ' + #{doctor.title}">Healthcare Portal - Doctor</span>
+            </a>
+            <button title="#{common.menu}" class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" th:title="#{common.menu}">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item me-3">
+                        <div th:replace="~{fragments/language-selector :: language-selector}"></div>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                            <span th:text="${doctor != null ? ('Dr. ' + doctor.firstName + ' ' + doctor.lastName) : 'Dr. Guest'}">Dr. Guest</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doctor-profile"><i class="fas fa-user me-2"></i><span th:text="#{dashboard.profile}">Profile</span></a></li>
+                            <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i><span th:text="#{common.settings}">Settings</span></a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i><span th:text="#{dashboard.logout}">Logout</span></a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-dashboard'">
+                        <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-appointments'">
+                        <i class="fas fa-calendar-alt me-3"></i><span th:text="#{dashboard.appointments}">Appointments</span>
+                    </div>
+                    <div class="sidebar-item active" onclick="window.location.href='/patient-management'">
+                        <i class="fas fa-users me-3"></i><span th:text="#{patient.management.title}">Patient Management</span>
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/medical-records'">
+                        <i class="fas fa-file-medical me-3"></i><span th:text="#{medical.records.title}">Medical Records</span>
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/doctor-prescriptions'">
+                        <i class="fas fa-prescription-bottle me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
+                    </div>
+                    <div class="sidebar-item" onclick="window.location.href='/analytics'">
+                        <i class="fas fa-chart-bar me-3"></i><span th:text="#{analytics.title}">Analytics</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Back Button -->
+                <a href="/patient-management" class="back-btn">
+                    <i class="fas fa-arrow-left"></i>
+                    Back to Patient Management
+                </a>
+
+                <!-- Patient Details Card -->
+                <div class="patient-card">
+                    <!-- Patient Header -->
+                    <div class="patient-header">
+                        <div class="patient-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <h3 th:text="${patient != null ? (patient.firstName + ' ' + patient.lastName) : 'Patient Name'}">Patient Name</h3>
+                        <p class="mb-0">Patient ID: <span th:text="${patient != null ? patient.id : 'N/A'}">N/A</span></p>
+                    </div>
+
+                    <!-- Personal Information -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-user me-2"></i>Personal Information
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Full Name:</span>
+                            <span class="info-value" th:text="${patient != null ? (patient.firstName + ' ' + patient.lastName) : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Gender:</span>
+                            <span class="info-value" th:text="${patient != null and patient.gender != null ? patient.gender : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone Number:</span>
+                            <span class="info-value" th:text="${patient != null and patient.phoneNumber != null ? patient.phoneNumber : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" th:text="${patient != null and patient.email != null ? patient.email : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Address:</span>
+                            <span class="info-value" th:text="${patient != null and patient.address != null ? patient.address : 'N/A'}">N/A</span>
+                        </div>
+                    </div>
+
+                    <!-- Physical Information -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-ruler me-2"></i>Physical Information
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Height:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.heightFeet != null and additionalpatientInfo.heightInches != null}"
+                                      th:text="${additionalpatientInfo.heightFeet + '\'' + ' ' + additionalpatientInfo.heightInches + '\'\''}">N/A</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.heightFeet != null and additionalpatientInfo.heightInches != null}">N/A</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Current Weight:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.currentWeight != null ? additionalpatientInfo.currentWeight + ' lbs' : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Target Weight:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.targetWeight != null ? additionalpatientInfo.targetWeight + ' lbs' : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Activity Level:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.activityLevel != null ? additionalpatientInfo.activityLevel : 'N/A'}">N/A</span>
+                        </div>
+                    </div>
+
+                    <!-- Medical Information -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-stethoscope me-2"></i>Medical Information
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Blood Type:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.bloodType != null ? additionalpatientInfo.bloodType : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Known Allergies:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.allergiesText != null ? additionalpatientInfo.allergiesText : 'None reported'}">None reported</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Current Medications:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.currentMedications != null ? additionalpatientInfo.currentMedications : 'None reported'}">None reported</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Chronic Conditions:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.chronicConditions != null and !additionalpatientInfo.chronicConditions.isEmpty()}"
+                                      th:text="${#strings.listJoin(additionalpatientInfo.chronicConditions, ', ')}">None reported</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.chronicConditions != null and !additionalpatientInfo.chronicConditions.isEmpty()}">None reported</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Other Conditions:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.otherConditionsDetails != null ? additionalpatientInfo.otherConditionsDetails : 'None reported'}">None reported</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Family History:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.familyHistory != null and !additionalpatientInfo.familyHistory.isEmpty()}"
+                                      th:text="${#strings.listJoin(additionalpatientInfo.familyHistory, ', ')}">None reported</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.familyHistory != null and !additionalpatientInfo.familyHistory.isEmpty()}">None reported</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Registration Date:</span>
+                            <span class="info-value" th:text="${patient != null and patient.registrationDate != null ? #dates.format(patient.registrationDate, 'MMM dd, yyyy') : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Status:</span>
+                            <span class="status-badge status-active">Active</span>
+                        </div>
+                    </div>
+
+                    <!-- Vital Signs & Baselines -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-heartbeat me-2"></i>Vital Signs & Baselines
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Resting Heart Rate:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.restingHeartRate != null ? additionalpatientInfo.restingHeartRate + ' bpm' : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Baseline Blood Pressure:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.baselineSystolic != null and additionalpatientInfo.baselineDiastolic != null}"
+                                      th:text="${additionalpatientInfo.baselineSystolic + '/' + additionalpatientInfo.baselineDiastolic + ' mmHg'}">N/A</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.baselineSystolic != null and additionalpatientInfo.baselineDiastolic != null}">N/A</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Normal Body Temperature:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.normalBodyTemp != null ? additionalpatientInfo.normalBodyTemp + '°F' : 'N/A'}">N/A</span>
+                        </div>
+                    </div>
+
+                    <!-- Emergency Contact Information -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-phone me-2"></i>Emergency Contact
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Contact Name:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.emergencyContactName != null ? additionalpatientInfo.emergencyContactName : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Relationship:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.emergencyContactRelation != null ? additionalpatientInfo.emergencyContactRelation : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Phone Number:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.emergencyContactPhone != null ? additionalpatientInfo.emergencyContactPhone : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Email:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.emergencyContactEmail != null ? additionalpatientInfo.emergencyContactEmail : 'N/A'}">N/A</span>
+                        </div>
+                    </div>
+
+                    <!-- Insurance Information -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-shield-alt me-2"></i>Insurance Information
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Insurance Provider:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.insuranceProvider != null ? additionalpatientInfo.insuranceProvider : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Policy Number:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.policyNumber != null ? additionalpatientInfo.policyNumber : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Group Number:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.groupNumber != null ? additionalpatientInfo.groupNumber : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Insurance Phone:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.insurancePhone != null ? additionalpatientInfo.insurancePhone : 'N/A'}">N/A</span>
+                        </div>
+                    </div>
+
+                    <!-- Health Goals & Monitoring -->
+                    <div class="info-section">
+                        <h5 class="info-title">
+                            <i class="fas fa-bullseye me-2"></i>Health Goals & Monitoring
+                        </h5>
+                        <div class="info-item">
+                            <span class="info-label">Blood Pressure Goal:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.systolicGoal != null and additionalpatientInfo.diastolicGoal != null}"
+                                      th:text="${additionalpatientInfo.systolicGoal + '/' + additionalpatientInfo.diastolicGoal + ' mmHg'}">N/A</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.systolicGoal != null and additionalpatientInfo.diastolicGoal != null}">N/A</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Target Heart Rate:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.minTargetHR != null and additionalpatientInfo.maxTargetHR != null}"
+                                      th:text="${additionalpatientInfo.minTargetHR + '-' + additionalpatientInfo.maxTargetHR + ' bpm'}">N/A</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.minTargetHR != null and additionalpatientInfo.maxTargetHR != null}">N/A</span>
+                            </span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Fasting Glucose Target:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.fastingGlucoseTarget != null ? additionalpatientInfo.fastingGlucoseTarget + ' mg/dL' : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Cholesterol Target:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.totalCholesterolTarget != null ? additionalpatientInfo.totalCholesterolTarget + ' mg/dL' : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Weight Monitoring Frequency:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.weightMonitoringFreq != null ? additionalpatientInfo.weightMonitoringFreq : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">BP Monitoring Frequency:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.bpMonitoringFreq != null ? additionalpatientInfo.bpMonitoringFreq : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Glucose Monitoring Frequency:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.glucoseMonitoringFreq != null ? additionalpatientInfo.glucoseMonitoringFreq : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Reminder Preference:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.reminderPreference != null ? additionalpatientInfo.reminderPreference : 'N/A'}">N/A</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Health Goals Notes:</span>
+                            <span class="info-value" th:text="${additionalpatientInfo != null and additionalpatientInfo.healthGoalsNotes != null ? additionalpatientInfo.healthGoalsNotes : 'None'}">None</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">Alert Preferences:</span>
+                            <span class="info-value">
+                                <span th:if="${additionalpatientInfo != null and additionalpatientInfo.alertPreferences != null and !additionalpatientInfo.alertPreferences.isEmpty()}"
+                                      th:text="${#strings.listJoin(additionalpatientInfo.alertPreferences, ', ')}">None set</span>
+                                <span th:unless="${additionalpatientInfo != null and additionalpatientInfo.alertPreferences != null and !additionalpatientInfo.alertPreferences.isEmpty()}">None set</span>
+                            </span>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

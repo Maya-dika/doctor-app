@@ -1,4 +1,6 @@
 package com.example.doctorapp.controller;
+
+import com.example.doctorapp.model.AdditionalPatientInfo;
 import com.example.doctorapp.model.Doctor;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.service.PatientManagementService;
@@ -17,7 +19,6 @@ public class PatientManagController {
     private PatientManagementService patientmanagmentService;
 
     // Show all patients who booked with the logged-in doctor
-    
     @GetMapping("/patient-management")
     public String viewPatientManagement(Model model, HttpSession session) {
         // get the logged in doctor from session
@@ -26,12 +27,12 @@ public class PatientManagController {
         if (loggedInDoctor != null) {
             // fetch all patients for this doctor
             List<Patient> patients = patientmanagmentService.findPatientsByDoctorId(loggedInDoctor.getId());
-            
-             // 🔎 Debugging with System.out.println
+
+            // 🔎 Debugging with System.out.println
             System.out.println("Fetched " + patients.size() + " patients for doctor ID " + loggedInDoctor.getId());
-        for (Patient p : patients) {
-            System.out.println("Patient -> ID=" + p.getId() + ", Name=" + p.getFirstName() + " " + p.getLastName());
-        }
+            for (Patient p : patients) {
+                System.out.println("Patient -> ID=" + p.getId() + ", Name=" + p.getFirstName() + " " + p.getLastName());
+            }
             model.addAttribute("patients", patients);
             model.addAttribute("doctor", loggedInDoctor);
         } else {
@@ -41,7 +42,33 @@ public class PatientManagController {
 
         return "patient-management"; // your Thymeleaf/HTML page
     }
+
+    @GetMapping("/patient-details/{patientId}")
+    public String viewPatientDetails(@PathVariable("patientId") Long patientId,
+            Model model,
+            HttpSession session) {
+
+        // get the logged-in doctor from session
+        Doctor loggedInDoctor = (Doctor) session.getAttribute("loggedInDoctor");
+        if (loggedInDoctor == null) {
+            return "redirect:/login";
+        }
+
+        // fetch the patient by ID
+        Patient patient = patientmanagmentService.findPatientById(patientId);
+        if (patient == null) {
+            return "redirect:/patient-management";
+        }
+        AdditionalPatientInfo additionalpatientInfo = patientmanagmentService.findAdditionalInfoByPatientId(patientId);
+        
+
+
+
+
+        model.addAttribute("patient", patient);
+       model.addAttribute("additionalInfo", additionalpatientInfo);
+        model.addAttribute("doctor", loggedInDoctor);
+
+        return "patient-details";
+    }
 }
-
-
-
