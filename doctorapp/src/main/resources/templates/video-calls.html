@@ -1,0 +1,633 @@
+<!-- ===== src/main/resources/templates/video-calls/index.html ===== 
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Medical Video Calls - [[${pageTitle}]]</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .main-container {
+            padding: 20px 0;
+        }
+
+        .header-section {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        .header-section h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 10px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(20px);
+            margin-bottom: 20px;
+        }
+
+        .nav-tabs .nav-link {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: white;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-tabs .nav-link.active {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            color: white;
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+        }
+
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-approved { background-color: #d4edda; color: #155724; }
+        .status-rejected { background-color: #f8d7da; color: #721c24; }
+        .status-in-progress { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+
+        .video-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .form-control:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <div class="container main-container">
+         Header 
+        <div class="header-section">
+            <h1><i class="fas fa-video"></i> Medical Video Calls</h1>
+            <p>Connect with your healthcare providers securely</p>
+        </div>
+
+         Navigation Tabs 
+        <ul class="nav nav-tabs justify-content-center" id="mainTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="patient-tab" data-bs-toggle="tab" data-bs-target="#patient-panel" type="button" role="tab">
+                    <i class="fas fa-user-injured"></i> Patient Portal
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="doctor-tab" data-bs-toggle="tab" data-bs-target="#doctor-panel" type="button" role="tab">
+                    <i class="fas fa-user-md"></i> Doctor Portal
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="call-tab" data-bs-toggle="tab" data-bs-target="#call-panel" type="button" role="tab">
+                    <i class="fas fa-phone-alt"></i> Join Call
+                </button>
+            </li>
+        </ul>
+
+         Tab Content 
+        <div class="tab-content mt-4" id="mainTabContent">
+            
+             Patient Portal 
+            <div class="tab-pane fade show active" id="patient-panel" role="tabpanel">
+                <div class="row">
+                     Request Call Form 
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-primary text-white">
+                                <h5><i class="fas fa-plus-circle"></i> Request Video Call</h5>
+                            </div>
+                            <div class="card-body">
+                                <form th:action="@{/api/video-calls/request}" method="post" id="requestForm">
+                                    <div class="mb-3">
+                                        <label for="patientId" class="form-label">Your Patient ID</label>
+                                        <input type="number" class="form-control" id="patientId" name="patientId" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="doctorId" class="form-label">Doctor ID</label>
+                                        <input type="number" class="form-control" id="doctorId" name="doctorId" required>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="reason" class="form-label">Reason for Call</label>
+                                        <textarea class="form-control" id="reason" name="reason" rows="3" required placeholder="Please describe why you need a video call..."></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-gradient w-100">
+                                        <i class="fas fa-paper-plane"></i> Request Video Call
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                     Patient History 
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5><i class="fas fa-history"></i> Your Call History</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="historyForm">
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" id="historyPatientId" placeholder="Enter your Patient ID">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="loadPatientHistory()">
+                                            <i class="fas fa-search"></i> Load History
+                                        </button>
+                                    </div>
+                                </form>
+                                <div id="patientHistory"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             Doctor Portal 
+            <div class="tab-pane fade" id="doctor-panel" role="tabpanel">
+                <div class="row">
+                     Pending Requests 
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-warning text-dark">
+                                <h5><i class="fas fa-clock"></i> Pending Video Call Requests</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="pendingForm">
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" id="pendingDoctorId" placeholder="Enter your Doctor ID">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="loadPendingRequests()">
+                                            <i class="fas fa-sync"></i> Load Requests
+                                        </button>
+                                    </div>
+                                </form>
+                                <div id="pendingRequests"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                     Doctor History 
+                    <div class="col-md-6">
+                        <div class="card">
+                            <div class="card-header bg-success text-white">
+                                <h5><i class="fas fa-list"></i> Your Call History</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="doctorHistoryForm">
+                                    <div class="input-group mb-3">
+                                        <input type="number" class="form-control" id="historyDoctorId" placeholder="Enter your Doctor ID">
+                                        <button type="button" class="btn btn-outline-secondary" onclick="loadDoctorHistory()">
+                                            <i class="fas fa-search"></i> Load History
+                                        </button>
+                                    </div>
+                                </form>
+                                <div id="doctorHistory"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+             Join Call 
+            <div class="tab-pane fade" id="call-panel" role="tabpanel">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <h5><i class="fas fa-video"></i> Join Video Call</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="callId" placeholder="Enter Call ID">
+                                    <button type="button" class="btn btn-success" onclick="joinCall()">
+                                        <i class="fas fa-sign-in-alt"></i> Join Call
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="videoCallContainer" style="display: none;">
+                            <div id="jitsiMeet" class="video-container mb-3"></div>
+                            <div class="text-center">
+                                <button type="button" class="btn btn-success me-2" onclick="startCall()">
+                                    <i class="fas fa-play"></i> Start Call
+                                </button>
+                                <button type="button" class="btn btn-danger" onclick="endCall()">
+                                    <i class="fas fa-stop"></i> End Call
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="callInfo"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+     Toast Container for Notifications 
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="successMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="errorMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+     Scripts 
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <script th:inline="javascript">
+        // Configuration with Thymeleaf variables
+        const API_BASE_URL = /*[[@{/api/video-calls}]]*/ '/api/video-calls';
+        let currentCallId = null;
+        let jitsiApi = null;
+
+        // Utility Functions
+        function showToast(message, type = 'success') {
+            const toastElement = document.getElementById(type + 'Toast');
+            const messageElement = document.getElementById(type + 'Message');
+            messageElement.textContent = message;
+            
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
+        }
+
+        function formatDateTime(dateTimeString) {
+            return new Date(dateTimeString).toLocaleString();
+        }
+
+        function getStatusBadge(status) {
+            return `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+        }
+
+        // API Functions
+        async function makeApiRequest(url, options = {}) {
+            try {
+                const response = await fetch(url, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        ...options.headers
+                    },
+                    ...options
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                return await response.json();
+            } catch (error) {
+                console.error('API request failed:', error);
+                showToast('Request failed: ' + error.message, 'error');
+                throw error;
+            }
+        }
+
+        // Patient Functions
+        document.getElementById('requestForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(e.target);
+            const patientId = formData.get('patientId');
+            const doctorId = formData.get('doctorId');
+            const reason = formData.get('reason');
+            
+            try {
+                const response = await makeApiRequest(`${API_BASE_URL}/request?patientId=${patientId}`, {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        doctorId: parseInt(doctorId),
+                        reason: reason
+                    })
+                });
+                
+                showToast(`Video call request submitted successfully! Call ID: ${response.id}`);
+                e.target.reset();
+                
+            } catch (error) {
+                showToast('Failed to submit request. Please try again.', 'error');
+            }
+        });
+
+        async function loadPatientHistory() {
+            const patientId = document.getElementById('historyPatientId').value;
+            if (!patientId) {
+                showToast('Please enter your patient ID', 'error');
+                return;
+            }
+
+            const historyDiv = document.getElementById('patientHistory');
+            historyDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+
+            try {
+                const history = await makeApiRequest(`${API_BASE_URL}/patient/${patientId}/history`);
+                displayCallHistory(history, historyDiv, 'patient');
+            } catch (error) {
+                historyDiv.innerHTML = '<div class="text-muted text-center">Failed to load history</div>';
+            }
+        }
+
+        // Doctor Functions
+        async function loadPendingRequests() {
+            const doctorId = document.getElementById('pendingDoctorId').value;
+            if (!doctorId) {
+                showToast('Please enter your doctor ID', 'error');
+                return;
+            }
+
+            const requestsDiv = document.getElementById('pendingRequests');
+            requestsDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+
+            try {
+                const requests = await makeApiRequest(`${API_BASE_URL}/doctor/${doctorId}/pending`);
+                displayPendingRequests(requests, requestsDiv, doctorId);
+            } catch (error) {
+                requestsDiv.innerHTML = '<div class="text-muted text-center">Failed to load pending requests</div>';
+            }
+        }
+
+        async function loadDoctorHistory() {
+            const doctorId = document.getElementById('historyDoctorId').value;
+            if (!doctorId) {
+                showToast('Please enter your doctor ID', 'error');
+                return;
+            }
+
+            const historyDiv = document.getElementById('doctorHistory');
+            historyDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+
+            try {
+                const history = await makeApiRequest(`${API_BASE_URL}/doctor/${doctorId}/history`);
+                displayCallHistory(history, historyDiv, 'doctor');
+            } catch (error) {
+                historyDiv.innerHTML = '<div class="text-muted text-center">Failed to load history</div>';
+            }
+        }
+
+        function displayPendingRequests(requests, container, doctorId) {
+            if (requests.length === 0) {
+                container.innerHTML = '<div class="text-muted text-center">No pending requests</div>';
+                return;
+            }
+
+            let html = '';
+            requests.forEach(request => {
+                html += `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <strong>Call ID: ${request.id}</strong>
+                                ${getStatusBadge(request.status)}
+                            </div>
+                            <p class="mb-1"><strong>Patient ID:</strong> ${request.patientId}</p>
+                            <p class="mb-1"><strong>Reason:</strong> ${request.reason}</p>
+                            <p class="mb-2"><strong>Requested:</strong> ${formatDateTime(request.requestedAt)}</p>
+                            <div class="d-grid gap-2 d-md-flex">
+                                <button class="btn btn-success btn-sm" onclick="approveCall(${request.id}, ${doctorId})">
+                                    <i class="fas fa-check"></i> Approve
+                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="rejectCall(${request.id}, ${doctorId})">
+                                    <i class="fas fa-times"></i> Reject
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function displayCallHistory(history, container, userType) {
+            if (history.length === 0) {
+                container.innerHTML = '<div class="text-muted text-center">No call history found</div>';
+                return;
+            }
+
+            let html = '';
+            history.forEach(call => {
+                html += `
+                    <div class="card mb-2">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <strong>Call ID: ${call.id}</strong>
+                                ${getStatusBadge(call.status)}
+                            </div>
+                            <p class="mb-1"><strong>${userType === 'patient' ? 'Doctor' : 'Patient'} ID:</strong> ${userType === 'patient' ? call.doctorId : call.patientId}</p>
+                            <p class="mb-1"><strong>Reason:</strong> ${call.reason}</p>
+                            <p class="mb-1"><strong>Requested:</strong> ${formatDateTime(call.requestedAt)}</p>
+                            ${call.approvedAt ? `<p class="mb-2"><strong>Approved:</strong> ${formatDateTime(call.approvedAt)}</p>` : ''}
+                            ${call.status === 'APPROVED' ? `
+                                <button class="btn btn-success btn-sm" onclick="joinCallById(${call.id})">
+                                    <i class="fas fa-video"></i> Join Call
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        async function approveCall(callId, doctorId) {
+            try {
+                const response = await makeApiRequest(`${API_BASE_URL}/${callId}/approve?doctorId=${doctorId}`, {
+                    method: 'POST'
+                });
+                
+                showToast(`Call approved successfully! Room: ${response.roomName}`);
+                loadPendingRequests();
+                
+            } catch (error) {
+                showToast('Failed to approve call', 'error');
+            }
+        }
+
+        async function rejectCall(callId, doctorId) {
+            try {
+                await makeApiRequest(`${API_BASE_URL}/${callId}/reject?doctorId=${doctorId}`, {
+                    method: 'POST'
+                });
+                
+                showToast('Call rejected successfully');
+                loadPendingRequests();
+                
+            } catch (error) {
+                showToast('Failed to reject call', 'error');
+            }
+        }
+
+        // Video Call Functions
+        async function joinCall() {
+            const callId = document.getElementById('callId').value;
+            if (!callId) {
+                showToast('Please enter a call ID', 'error');
+                return;
+            }
+
+            await joinCallById(callId);
+        }
+
+        async function joinCallById(callId) {
+            try {
+                const callData = await makeApiRequest(`${API_BASE_URL}/${callId}`);
+                
+                if (callData.status !== 'APPROVED') {
+                    showToast(`Cannot join call. Status: ${callData.status}`, 'error');
+                    return;
+                }
+                
+                currentCallId = callId;
+                initializeJitsiCall(callData);
+                
+                // Switch to call tab
+                const callTab = new bootstrap.Tab(document.getElementById('call-tab'));
+                callTab.show();
+                
+            } catch (error) {
+                showToast('Failed to join call', 'error');
+            }
+        }
+
+        function initializeJitsiCall(callData) {
+    document.getElementById('videoCallContainer').style.display = 'block';
+    
+    if (jitsiApi) {
+        jitsiApi.dispose();
+    }
+    
+    const domain = 'meet.jit.si';
+    const options = {
+        roomName: callData.roomName,
+        width: '100%',
+        height: 600,
+        parentNode: document.querySelector('#jitsiMeet'),
+        
+        // ===================================================================
+        // FINAL CONFIGURATION WITH NETWORK FALLBACK
+        // ===================================================================
+        configOverwrite: {
+            // --- **CRITICAL NETWORK FIX**: Use BOSH instead of WebSocket ---
+            // This tunnels traffic over standard HTTPS, bypassing most firewalls.
+            serviceUrl: `https://meet.jit.si/http-bind`,
+            websocket: undefined, // Explicitly disable WebSocket
+            
+            // --- Core flags to disable auth ---
+            enableUserRolesBasedOnToken: false,
+            requireDisplayName: false,
+            
+            // --- Explicitly disable lobby and pre-join screens ---
+            prejoinPageEnabled: false,
+            enableWelcomePage: false,
+            enableLobby: false,
+            
+            // --- Prevent server-side auth checks ---
+            token: undefined,
+            
+            // --- Disable features that might trigger re-authentication ---
+            enableClosePage: false,
+            disableThirdPartyRequests: true,
+            
+            // --- P2P is less critical with BOSH but can be kept ---
+            p2p: {
+                enabled: true
+            },
+        },
+        
+        interfaceConfigOverwrite: {
+            // --- UI Simplification ---
+            SHOW_JITSI_WATERMARK: false,
+            SHOW_WATERMARK_FOR_GUESTS: false,
+            DISABLE_INVITE_FUNCTIONS: true,
+            TOOLBAR_BUTTONS: [
+                'microphone', 'camera', 'hangup', 'settings',
+                'tileview', 'fullscreen', 'videoquality'
+            ],
+            SETTINGS_SECTIONS: ['devices', 'language'],
+        },
+        
+        userInfo: {
+            displayName: `User-${Math.floor(Math.random( ) * 1000)}`
+        }
+        // ===================================================================
+    };
+    
+    jitsiApi = new JitsiMeetExternalAPI(domain, options);
+    
+    // Event listeners remain the same
+    jitsiApi.addEventListener('videoConferenceJoined', () => {
+        showToast('Successfully connected to the video call!');
+    });
+    
+    jitsiApi.addEventListener('videoConferenceLeft', () => {
+        showToast('You have left the video call.');
+        document.getElementById('videoCallContainer').style.display = 'none';
+        if (jitsiApi) { jitsiApi.dispose(); jitsiApi = null; }
+    });
+
+    jitsiApi.addEventListener('readyToClose', () => {
+        if (jitsiApi) { jitsiApi.dispose(); jitsiApi = null; }
+    });
+    
+    // Display call info
+    document.getElementById('callInfo').innerHTML = `
+        <div class="alert alert-success">
+            <strong>Call Information:</strong>  
+
+            Call ID: ${callData.id}  
+
+            Room: ${callData.roomName}
+        </div>
+    `;
+}
+
+
+
+    </script>
+</body>
+</html>-->

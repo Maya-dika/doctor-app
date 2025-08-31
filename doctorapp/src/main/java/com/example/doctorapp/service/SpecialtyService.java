@@ -28,7 +28,7 @@ public class SpecialtyService {
 
     // Get specialty by name
     public Optional<Specialty> getSpecialtyByName(String name) {
-        return specialtyRepository.findByName(name);
+        return specialtyRepository.findByNameIgnoreCase(name);
     }
 
     // Save or update specialty

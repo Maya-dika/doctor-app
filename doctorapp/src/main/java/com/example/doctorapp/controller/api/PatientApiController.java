@@ -5,7 +5,6 @@ import com.example.doctorapp.mapper.PatientMapper;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.service.PatientService;
 import com.example.doctorapp.service.ExcelExportService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

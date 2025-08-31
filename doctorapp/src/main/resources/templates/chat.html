@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Healya - AI Medical Assistant</title>
+<style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body, html { height: 100%; font-family: 'Inter', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: linear-gradient(135deg, #f8fffe 0%, #e8f5f3 25%, #f0f8ff 75%, #f5f7ff 100%); display: flex; justify-content: center; align-items: center; }
+
+    .chat-container {
+        width: 1000px; /* Fixed large width */
+        height: 800px; /* Fixed large height */
+        min-width: 1000px; /* Ensure it doesn't shrink below this */
+        min-height: 800px; /* Ensure it doesn't shrink below this */
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 20px;
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+
+    .chat-header {
+        padding: 15px 20px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        font-weight: 600;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-radius: 20px 20px 0 0;
+    }
+
+    .header-left {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .status-dot {
+        width: 8px; height: 8px; border-radius: 50%; background: #4ade80;
+        box-shadow: 0 0 0 2px rgba(74,222,128,0.3);
+        animation: pulse 2s infinite;
+    }
+
+    .menu-btn {
+        background: rgba(255,255,255,0.2);
+        border: 1px solid rgba(255,255,255,0.3);
+        color: white;
+        padding: 6px 12px;
+        border-radius: 12px;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .menu-btn:hover {
+        background: rgba(255,255,255,0.3);
+        transform: translateY(-1px);
+    }
+
+    .chat-messages {
+        flex: 1;
+        padding: 20px;
+        overflow-y: auto;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .message {
+        padding: 12px 16px;
+        border-radius: 15px;
+        max-width: 85%;
+        line-height: 1.4;
+        word-wrap: break-word;
+        white-space: pre-wrap;
+        flex-shrink: 0; /* Prevent messages from shrinking */
+        max-height: none; /* Allow messages to be any height */
+    }
+
+    .user-message { 
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); 
+        color: white; 
+        align-self: flex-end; 
+        text-align: right; 
+    }
+
+    .ai-message { 
+        background: rgba(118, 75, 162, 0.1); 
+        color: #2d3748; 
+        border: 1px solid rgba(118, 75, 162, 0.3); 
+        align-self: flex-start; 
+    }
+
+    .menu-message {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        color: white;
+        align-self: center;
+        text-align: center;
+        max-width: 95%;
+        border-radius: 20px;
+        padding: 20px;
+        margin: 10px 0;
+    }
+
+    .quick-options {
+        position: absolute;
+        bottom: 100px;
+        left: 20px;
+        right: 20px;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 10px;
+        z-index: 10;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        transition: all 0.3s ease;
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .quick-options.hidden {
+        opacity: 0;
+        transform: translateY(20px);
+        pointer-events: none;
+    }
+
+    .quick-option {
+        background: rgba(255,255,255,0.9);
+        border: 2px solid #667eea;
+        border-radius: 12px;
+        padding: 12px 16px;
+        cursor: pointer;
+        text-align: center;
+        transition: all 0.3s ease;
+        font-weight: 500;
+        color: #667eea;
+    }
+
+    .quick-option:hover {
+        background: #667eea;
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(102,126,234,0.3);
+    }
+
+    .typing-indicator {
+        padding: 12px 16px;
+        border-radius: 15px;
+        background: rgba(118, 75, 162, 0.1);
+        color: #2d3748;
+        max-width: 85%;
+        align-self: flex-start;
+        display: none;
+    }
+
+    .typing-dots {
+        display: flex;
+        gap: 4px;
+        align-items: center;
+    }
+
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: #764ba2;
+        animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+    .typing-dot:nth-child(3) { animation-delay: -0.32s; }
+
+    .chat-input-container {
+        padding: 20px;
+        background: rgba(255,255,255,0.9);
+        backdrop-filter: blur(10px);
+        display: flex;
+        gap: 10px;
+        border-radius: 0 0 20px 20px;
+        border-top: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .chat-input {
+     flex: none; /* disable auto-flex grow */
+     width: 900px; /* adjust as needed */
+     padding: 12px 16px;
+     border: 2px solid rgba(0,0,0,0.1);
+     border-radius: 25px;
+     outline: none;
+     font-size: 14px;
+     background: rgba(255,255,255,0.95);
+     transition: all 0.3s ease;
+ }
+
+    .chat-input:focus { 
+        border-color: #667eea; 
+        box-shadow: 0 0 0 3px rgba(102,126,234,0.1); 
+    }
+
+    .send-btn {
+        width: 44px; height: 44px;
+        border: none;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white; cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px;
+        transition: all 0.3s ease;
+    }
+
+    .send-btn:hover:not(:disabled) { 
+        transform: scale(1.05); 
+        box-shadow: 0 5px 15px rgba(102,126,234,0.3); 
+    }
+    .send-btn:disabled { 
+        opacity: 0.5; 
+        cursor: not-allowed; 
+    }
+
+    .input-placeholder {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 5px;
+        padding-left: 16px;
+    }
+
+    @keyframes pulse { 
+        0%,100%{opacity:1}50%{opacity:0.5} 
+    }
+    @keyframes typing { 
+        0%,80%,100%{transform:scale(0)}40%{transform:scale(1)} 
+    }
+
+    @media (max-width: 768px) {
+        .chat-container {
+            height: 100vh;
+            min-height: 100vh;
+            max-height: 100vh;
+            border-radius: 0;
+            max-width: 100%;
+        }
+        
+        .quick-options {
+            grid-template-columns: 1fr;
+            bottom: 120px;
+            left: 10px;
+            right: 10px;
+        }
+
+        .chat-input-container {
+            height: 90px;
+            padding: 15px;
+        }
+    }
+
+    /* Scrollbar styling for better appearance */
+    .chat-messages::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .chat-messages::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.05);
+        border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb {
+        background: rgba(118, 75, 162, 0.3);
+        border-radius: 3px;
+    }
+
+    .chat-messages::-webkit-scrollbar-thumb:hover {
+        background: rgba(118, 75, 162, 0.5);
+    }
+    .back-btn {   
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #6c757d, #495057);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            z-index: 10;
+        }
+    .back-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            background: linear-gradient(135deg, #495057, #6c757d);
+        }
+</style>
+</head>
+<body>
+        <a href="/" class="back-btn" th:text="#{common.back}">← Back to Home</a>
+    <div class="chat-container">
+        <div class="chat-header">
+            <div class="header-left">
+                <div class="status-dot" id="statusDot"></div>
+                Healya - Medical Assistant
+            </div>
+            <button class="menu-btn" id="menuBtn">Main Menu</button>
+            
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="menu-message" id="welcomeMessage">
+                🏥 <strong>Welcome to Healya!</strong><br><br>
+                I'm your medical assistant. Choose how you'd like to get started:
+            </div>
+        </div>
+
+        <div class="quick-options" id="quickOptions">
+            <div class="quick-option" data-option="1">
+                👨‍⚕️ View All Doctors
+            </div>
+            <div class="quick-option" data-option="2">
+                🩺 Available Specialties
+            </div>
+            <div class="quick-option" data-option="3">
+                📍 Find by Location
+            </div>
+            <div class="quick-option" data-option="4">
+                💬 Chat with AI
+            </div>
+        </div>
+
+        <div class="chat-input-container">
+            <div style="flex: 1;">
+                <div class="input-placeholder" id="inputPlaceholder">Type your message or select an option above...</div>
+                <input type="text" class="chat-input" id="chatInput" placeholder="Type 1, 2, 3, 4, or ask a question..." maxlength="500">
+            </div>
+            <button class="send-btn" id="sendBtn">➤</button>
+        </div>
+    </div>
+
+    <script>
+class HealyaChat {
+    constructor() {
+        this.chatMessages = document.getElementById('chatMessages');
+        this.chatInput = document.getElementById('chatInput');
+        this.sendBtn = document.getElementById('sendBtn');
+        this.statusDot = document.getElementById('statusDot');
+        this.menuBtn = document.getElementById('menuBtn');
+        this.quickOptions = document.getElementById('quickOptions');
+        this.inputPlaceholder = document.getElementById('inputPlaceholder');
+
+        // State management
+        this.isInChatMode = false;
+        this.isMenuVisible = true;
+
+        // Create typing indicator
+        this.typingIndicator = document.createElement('div');
+        this.typingIndicator.className = 'typing-indicator';
+        this.typingIndicator.innerHTML = `
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>`;
+
+        this.initializeEventListeners();
+        this.checkHealth();
+        setInterval(() => this.checkHealth(), 30000);
+    }
+
+    initializeEventListeners() {
+        // Send button and enter key
+        this.sendBtn.addEventListener('click', () => this.sendMessage());
+        this.chatInput.addEventListener('keypress', e => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                this.sendMessage();
+            }
+        });
+
+        // Menu button
+        this.menuBtn.addEventListener('click', () => this.showMainMenu());
+
+        // Quick option buttons
+        document.querySelectorAll('.quick-option').forEach(option => {
+            option.addEventListener('click', () => {
+                const optionNumber = option.getAttribute('data-option');
+                this.handleQuickOption(optionNumber);
+            });
+        });
+
+        // Input focus handling
+        this.chatInput.addEventListener('focus', () => {
+            if (this.isMenuVisible) {
+                this.hideQuickOptions();
+            }
+        });
+    }
+
+    async checkHealth() {
+        try {
+            const response = await fetch('/chatbot/health');
+            const data = await response.json();
+            if (data.status === 'healthy') {
+                this.statusDot.style.background = '#4ade80';
+                this.sendBtn.disabled = false;
+            } else {
+                this.statusDot.style.background = '#ef4444';
+                this.sendBtn.disabled = true;
+            }
+        } catch {
+            this.statusDot.style.background = '#ef4444';
+            this.sendBtn.disabled = true;
+        }
+    }
+
+    showMainMenu() {
+        this.isInChatMode = false;
+        this.isMenuVisible = true;
+        
+        // Clear messages except welcome
+        this.chatMessages.innerHTML = `
+            <div class="menu-message">
+                🏥 <strong>Welcome to Healya!</strong><br><br>
+                Choose how you'd like to get started:
+            </div>`;
+        
+        this.showQuickOptions();
+        this.updateInputPlaceholder("Type 1, 2, 3, 4, or ask a question...");
+        this.scrollToBottom();
+    }
+
+    hideQuickOptions() {
+        this.quickOptions.classList.add('hidden');
+        this.isMenuVisible = false;
+    }
+
+    showQuickOptions() {
+        this.quickOptions.classList.remove('hidden');
+        this.isMenuVisible = true;
+    }
+
+    updateInputPlaceholder(text) {
+        this.inputPlaceholder.textContent = text;
+        this.chatInput.placeholder = text;
+    }
+
+    handleQuickOption(optionNumber) {
+        this.hideQuickOptions();
+        
+        // Add user message showing what they selected
+        const optionTexts = {
+            '1': '👨‍⚕️ Show me all doctors',
+            '2': '🩺 What specialties are available?',
+            '3': '📍 Show doctors by location',
+            '4': '💬 I want to chat with the AI'
+        };
+        
+        this.addMessage(optionTexts[optionNumber], 'user');
+        this.sendMessageToServer(optionNumber);
+        
+        if (optionNumber === '4') {
+            this.isInChatMode = true;
+            this.updateInputPlaceholder("Ask about symptoms, health questions...");
+        }
+    }
+
+    showTyping(show) {
+        if (show) {
+            this.chatMessages.appendChild(this.typingIndicator);
+            this.typingIndicator.style.display = 'block';
+        } else {
+            if (this.typingIndicator.parentNode) {
+                this.typingIndicator.parentNode.removeChild(this.typingIndicator);
+            }
+        }
+        this.scrollToBottom();
+    }
+
+    async sendMessage() {
+        const message = this.chatInput.value.trim();
+        if (!message || this.sendBtn.disabled) return;
+
+        // Handle menu commands
+        if (message.toLowerCase() === 'menu' || message.toLowerCase() === 'main menu') {
+            this.chatInput.value = '';
+            this.showMainMenu();
+            return;
+        }
+
+        // Add user message
+        this.addMessage(message, 'user');
+        this.chatInput.value = '';
+        this.sendBtn.disabled = true;
+
+        // Send to server
+        await this.sendMessageToServer(message);
+    }
+
+    async sendMessageToServer(message) {
+        this.showTyping(true);
+
+        try {
+            const response = await fetch('/chatbot/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message })
+            });
+            
+            const data = await response.json();
+            this.showTyping(false);
+
+            if (data.reply) {
+                this.addMessage(data.reply, 'ai');
+                
+                // Only show menu options if the response explicitly contains welcome message
+                if (data.reply.includes('Welcome to Healya!') && data.reply.includes('Choose an option:')) {
+                    setTimeout(() => this.showQuickOptions(), 500);
+                    this.isMenuVisible = true;
+                    this.isInChatMode = false;
+                }
+                // Stay in chat mode if we're getting chat responses
+                else if (data.reply.includes('Continue chatting') || this.isInChatMode) {
+                    // Keep chat mode active
+                    this.isInChatMode = true;
+                    this.isMenuVisible = false;
+                    this.updateInputPlaceholder("Continue your health questions...");
+                }
+            } else {
+                this.addMessage('❌ Unexpected response format', 'ai');
+            }
+        } catch (err) {
+            this.showTyping(false);
+            this.addMessage(`❌ Connection error: ${err.message}`, 'ai');
+        }
+
+        this.sendBtn.disabled = false;
+    }
+
+    addMessage(content, type) {
+        const div = document.createElement('div');
+        div.className = `message ${type}-message`;
+        
+        // Format content for better display
+        if (type === 'ai') {
+            // Convert markdown-style formatting to HTML
+            content = content
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/\*(.*?)\*/g, '<em>$1</em>')
+                .replace(/\n\n/g, '<br><br>')
+                .replace(/\n/g, '<br>');
+        }
+        
+        div.innerHTML = content;
+        this.chatMessages.appendChild(div);
+        this.scrollToBottom();
+    }
+
+    scrollToBottom() {
+        setTimeout(() => {
+            this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+        }, 100);
+    }
+}
+
+// Initialize when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    new HealyaChat();
+});
+</script>
+
+</body>
+</html>

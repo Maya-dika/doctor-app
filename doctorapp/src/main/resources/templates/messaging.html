@@ -204,7 +204,7 @@
             <!-- Sidebar -->
           <div class="col-md-3 col-lg-2 p-0">
     <div class="sidebar">
-        <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-dashboard}'|">
+        <div class="sidebar-item active" th:onclick="|window.location.href='@{/patient-dashboard}'|">
             <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/myappointments}'|">
@@ -221,6 +221,9 @@
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/messaging}'|">
             <i class="fas fa-comments me-3"></i><span th:text="#{messaging.title}">Messages</span>
+        </div>
+        <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-medical-calls}'|">
+            <i class="fas fa-comments me-3"></i><span>Request Video Call</span>
         </div>
         <div class="sidebar-item" th:onclick="|window.location.href='@{/billing}'|">
             <i class="fas fa-credit-card me-3"></i><span th:text="#{billing.title}">Billing</span>

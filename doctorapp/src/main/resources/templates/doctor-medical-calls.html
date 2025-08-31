@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Doctor Portal - Medical Video Calls</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c5aa0;
+            --secondary-color: #5bc0de;
+            --success-color: #5cb85c;
+            --warning-color: #f0ad4e;
+            --danger-color: #d9534f;
+            --light-bg: #f8f9fa;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .sidebar {
+            background: white;
+            min-height: calc(100vh - 56px);
+            box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+            padding: 0;
+        }
+
+        .sidebar-item {
+            padding: 15px 20px;
+            border-bottom: 1px solid #e9ecef;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            -webkit-user-select: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+        }
+
+        .sidebar-item:hover {
+            background-color: #f8f9fa;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .sidebar-item.active {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover {
+            background-color: #218838;
+            border-color: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            color: white;
+            border-radius: 25px;
+            padding: 10px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .btn-outline-primary {
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            border-radius: 25px;
+            padding: 8px 16px;
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .page-header {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(40, 167, 69, 0.25);
+        }
+
+        .status-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+        }
+
+        .status-pending { background-color: #fff3cd; color: #856404; }
+        .status-approved { background-color: #d4edda; color: #155724; }
+        .status-rejected { background-color: #f8d7da; color: #721c24; }
+        .status-in-progress { background-color: #d1ecf1; color: #0c5460; }
+        .status-completed { background-color: #d4edda; color: #155724; }
+
+        .video-container {
+            width: 100%;
+            height: 600px;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .alert {
+            border: none;
+            border-radius: 10px;
+        }
+
+        .nav-tabs .nav-link {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.2);
+            color: var(--primary-color);
+            border-radius: 10px 10px 0 0;
+            margin-right: 5px;
+        }
+
+        .nav-tabs .nav-link.active {
+            background: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .tab-content {
+            background: white;
+            border-radius: 0 15px 15px 15px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .pending-count {
+            background: #dc3545;
+            color: white;
+            border-radius: 50%;
+            padding: 2px 8px;
+            font-size: 0.7rem;
+            margin-left: 5px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-heartbeat me-2"></i>
+                <span>Healthcare Portal - Doctor</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-user-circle me-1"></i>
+                        <span th:text="${session.loggedInDoctor?.firstName + ' ' + session.loggedInDoctor?.lastName}">Dr. Name</span>
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/doctor-dashboard"><i class="fas fa-tachometer-alt me-2"></i>Dashboard</a></li>
+                            <li><a class="dropdown-item" href="/logout"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <div class="col-md-3 col-lg-2 p-0">
+                <div class="sidebar">
+                 <div class="sidebar-item active" th:onclick="|window.location.href='@{/doctor-dashboard}'|">
+                        <i class="fas fa-tachometer-alt me-3"></i><span th:text="#{dashboard.title}">Dashboard</span>
+                    </div>
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/doctor-appointments}'|">
+                        <i class="fas fa-calendar-alt me-3"></i><span th:text="#{dashboard.appointments}">Appointments</span>
+                    </div>
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/patient-management}'|">
+                        <i class="fas fa-users me-3"></i><span th:text="#{patient.management.title}">Patient Management</span>
+                    </div>
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/medical-records}'|">
+                        <i class="fas fa-file-medical me-3"></i><span th:text="#{medical.records.title}">Medical Records</span>
+                    </div>
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/doctor-prescriptions}'|">
+                        <i class="fas fa-prescription-bottle me-3"></i><span th:text="#{dashboard.prescriptions}">Prescriptions</span>
+                    </div>
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/doctor-medical-calls}'|">
+                    <i class="fas fa-comments me-3"></i><span>Request Video Call</span>
+                  </div>
+                    <div class="sidebar-item" th:onclick="|window.location.href='@{/analytics}'|">
+                        <i class="fas fa-chart-bar me-3"></i><span th:text="#{analytics.title}">Analytics</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content -->
+            <div class="col-md-9 col-lg-10 p-4">
+                <!-- Page Header -->
+                <div class="page-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h2 class="mb-2">
+                                <i class="fas fa-user-md text-primary me-3"></i>
+                                <span>Doctor Video Calls</span>
+                            </h2>
+                            <p class="text-muted mb-0">Manage patient video call requests and appointments</p>
+                        </div>
+                        <a href="/doctor-dashboard" class="btn btn-outline-primary">
+                            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Navigation Tabs -->
+                <ul class="nav nav-tabs" id="doctorTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="pending-tab" data-bs-toggle="tab" data-bs-target="#pending-panel" type="button" role="tab">
+                            <i class="fas fa-clock me-2"></i>Pending Requests
+                            <span id="pendingCount" class="pending-count" style="display: none;">0</span>
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="history-tab" data-bs-toggle="tab" data-bs-target="#history-panel" type="button" role="tab">
+                            <i class="fas fa-list me-2"></i>Call History
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="join-tab" data-bs-toggle="tab" data-bs-target="#join-panel" type="button" role="tab">
+                            <i class="fas fa-video me-2"></i>Join Call
+                        </button>
+                    </li>
+                </ul>
+
+                <!-- Tab Content -->
+                <div class="tab-content" id="doctorTabContent">
+                    
+                    <!-- Pending Requests Panel -->
+                    <div class="tab-pane fade show active" id="pending-panel" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10">
+                                <div class="card">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h5><i class="fas fa-clock me-2"></i>Pending Video Call Requests</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <form id="pendingForm">
+    <div class="input-group mb-3">
+        <input type="number" class="form-control" id="pendingDoctorId" 
+               th:value="${doctorId}" placeholder="Enter your Doctor ID" readonly>
+        <button type="button" class="btn btn-outline-secondary" onclick="loadPendingRequests()">
+            <i class="fas fa-sync me-1"></i>Load Requests
+        </button>
+        <button type="button" class="btn btn-success" onclick="autoRefreshToggle()">
+            <i class="fas fa-sync-alt me-1"></i><span id="autoRefreshText">Start Auto-Refresh</span>
+        </button>
+    </div>
+    <small class="form-text text-muted">Your doctor ID is automatically loaded from your session.</small>
+</form>
+                                        <div id="pendingRequests"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Call History Panel -->
+                    <div class="tab-pane fade" id="history-panel" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h5><i class="fas fa-list me-2"></i>Your Call History</h5>
+                                    </div>
+                                    <div class="card-body">
+                                       <form id="doctorHistoryForm">
+    <div class="input-group mb-3">
+        <input type="number" class="form-control" id="historyDoctorId" 
+               th:value="${doctorId}" placeholder="Enter your Doctor ID" readonly>
+        <button type="button" class="btn btn-outline-secondary" onclick="loadDoctorHistory()">
+            <i class="fas fa-search me-1"></i>Load History
+        </button>
+    </div>
+    <small class="form-text text-muted">Your doctor ID is automatically loaded from your session.</small>
+</form>
+                                        <div id="doctorHistory"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Join Call Panel -->
+                    <div class="tab-pane fade" id="join-panel" role="tabpanel">
+                        <div class="row justify-content-center">
+                            <div class="col-md-10">
+                                <div class="card">
+                                    <div class="card-header bg-success text-white">
+                                        <h5><i class="fas fa-video me-2"></i>Join Video Call</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row mb-3">
+                                            <div class="col-md-6">
+                                                <div class="input-group">
+                                                    <input type="number" class="form-control" id="callId" placeholder="Enter Call ID">
+                                                    <button type="button" class="btn btn-success" onclick="joinCall()">
+                                                        <i class="fas fa-sign-in-alt me-1"></i>Join Call
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+                                        <div id="videoCallContainer" style="display: none;">
+                                            <div id="jitsiMeet" class="video-container mb-3"></div>
+                                            <div class="text-center">
+                                                <button type="button" class="btn btn-success me-2" onclick="startCall()">
+                                                    <i class="fas fa-play me-1"></i>Start Call
+                                                </button>
+                                                <button type="button" class="btn btn-danger" onclick="endCall()">
+                                                    <i class="fas fa-stop me-1"></i>End Call
+                                                </button>
+                                            </div>
+                                        </div>
+
+                                        <div id="callInfo"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container for Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast align-items-center text-white bg-success border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="successMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+        <div id="errorToast" class="toast align-items-center text-white bg-danger border-0" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="errorMessage"></div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src='https://meet.jit.si/external_api.js'></script>
+    <script>
+       // Fixed JavaScript for doctor-medical-calls.html
+// Replace the existing script section with this corrected version
+
+// Configuration - CORRECTED API URLs
+const API_BASE_URL = '/api/video-calls';
+let currentCallId = null;
+let jitsiApi = null;
+let autoRefreshInterval = null;
+let currentDoctorId = null;
+
+// Utility Functions
+function showToast(message, type = 'success') {
+    const toastElement = document.getElementById(type + 'Toast');
+    const messageElement = document.getElementById(type + 'Message');
+    messageElement.textContent = message;
+    
+    const toast = new bootstrap.Toast(toastElement);
+    toast.show();
+}
+
+function formatDateTime(dateTimeString) {
+    return new Date(dateTimeString).toLocaleString();
+}
+
+function getStatusBadge(status) {
+    return `<span class="status-badge status-${status.toLowerCase()}">${status}</span>`;
+}
+
+// API Functions
+async function makeApiRequest(url, options = {}) {
+    try {
+        const response = await fetch(url, {
+            headers: {
+                'Content-Type': 'application/json',
+                'X-Requested-With': 'XMLHttpRequest',
+                ...options.headers
+            },
+            ...options
+        });
+        
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        return await response.json();
+    } catch (error) {
+        console.error('API request failed:', error);
+        showToast('Request failed: ' + error.message, 'error');
+        throw error;
+    }
+}
+
+// Doctor Functions - CORRECTED ENDPOINTS
+async function loadPendingRequests() {
+    const doctorId = document.getElementById('pendingDoctorId').value;
+    if (!doctorId) {
+        showToast('Please enter your doctor ID', 'error');
+        return;
+    }
+
+    currentDoctorId = doctorId;
+    const requestsDiv = document.getElementById('pendingRequests');
+    requestsDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+
+    try {
+        // FIXED: Use correct endpoint that matches your controller
+        const requests = await makeApiRequest(`${API_BASE_URL}/doctor-video-calls/${doctorId}/pending`);
+        displayPendingRequests(requests, requestsDiv, doctorId);
+        updatePendingCount(requests.length);
+    } catch (error) {
+        requestsDiv.innerHTML = '<div class="text-muted text-center">Failed to load pending requests</div>';
+        updatePendingCount(0);
+    }
+}
+
+async function loadDoctorHistory() {
+    const doctorId = document.getElementById('historyDoctorId').value;
+    if (!doctorId) {
+        showToast('Please enter your doctor ID', 'error');
+        return;
+    }
+
+    const historyDiv = document.getElementById('doctorHistory');
+    historyDiv.innerHTML = '<div class="text-center"><div class="spinner-border" role="status"></div></div>';
+
+    try {
+        // FIXED: Use correct endpoint that matches your controller
+        const history = await makeApiRequest(`${API_BASE_URL}/doctor-video-calls/${doctorId}/history`);
+        displayCallHistory(history, historyDiv, 'doctor');
+    } catch (error) {
+        historyDiv.innerHTML = '<div class="text-muted text-center">Failed to load history</div>';
+    }
+}
+
+function updatePendingCount(count) {
+    const countElement = document.getElementById('pendingCount');
+    if (count > 0) {
+        countElement.textContent = count;
+        countElement.style.display = 'inline';
+    } else {
+        countElement.style.display = 'none';
+    }
+}
+
+function autoRefreshToggle() {
+    const button = document.getElementById('autoRefreshText');
+    
+    if (autoRefreshInterval) {
+        clearInterval(autoRefreshInterval);
+        autoRefreshInterval = null;
+        button.textContent = 'Start Auto-Refresh';
+        showToast('Auto-refresh stopped');
+    } else {
+        if (!currentDoctorId) {
+            showToast('Please load requests first', 'error');
+            return;
+        }
+        
+        autoRefreshInterval = setInterval(() => {
+            if (currentDoctorId) {
+                document.getElementById('pendingDoctorId').value = currentDoctorId;
+                loadPendingRequests();
+            }
+        }, 30000); // Refresh every 30 seconds
+        
+        button.textContent = 'Stop Auto-Refresh';
+        showToast('Auto-refresh started (every 30 seconds)');
+    }
+}
+
+function displayPendingRequests(requests, container, doctorId) {
+    if (requests.length === 0) {
+        container.innerHTML = '<div class="text-muted text-center">No pending requests</div>';
+        return;
+    }
+
+    let html = '';
+    requests.forEach(request => {
+        html += `
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <strong>Call ID: ${request.id}</strong>
+                        ${getStatusBadge(request.status)}
+                    </div>
+                    <p class="mb-1"><strong>Patient ID:</strong> ${request.patientId}</p>
+                    <p class="mb-1"><strong>Reason:</strong> ${request.reason}</p>
+                    <p class="mb-2"><strong>Requested:</strong> ${formatDateTime(request.requestedAt)}</p>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-success btn-sm" onclick="approveCall(${request.id}, ${doctorId})">
+                            <i class="fas fa-check me-1"></i>Approve
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="rejectCall(${request.id}, ${doctorId})">
+                            <i class="fas fa-times me-1"></i>Reject
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+function displayCallHistory(history, container, userType) {
+    if (history.length === 0) {
+        container.innerHTML = '<div class="text-muted text-center">No call history found</div>';
+        return;
+    }
+
+    let html = '';
+    history.forEach(call => {
+        html += `
+            <div class="card mb-2">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                        <strong>Call ID: ${call.id}</strong>
+                        ${getStatusBadge(call.status)}
+                    </div>
+                    <p class="mb-1"><strong>Patient ID:</strong> ${call.patientId}</p>
+                    <p class="mb-1"><strong>Reason:</strong> ${call.reason}</p>
+                    <p class="mb-1"><strong>Requested:</strong> ${formatDateTime(call.requestedAt)}</p>
+                    ${call.approvedAt ? `<p class="mb-2"><strong>Approved:</strong> ${formatDateTime(call.approvedAt)}</p>` : ''}
+                    ${call.status === 'APPROVED' ? `
+                        <button class="btn btn-success btn-sm" onclick="joinCallById(${call.id})">
+                            <i class="fas fa-video me-1"></i>Join Call
+                        </button>
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    });
+    container.innerHTML = html;
+}
+
+async function approveCall(callId, doctorId) {
+    try {
+        // FIXED: Use correct endpoint that matches your controller
+        await makeApiRequest(`${API_BASE_URL}/doctor-video-calls/${callId}/approve?doctorId=${doctorId}`, {
+            method: 'POST'
+        });
+        
+        showToast('Call approved successfully');
+        loadPendingRequests();
+        
+    } catch (error) {
+        showToast('Failed to approve call', 'error');
+    }
+}
+
+async function rejectCall(callId, doctorId) {
+    try {
+        // FIXED: Use correct endpoint that matches your controller
+        await makeApiRequest(`${API_BASE_URL}/doctor-video-calls/${callId}/reject?doctorId=${doctorId}`, {
+            method: 'POST'
+        });
+        
+        showToast('Call rejected');
+        loadPendingRequests();
+        
+    } catch (error) {
+        showToast('Failed to reject call', 'error');
+    }
+}
+
+// Video Call Functions
+async function joinCall() {
+    const callId = document.getElementById('callId').value;
+    if (!callId) {
+        showToast('Please enter a call ID', 'error');
+        return;
+    }
+
+    await joinCallById(callId);
+}
+
+async function joinCallById(callId) {
+    try {
+        // FIXED: Use correct endpoint that matches your controller
+        const callData = await makeApiRequest(`${API_BASE_URL}/video-calls/${callId}`);
+        
+        if (callData.status !== 'APPROVED') {
+            showToast(`Cannot join call. Status: ${callData.status}`, 'error');
+            return;
+        }
+        
+        currentCallId = callId;
+        initializeJitsiCall(callData);
+        
+        // Switch to join call tab
+        const joinTab = new bootstrap.Tab(document.getElementById('join-tab'));
+        joinTab.show();
+        
+    } catch (error) {
+        showToast('Failed to join call', 'error');
+    }
+}
+
+// Alternative Jitsi configurations to try different servers
+function initializeJitsiCall(callData) {
+    document.getElementById('videoCallContainer').style.display = 'block';
+    
+    if (jitsiApi) {
+        jitsiApi.dispose();
+    }
+    
+    // Try different Jitsi instances - some are more permissive
+    const jitsiOptions = [
+        {
+            domain: 'meet.jit.si',
+            name: 'Official Jitsi'
+        },
+        {
+            domain: '8x8.vc', 
+            name: '8x8 Video'
+        },
+        {
+            domain: 'meet.ffmuc.net',
+            name: 'Freifunk Munich'
+        }
+    ];
+    
+    // Start with the first option, can be made configurable
+    const selectedServer = jitsiOptions[2];
+    
+    const options = {
+        roomName: callData.roomName,
+        width: '100%',
+        height: 600,
+        parentNode: document.querySelector('#jitsiMeet'),
+        
+        // MINIMAL CONFIGURATION - Less is more for avoiding auth issues
+        configOverwrite: {
+            // Core settings
+            prejoinPageEnabled: false,
+            requireDisplayName: false,
+            
+            // Network - Use BOSH for better compatibility
+            serviceUrl: `https://${selectedServer.domain}/http-bind`,
+            
+            // Explicitly disable authentication
+            enableUserRolesBasedOnToken: false,
+            enableLobby: false,
+            
+            // P2P for direct connection
+            p2p: {
+                enabled: true
+            }
+        },
+        
+        interfaceConfigOverwrite: {
+            // Minimal UI to avoid auth-related features
+            TOOLBAR_BUTTONS: [
+                'microphone', 'camera', 'hangup', 'fullscreen'
+            ]
+        }
+    };
+    
+    jitsiApi = new JitsiMeetExternalAPI(selectedServer.domain, options);
+    
+    // Set a timeout to detect authentication issues
+    const authTimeout = setTimeout(() => {
+        console.warn('Authentication timeout - trying alternative approach');
+        showToast('Connection taking longer than expected. This may be a server issue.', 'error');
+    }, 10000);
+    
+    jitsiApi.addEventListener('videoConferenceJoined', () => {
+        clearTimeout(authTimeout);
+        showToast(`Successfully connected via ${selectedServer.name}!`);
+    });
+    
+    jitsiApi.addEventListener('videoConferenceLeft', () => {
+        clearTimeout(authTimeout);
+        showToast('You have left the video call.');
+        document.getElementById('videoCallContainer').style.display = 'none';
+        if (jitsiApi) { jitsiApi.dispose(); jitsiApi = null; }
+    });
+
+    jitsiApi.addEventListener('readyToClose', () => {
+        clearTimeout(authTimeout);
+        if (jitsiApi) { jitsiApi.dispose(); jitsiApi = null; }
+    });
+}
+
+function startCall() {
+    if (jitsiApi) {
+        showToast('Call is already active');
+    }
+}
+
+function endCall() {
+    if (jitsiApi) {
+        jitsiApi.dispose();
+        jitsiApi = null;
+        document.getElementById('videoCallContainer').style.display = 'none';
+        showToast('Call ended');
+    }
+}
+  document.addEventListener('DOMContentLoaded', function() {
+        const doctorId = /*[[${doctorId}]]*/ null;
+        if (doctorId) {
+            // Auto-populate doctor ID fields
+            document.getElementById('pendingDoctorId').value = doctorId;
+            document.getElementById('historyDoctorId').value = doctorId;
+            
+            // Set currentDoctorId for auto-refresh functionality
+            currentDoctorId = doctorId;
+            
+            // Auto-load pending requests and history
+            loadPendingRequests();
+            loadDoctorHistory();
+            
+            // Auto-join call if specified
+            const callId = /*[[${callId}]]*/ null;
+            const autoJoin = /*[[${autoJoin}]]*/ false;
+            
+            if (callId && autoJoin) {
+                document.getElementById('callId').value = callId;
+                setTimeout(() => {
+                    joinCallById(callId);
+                }, 1000);
+            }
+        }
+    });
+    </script>
+</body>
+</html>
+

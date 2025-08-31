@@ -36,9 +36,9 @@ public class DoctorService {
     }
     
     // Search methods from your original service
-    public List<Doctor> getDoctorsBySpecialty(Specialty specialty) {
-        return doctorRepository.findBySpecialty(specialty);
-    }
+  public List<Doctor> getDoctorsBySpecialty(String specialtyName) {
+    return doctorRepository.findDoctorsBySpecialtyName(specialtyName);
+}
     
     public List<Doctor> getDoctorsBySpecialtyId(Long specialtyId) {
         return doctorRepository.findBySpecialtyId(specialtyId);

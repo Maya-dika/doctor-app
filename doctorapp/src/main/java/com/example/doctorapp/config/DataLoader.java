@@ -117,10 +117,10 @@ public class DataLoader implements CommandLineRunner {
     
     private void loadSampleDoctors() {
         // Get some specialties for the doctors
-        Specialty generalMedicine = specialtyRepository.findByName("General Medicine").orElse(null);
-        Specialty cardiology = specialtyRepository.findByName("Cardiology").orElse(null);
-        Specialty dermatology = specialtyRepository.findByName("Dermatology").orElse(null);
-        Specialty pediatrics = specialtyRepository.findByName("Pediatrics").orElse(null);
+        Specialty generalMedicine = specialtyRepository.findByNameIgnoreCase("General Medicine").orElse(null);
+        Specialty cardiology = specialtyRepository.findByNameIgnoreCase("Cardiology").orElse(null);
+        Specialty dermatology = specialtyRepository.findByNameIgnoreCase("Dermatology").orElse(null);
+        Specialty pediatrics = specialtyRepository.findByNameIgnoreCase("Pediatrics").orElse(null);
         
         if (generalMedicine == null || cardiology == null || dermatology == null || pediatrics == null) {
             System.out.println("Some specialties not found, skipping doctor creation");

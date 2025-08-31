@@ -71,14 +71,15 @@
             75% { transform: translateY(-15px) rotate(270deg); }
         }
 
-        /* Header */
+        /* Header - Compact layout */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 30px 60px;
+            padding: 15px 60px;
             position: relative;
             z-index: 10;
+            height: 80px; /* Fixed height to prevent expansion */
         }
 
         .logo-section {
@@ -88,21 +89,21 @@
         }
 
         .logo {
-            width: 60px;
-            height: 60px;
+            width: 50px;
+            height: 50px;
             background: linear-gradient(135deg, #2e7d32, #1976d2);
-            border-radius: 15px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.5rem;
+            font-size: 1.3rem;
             color: white;
             font-weight: bold;
             animation: pulse 3s ease-in-out infinite;
         }
 
         .logo-text {
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 700;
             color: #2d3748;
             letter-spacing: -1px;
@@ -113,16 +114,24 @@
             50% { transform: scale(1.05); }
         }
 
+        /* Header controls - horizontal layout */
+        .header-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
         .login-btn {
-            padding: 15px 30px;
+            padding: 10px 20px;
             background: linear-gradient(135deg, #667eea, #764ba2);
             color: white;
             text-decoration: none;
-            border-radius: 25px;
+            border-radius: 20px;
             font-weight: 600;
-            font-size: 1rem;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            white-space: nowrap;
         }
 
         .login-btn:hover {
@@ -135,19 +144,19 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 40px 60px 60px;
-            min-height: calc(100vh - 120px);
+            padding: 20px 60px 60px;
+            min-height: calc(100vh - 80px);
             justify-content: center;
         }
 
         .hero-section {
             text-align: center;
-            margin-bottom: 80px;
+            margin-bottom: 60px;
             max-width: 800px;
         }
 
         .main-title {
-            font-size: 4rem;
+            font-size: 3.5rem;
             font-weight: 800;
             color: #2d3748;
             margin-bottom: 20px;
@@ -197,7 +206,7 @@
             -webkit-backdrop-filter: blur(20px);
             backdrop-filter: blur(20px);
             border-radius: 30px;
-            padding: 60px 40px;
+            padding: 50px 40px;
             box-shadow: 
                 0 25px 50px rgba(0, 0, 0, 0.08),
                 0 0 0 1px rgba(255, 255, 255, 0.5);
@@ -206,7 +215,7 @@
             cursor: pointer;
             position: relative;
             overflow: hidden;
-            min-height: 500px;
+            min-height: 450px;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -250,15 +259,15 @@
         }
 
         .card-icon {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             color: white;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             transition: all 0.4s ease;
             position: relative;
         }
@@ -279,7 +288,7 @@
         }
 
         .card-title {
-            font-size: 2rem;
+            font-size: 1.8rem;
             font-weight: 700;
             margin-bottom: 15px;
             color: #2d3748;
@@ -287,23 +296,23 @@
 
         .card-description {
             color: #718096;
-            font-size: 1.1rem;
+            font-size: 1rem;
             line-height: 1.6;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
         }
 
         .card-features {
             list-style: none;
-            margin-bottom: 40px;
+            margin-bottom: 30px;
             width: 100%;
         }
 
         .card-features li {
             color: #4a5568;
-            font-size: 1rem;
-            margin-bottom: 12px;
+            font-size: 0.95rem;
+            margin-bottom: 10px;
             position: relative;
-            padding-left: 30px;
+            padding-left: 25px;
             text-align: left;
         }
 
@@ -313,16 +322,16 @@
             left: 0;
             color: #48bb78;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
         }
 
         .cta-button {
             width: 100%;
-            padding: 18px 36px;
+            padding: 15px 30px;
             border: none;
             border-radius: 25px;
             font-weight: 600;
-            font-size: 1.1rem;
+            font-size: 1rem;
             text-transform: uppercase;
             letter-spacing: 0.5px;
             transition: all 0.3s ease;
@@ -372,11 +381,29 @@
             .features-highlight {
                 gap: 20px;
             }
+
+            .header-controls {
+                gap: 15px;
+            }
+
+            .login-btn {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
         }
 
         @media (max-width: 768px) {
             .header {
-                padding: 20px 30px;
+                padding: 15px 30px;
+                flex-wrap: wrap;
+                height: auto;
+                gap: 15px;
+            }
+
+            .header-controls {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-end;
             }
             
             .main-content {
@@ -439,9 +466,12 @@
             <div class="logo">H+</div>
             <div class="logo-text" th:text="#{header.logo.text}">HealthCare Portal</div>
         </div>
-        <div style="display: flex; align-items: center; gap: 20px;">
+
+        <!-- Compact horizontal layout for header controls -->
+        <div class="header-controls">
             <div th:replace="~{fragments/language-selector :: language-selector}"></div>
-            <a href="/login" class="login-btn" th:text="#{header.login.text}">Already have an account? Login</a>
+            <a href="/login" class="login-btn" th:text="#{header.login.text}">Login here</a>
+            <a href="/chat" class="login-btn">Chat with Healya</a>
         </div>
     </header>
 
@@ -450,7 +480,6 @@
         <section class="hero-section">
             <h1 class="main-title" th:text="#{main.title}">Choose Your Healthcare Journey</h1>
             <p class="subtitle" th:text="#{main.subtitle}">Experience seamless healthcare management with our comprehensive digital platform designed for modern medical practice</p>
-           
         </section>
 
         <section class="user-selection">

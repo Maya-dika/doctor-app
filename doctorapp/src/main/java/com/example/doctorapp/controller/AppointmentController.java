@@ -5,17 +5,22 @@ import com.example.doctorapp.model.Appointment;
 import com.example.doctorapp.model.Patient;
 import com.example.doctorapp.model.Doctor;
 import com.example.doctorapp.service.AppointmentService;
+import com.example.doctorapp.service.EmailService;
 import com.example.doctorapp.service.DoctorService;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @Controller
 public class AppointmentController {
     
     private final AppointmentService appointmentService;
     private final DoctorService doctorService;
+    
+    @Autowired
+    private EmailService emailService;
 
     public AppointmentController(AppointmentService appointmentService, DoctorService doctorService) {
         this.appointmentService = appointmentService;
@@ -61,6 +66,13 @@ public class AppointmentController {
             model.addAttribute("doctor", doctor);
             return "book-appointment-form";
         }
+        
+        emailService.sendAppointmentConfirmationToPatient(
+        loggedInPatient.getEmail(),
+        loggedInPatient.getFirstName(),
+        doctor.getFirstName(),
+        appointment.getAppointmentDate().toString()
+    );
 
         appointment.setPatient(loggedInPatient);
         appointment.setDoctor(doctor);
