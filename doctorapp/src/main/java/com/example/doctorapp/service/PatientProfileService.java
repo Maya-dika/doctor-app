@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-@Transactional // Add this annotation
+@Transactional
 public class PatientProfileService {
     
     private final PatientProfileRepository repository;
@@ -16,7 +16,7 @@ public class PatientProfileService {
         this.repository = repository;
     }
     
-    @Transactional // Ensure transactional context
+    @Transactional
     public AdditionalPatientInfo save(AdditionalPatientInfo info) {
         try {
             // If updating existing record, fetch it first

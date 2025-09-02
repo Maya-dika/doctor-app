@@ -12,8 +12,6 @@ import java.util.List;
 @Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     
-    // ========== EXISTING METHODS (Keep as is) ==========
-    
     // Find doctor by email (for login and duplicate checking)
     Optional<Doctor> findByEmail(String email);
     

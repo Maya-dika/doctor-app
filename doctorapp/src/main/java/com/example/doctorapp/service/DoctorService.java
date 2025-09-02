@@ -97,7 +97,7 @@ public class DoctorService {
         doctorRepository.deleteById(id);
     }
     
-    // Update doctor
+ 
     public Doctor updateDoctor(Doctor doctor) {
         if (doctor.getId() != null && doctorRepository.existsById(doctor.getId())) {
             return doctorRepository.save(doctor);
@@ -105,10 +105,8 @@ public class DoctorService {
         throw new IllegalArgumentException("Doctor with ID " + doctor.getId() + " does not exist");
     }
     
-    // Advanced search method
+
     public List<Doctor> searchDoctors(String name, String location, Long specialtyId, Integer minExperience) {
-        // This would require a custom query or specification
-        // For now, returning all doctors - you can implement custom search logic
         return doctorRepository.findAll();
     }
     

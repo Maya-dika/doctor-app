@@ -8,7 +8,7 @@ public class VideoCallRequestDto {
     private Long doctorId;
     private String reason;
     
-    // Constructors
+
     public VideoCallRequestDto() {}
     
     public VideoCallRequestDto(Long doctorId, String reason) {
